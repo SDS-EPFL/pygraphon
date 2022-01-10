@@ -18,6 +18,7 @@ ignore =
     D400
     D200
     BLK100
+    D107
 exclude =
     .tox,
     .git,

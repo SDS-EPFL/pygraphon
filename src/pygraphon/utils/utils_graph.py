@@ -23,4 +23,5 @@ def edge_density(adjacency_matrix: np.ndarray) -> float:
     Returns:
         float: edge density rho
     """
-    return np.sum(adjacency_matrix) / (adjacency_matrix.shape[0] * (adjacency_matrix.shape[1] - 1))
+    return np.sum(adjacency_matrix) / \
+        (adjacency_matrix.shape[0] * (adjacency_matrix.shape[1] - 1))

@@ -27,7 +27,7 @@ def generate_adjacency_matrix(n, probs, rho):
     np.array
         adjacency matrix ind realisations of Bern(probs)
     """
-    if type(probs) != int:
+    if not isinstance(probs, int):
         assert probs.shape[0] == int(
             n * (n - 1) / 2
         ), f"probs array wrong size compared to number of nodes: got {probs.shape} instead of { n*(n-1)/2}"
@@ -45,9 +45,11 @@ def generate_adjacency_matrix(n, probs, rho):
 
 def norm_graphon_labeled(graphon1, graphon2, norm="MISE"):
     if norm == "MISE":
-        result = (np.sum((graphon1 - graphon2) ** 2)) / (graphon2.shape[0] ** 2)
+        result = (np.sum((graphon1 - graphon2) ** 2)) / \
+            (graphon2.shape[0] ** 2)
     elif norm == "ABS" or norm == "MAE":
-        result = (np.sum(np.abs(graphon1 - graphon2))) / (graphon2.shape[0] ** 2)
+        result = (np.sum(np.abs(graphon1 - graphon2))) / \
+            (graphon2.shape[0] ** 2)
     else:
         raise ValueError("norm not defined")
     return result
@@ -99,7 +101,8 @@ class StepGraphon:
             # THIS WILL FAIL IN ANOTHER CODE ARCHITECTURE !
             paths = self.getMatlabPaths()
 
-            # approximate the graphon using the method from Olhede and Wolfe (2013)
+            # approximate the graphon using the method from Olhede and Wolfe
+            # (2013)
             adjacencyMatrix = get_ajacency_matrix_from_graph(graph)
             self.matlabEngine = setupMatlabEngine(matlabEngine, paths)
             (
@@ -135,7 +138,8 @@ class StepGraphon:
 
         return function
 
-    def draw(self, rho: float, numberNodes: int = None, exchangeable: bool = False) -> np.ndarray:
+    def draw(self, rho: float, numberNodes: int = None,
+             exchangeable: bool = False) -> np.ndarray:
 
         # check parameters
         nodes = numberNodes if numberNodes is not None else self.numberNodes
@@ -188,13 +192,16 @@ class StepGraphon:
         # network histogram approximation
         # calls matlab script from paper
         if bandwidthHist is None:
-            idx, h = matlabEngine.nethist(npArray2Matlab(adjacencyMatrix), nargout=2)
+            idx, h = matlabEngine.nethist(
+                npArray2Matlab(adjacencyMatrix), nargout=2)
             bandwidthHist = h / len(idx)
         else:
-            # needs this weird conversion for matlab to work, does not accept int
+            # needs this weird conversion for matlab to work, does not accept
+            # int
             argh = float(int(bandwidthHist * adjacencyMatrix.shape[0]))
 
-            idx = matlabEngine.nethist(npArray2Matlab(adjacencyMatrix), argh, nargout=1)
+            idx = matlabEngine.nethist(
+                npArray2Matlab(adjacencyMatrix), argh, nargout=1)
         groupmembership = [elt[0] for elt in idx]
 
         # compute the actual values of the graphon approximation
@@ -205,7 +212,8 @@ class StepGraphon:
         rho_inv = 1 / rho if rho != 0 else 1
         H = np.zeros((ngroups, ngroups))
 
-        # compute the number of links between groups i and j / all possible links
+        # compute the number of links between groups i and j / all possible
+        # links
         for i in range(ngroups):
             for j in np.arange(i, ngroups):
                 total = countGroups[groups[i]] * countGroups[groups[j]]
@@ -224,7 +232,8 @@ class StepGraphon:
         P = np.zeros((len(groupmembership), len(groupmembership)))
         for i in range(P.shape[0]):
             for j in np.arange(i + 1, P.shape[0]):
-                P[i, j] = H[int(groupmembership[i]) - 1, int(groupmembership[j]) - 1]
+                P[i, j] = H[int(groupmembership[i]) - 1,
+                            int(groupmembership[j]) - 1]
                 P[j, i] = P[i, j]
         return H, P, bandwidthHist
 
@@ -263,7 +272,8 @@ class StepGraphon:
 
         # check that graphons have the same bandwidth for their blocks
         if h1 != h2:
-            raise NotImplementedError("different size of graphons cannot be compared for now")
+            raise NotImplementedError(
+                "different size of graphons cannot be compared for now")
 
         # weight the difference of the graphons based on the area of the block considered
         # compute the weighted norm
@@ -275,7 +285,8 @@ class StepGraphon:
             len(np.unique(self.graphon.shape)) != 1
             or len(np.unique(stepGraphon.graphon.shape)) != 1
         ):
-            raise ValueError("Cannot compare graphons with heterogeneous block sizes")
+            raise ValueError(
+                "Cannot compare graphons with heterogeneous block sizes")
 
         # generate all possible permutations
         permutations_possible = generate_all_permutations(graphon1.shape[0])
@@ -285,11 +296,22 @@ class StepGraphon:
         for sigma in permutations_possible:
             if norm == "MISE":
                 result = np.sqrt(
-                    np.sum(((graphon1 - permute_matrix(graphon2, sigma)) ** 2) * self.areas)
+                    np.sum(
+                        ((graphon1 -
+                          permute_matrix(
+                              graphon2,
+                              sigma)) ** 2) *
+                        self.areas)
                 )
             elif norm in ["ABS", "MAE"]:
                 result = np.average(
-                    np.sum(np.abs(graphon1 - permute_matrix(graphon2, sigma)) * self.areas)
+                    np.sum(
+                        np.abs(
+                            graphon1 -
+                            permute_matrix(
+                                graphon2,
+                                sigma)) *
+                        self.areas)
                 )
             else:
                 raise ValueError(f"norm not defined, got {norm}")
@@ -298,7 +320,10 @@ class StepGraphon:
         return norm_value
 
     def norm(self, norm: str = "MISE"):
-        empty = StepGraphon(graphon=np.zeros_like(self.graphon), bandwidthHist=self.bandwidthHist)
+        empty = StepGraphon(
+            graphon=np.zeros_like(
+                self.graphon),
+            bandwidthHist=self.bandwidthHist)
         return self.distance(empty, norm)
 
     def integral(self) -> float:
@@ -354,7 +379,8 @@ class StepGraphon:
         if latentVarArray is not None:
             latentVarArray = np.squeeze(latentVarArray)
             if latentVarArray.ndim != 1:
-                raise ValueError("Latent variables array should be one dimensional")
+                raise ValueError(
+                    "Latent variables array should be one dimensional")
             if numberNodes is not None and numberNodes != latentVarArray.shape[0]:
                 raise ValueError(
                     f"Number of nodes ({numberNodes}) and length of latent variable array ({latentVarArray.shape[0]}) disagree"
@@ -382,19 +408,23 @@ class StepGraphon:
                 "No edge probabilites were computed in the initialization, no default number of ndoes and  no number of nodes were given: unable to return a matrix of edge probabilites"
             )
         # deals with generating edge probabilities from latent variables array
-        probs = np.zeros((int(numberNodes * (numberNodes - 1) / 2), 1)).reshape(-1)
+        probs = np.zeros(
+            (int(numberNodes * (numberNodes - 1) / 2), 1)).reshape(-1)
 
         # TODO: performance
         # Now we iterate over the probabilities array and call the function for each
-        # latent variable. Way to do that in a vectorized fashion to avoid for loop ?
+        # latent variable. Way to do that in a vectorized fashion to avoid for
+        # loop ?
         I, J = np.triu_indices(numberNodes, 1)
         for index, nodes in enumerate(zip(I, J)):
-            probs[index] = self.graphon_function(latentVarArray[nodes[0]], latentVarArray[nodes[1]])
+            probs[index] = self.graphon_function(
+                latentVarArray[nodes[0]], latentVarArray[nodes[1]])
 
         if wholeMatrix:
             P = np.zeros((numberNodes, numberNodes))
             P[np.triu_indices(numberNodes, 1)] = probs
-            P[np.tril_indices(numberNodes, -1)] = P.T[np.tril_indices(numberNodes, -1)]
+            P[np.tril_indices(numberNodes, -1)
+              ] = P.T[np.tril_indices(numberNodes, -1)]
             return P
         else:
             return probs

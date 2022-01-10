@@ -34,28 +34,44 @@ def distance_StepGraphon(
     graphon2_matrix = graphon2.graphon
 
     # check that graphons have the same bandwidth for their blocks
-    #  this means they have the same size of blocks if the graphon have the same shape
+    # this means they have the same size of blocks if the graphon have the
+    # same shape
     if graphon2.bandwidthHist != graphon1.bandwidthHist:
-        raise NotImplementedError("different size of graphons cannot be compared for now")
+        raise NotImplementedError(
+            "different size of graphons cannot be compared for now")
 
     # check if the graphon blocks all have same size
-    if len(np.unique(graphon1.areas)) != 1 or len(np.unique(graphon2.areas)) != 1:
-        raise NotImplementedError("Cannot compare graphons with heterogeneous block sizes")
+    if len(np.unique(graphon1.areas)) != 1 or len(
+            np.unique(graphon2.areas)) != 1:
+        raise NotImplementedError(
+            "Cannot compare graphons with heterogeneous block sizes")
 
     # generate all possible permutations
     permutations_possible = generate_all_permutations(graphon1_matrix.shape[0])
 
-    norm_value = np.sqrt(np.sum(((graphon1 - graphon2_matrix) ** 2) * graphon1.areas))
+    norm_value = np.sqrt(
+        np.sum(((graphon1 - graphon2_matrix) ** 2) * graphon1.areas))
     if not exchangeable:
         return norm_value
     for sigma in permutations_possible:
         if norm == "MISE":
             result = np.sqrt(
-                np.sum(((graphon1 - permute_matrix(graphon2_matrix, sigma)) ** 2) * graphon1.areas)
+                np.sum(
+                    ((graphon1 -
+                      permute_matrix(
+                          graphon2_matrix,
+                          sigma)) ** 2) *
+                    graphon1.areas)
             )
         elif norm in ["ABS", "MAE"]:
             result = np.average(
-                np.sum(np.abs(graphon1 - permute_matrix(graphon2_matrix, sigma)) * graphon1.areas)
+                np.sum(
+                    np.abs(
+                        graphon1 -
+                        permute_matrix(
+                            graphon2_matrix,
+                            sigma)) *
+                    graphon1.areas)
             )
         else:
             raise ValueError(f"norm not defined, got {norm}")
