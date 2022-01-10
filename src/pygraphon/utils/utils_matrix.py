@@ -3,14 +3,12 @@ from typing import Tuple
 from copy import copy
 
 
-
 def rearangeMatrix(A, indices):
     return A[indices][:, indices]
 
 
 def check_symmetric(a, rtol=1e-05, atol=1e-08):
     return np.allclose(a, a.T, rtol=rtol, atol=atol)
-
 
 
 def permute_matrix(matrix: np.ndarray, permutation: Tuple) -> np.ndarray:

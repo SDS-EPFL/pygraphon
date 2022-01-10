@@ -12,11 +12,11 @@ from pygraphon.utils.utils_maltab import getMatlabPaths, npArray2Matlab, setupMa
 
 
 class HistogramEstimator(BaseEstimator):
-    """Implements the histogram estimator from Universality of block model approximation [1] to approximate a graphon
-    from a single adjacency matrix. Size of blocks can be  determined automaticaly.
+    """Implements the histogram estimator from Universality of block model approximation [1].
+    Approximate a graphon from a single adjacency matrix. Size of blocks can be  determined automaticaly.
 
     Args:
-        matlabEngine (matlab.engine.MatlabEngine): matlab engine to do the approximation.
+        matlab_engine (matlab.engine.MatlabEngine): matlab engine to do the approximation.
         bandwithHist (float, optional): size of the block of the histogram. If None, automatically derived
         from the observation. Defaults to None.
 
@@ -26,23 +26,32 @@ class HistogramEstimator(BaseEstimator):
     """
 
     def __init__(
-        self, matlabEngine: matlab.engine.MatlabEngine, bandwithHist: float = None
+        self, matlab_engine: matlab.engine.MatlabEngine, bandwithHist: float = None
     ) -> None:
+        """Initialize the histogram estimator.
+
+        Args:
+             matlab_engine (matlab.engine.MatlabEngine): matlab engine to do the approximation.
+        bandwithHist (float, optional): size of the block of the histogram. If None, automatically derived
+        from the observation. Defaults to None.
+        """
+
         super().__init__()
-        self.matlabEngine = setupMatlabEngine(
-            matlabEngine=matlabEngine, paths=getMatlabPaths("nethist")
+        self.matlab_engine = setupMatlabEngine(
+            matlab_engine=matlab_engine, paths=getMatlabPaths("nethist")
         )
         self.bandwidthHist = bandwithHist
 
     def approximateGraphonFromAdjacency(self, adjacency_matrix: np.ndarray) -> StepGraphon:
-        H, P, h = self._approximate(adjacency_matrix, self.bandwidthHist, self.matlabEngine)
+        graphon_matrix, _, h = self._approximate(adjacency_matrix, self.bandwidthHist, self.matlab_engine)
         self.bandwidthHist = h
-        return StepGraphon(H, self.bandwidthHist)
+        return StepGraphon(graphon_matrix, self.bandwidthHist)
 
     def _approximate(
+        self,
         adjacencyMatrix: np.ndarray,
         bandwidthHist: float,
-        matlabEngine: matlab.engine.matlabengine.MatlabEngine,
+        matlab_engine: matlab.engine.matlabengine.MatlabEngine,
     ) -> Tuple[np.ndarray]:
         """Use function from Universality of block model approximation [1] to approximate a graphon
         from a single adjacency matrix.
@@ -59,7 +68,8 @@ class HistogramEstimator(BaseEstimator):
             ValueError: if no matlab engine is given and no path to maltab scripts is given
 
         Returns:
-            Tuple[np.ndarray], float : (H,P),h , H is the block model graphon and P is the edge probability matrix
+            Tuple[np.ndarray], float : graphon_matrix, edge_probability_matrix, h. graphon_matrix is the block model
+            graphon and P is the edge probability matrix
             corresponding to the adjacency matrix. h is the size of the block
 
 
@@ -70,13 +80,13 @@ class HistogramEstimator(BaseEstimator):
         # network histogram approximation
         # calls matlab script from paper
         if bandwidthHist is None:
-            idx, h = matlabEngine.nethist(npArray2Matlab(adjacencyMatrix), nargout=2)
+            idx, h = matlab_engine.nethist(npArray2Matlab(adjacencyMatrix), nargout=2)
             bandwidthHist = h / len(idx)
         else:
             # needs this weird conversion for matlab to work, does not accept int
             argh = float(int(bandwidthHist * adjacencyMatrix.shape[0]))
 
-            idx = matlabEngine.nethist(npArray2Matlab(adjacencyMatrix), argh, nargout=1)
+            idx = matlab_engine.nethist(npArray2Matlab(adjacencyMatrix), argh, nargout=1)
         groupmembership = [elt[0] for elt in idx]
 
         # compute the actual values of the graphon approximation
@@ -85,13 +95,13 @@ class HistogramEstimator(BaseEstimator):
         ngroups = len(groups)
         rho = edge_density(adjacencyMatrix)
         rho_inv = 1 / rho if rho != 0 else 1
-        H = np.zeros((ngroups, ngroups))
+        graphon_matrix = np.zeros((ngroups, ngroups))
 
         # compute the number of links between groups i and j / all possible links
         for i in range(ngroups):
             for j in np.arange(i, ngroups):
                 total = countGroups[groups[i]] * countGroups[groups[j]]
-                H[i][j] = (
+                graphon_matrix[i][j] = (
                     np.sum(
                         adjacencyMatrix[np.where(groupmembership == groups[i])[0]][
                             :, np.where(groupmembership == groups[j])[0]
@@ -99,13 +109,13 @@ class HistogramEstimator(BaseEstimator):
                     )
                     / total
                 )
-                H[i, j] = H[i, j] * rho_inv
-                H[j][i] = H[i, j]
+                graphon_matrix[i, j] = graphon_matrix[i, j] * rho_inv
+                graphon_matrix[j][i] = graphon_matrix[i, j]
 
         # fills in the edge probability matrix from the value of the graphon
-        P = np.zeros((len(groupmembership), len(groupmembership)))
-        for i in range(P.shape[0]):
-            for j in np.arange(i + 1, P.shape[0]):
-                P[i, j] = H[int(groupmembership[i]) - 1, int(groupmembership[j]) - 1]
-                P[j, i] = P[i, j]
-        return H, P, bandwidthHist
+        edge_probability_matrix = np.zeros((len(groupmembership), len(groupmembership)))
+        for i in range(edge_probability_matrix.shape[0]):
+            for j in np.arange(i + 1, edge_probability_matrix.shape[0]):
+                edge_probability_matrix[i, j] = graphon_matrix[int(groupmembership[i]) - 1, int(groupmembership[j]) - 1]
+                edge_probability_matrix[j, i] = edge_probability_matrix[i, j]
+        return graphon_matrix, edge_probability_matrix, bandwidthHist

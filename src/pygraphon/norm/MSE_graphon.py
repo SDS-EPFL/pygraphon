@@ -8,18 +8,21 @@ from pygraphon.utils.utils_matrix import permute_matrix
 def distance_StepGraphon(
     graphon1: StepGraphon, graphon2: StepGraphon, norm: str = "MISE", exchangeable: bool = True
 ) -> float:
-    """Implement the mean squared error and mean absolute error for stepgraphons of same size (same number of blocks and same areas of blocks)
+    """Implement the mean squared error and mean absolute error for stepgraphons of same size (same number of blocks
+    and same areas of blocks)
 
 
     Args:
         graphon1 (StepGraphon): first stepgraphon to compare
         graphon2 (StepGraphon): second stepgraphon to compare
         norm (str, optional): in ["MAE","MISE"]. Defaults to "MISE".
-        exchangeable (bool, optional): if sets to true, the norm will try all possible permutations of the blocks to find the lowest distance. 
+        exchangeable (bool, optional): if sets to true, the norm will try all possible permutations of the blocks to
+        find the lowest distance.
         Otherwise assume correspondance between the blocks of the first and second graphon. Defaults to True.
 
     Raises:
-        NotImplementedError: if the two graphons are not of the same size (different number of blocks or heteogeneous size of blocks)
+        NotImplementedError: if the two graphons are not of the same size (different number of blocks or heteogeneous
+        size of blocks)
         ValueError: if norm not in MAE or MISE
 
     Returns:
@@ -42,9 +45,7 @@ def distance_StepGraphon(
     # generate all possible permutations
     permutations_possible = generate_all_permutations(graphon1_matrix.shape[0])
 
-    norm_value = np.sqrt(
-                np.sum(((graphon1 - graphon2_matrix) ** 2) * graphon1.areas)
-            )
+    norm_value = np.sqrt(np.sum(((graphon1 - graphon2_matrix) ** 2) * graphon1.areas))
     if not exchangeable:
         return norm_value
     for sigma in permutations_possible:

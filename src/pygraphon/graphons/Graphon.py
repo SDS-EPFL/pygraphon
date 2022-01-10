@@ -29,7 +29,6 @@ class Graphon(ABC):
         """
         pass
 
-
     def draw(self, rho: float, n: int, exchangeable: bool = True) -> np.ndarray:
         """Draw a graph from the graphon with a given density and number of vertices.
 
@@ -41,7 +40,7 @@ class Graphon(ABC):
         Returns:
             np.ndarray: adjacency matrix of the realized graph (nxn)
         """
-        probs = self._get_edge_probabilities(n, exchangeable=exchangeable, wholeMatrix= True)
+        probs = self._get_edge_probabilities(n, exchangeable=exchangeable, wholeMatrix=True)
         return self._generate_adjacency_matrix(n, probs, rho)
 
     def _generate_adjacency_matrix(self, n, probs, rho):
@@ -53,7 +52,8 @@ class Graphon(ABC):
         n: int
             number of nodes in the graph (A will be a nxn matrix)
         probs: np.ndarray or int
-            bernoulli probability of having an edge if np.ndarray size n*(n-1)/2 with indices corresponding to np.tri_indices(n,1)
+            bernoulli probability of having an edge if np.ndarray size n*(n-1)/2 with indices corresponding
+            to np.tri_indices(n,1)
             if int : constant probability for all the edges
         rho: float
             edge density of the realized graph
@@ -89,7 +89,8 @@ class Graphon(ABC):
         Args:
             n (int): number of nodes in the edge probability matrix returned
             exchangeable (bool, optional): if True the graph will be vertex exchangeable. Defaults to True.
-            wholeMatrix (bool, optional): if True return the square symmetric matrix, otherwise return the upper diagonal. Defaults to True.
+            wholeMatrix (bool, optional): if True return the square symmetric matrix, otherwise return the upper
+            diagonal. Defaults to True.
 
         Returns:
             np.ndarray: matrix of edge probabilities (nxn) if wholeMatrix (n*(n-1)/2) if not wholeMatrix

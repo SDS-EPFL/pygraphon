@@ -1,7 +1,8 @@
-from ..core.Graphon import Graphon
+from ..graphons.Graphon import Graphon
 from matplotlib.pyplot import Figure, Axes
 from typing import Tuple
 import matplotlib.pyplot as plt
+
 
 def plot(
     graphon: Graphon, fig: Figure = None, ax: Axes = None, figsize: Tuple[int, int] = (6, 5)

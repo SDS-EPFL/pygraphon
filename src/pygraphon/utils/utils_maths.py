@@ -1,6 +1,7 @@
 from typing import Iterable
 from itertools import permutations
 
+
 def generate_all_permutations(size: int = 3) -> Iterable:
     """Generate all permutations of a given size.
 
