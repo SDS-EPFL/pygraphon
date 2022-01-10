@@ -56,7 +56,7 @@ class SimpleMomentEstimator(BaseEstimator):
 
         self.counter = CycleCount(matlab_engine)
 
-    def _approximateGraphonFromAdjacency(self, adjacency_matrix: np.ndarray) -> StepGraphon:
+    def _approximate_graphon_from_adjacency(self, adjacency_matrix: np.ndarray) -> StepGraphon:
         """Estimate the graphon function f(x,y) from an adjacency matrix by solving moment equations."""
 
         # compute densities from observed graphs
@@ -86,6 +86,7 @@ class SimpleMomentEstimator(BaseEstimator):
         Returns:
             np.ndarray: projected graphon
         """
+
         if type == "abs":
             return np.abs(graphon)
         elif type == "clip":
@@ -142,6 +143,15 @@ class SimpleMomentEstimator(BaseEstimator):
     def _edge_density_moment_theoretical(
         self, theta: np.ndarray, areas: np.ndarray = None
     ) -> float:
+        """Return the theoretical values of homomorphism densities of edge density given a block model
+
+        Args:
+            theta (np.ndarray): connection matrix
+            areas (np.ndarray, optional): sizes of the blocks. Defaults to None and then supposed to be homogeneous.
+
+        Returns:
+            float: theoretical edge density of the SBM represented by theta
+        """
 
         if not check_symmetric(theta):
             raise ValueError("connection matrix theta should be symmetric")
@@ -167,6 +177,15 @@ class SimpleMomentEstimator(BaseEstimator):
     def _cherry_density_moment_theoretical(
         self, theta: np.ndarray, areas: np.ndarray = None
     ) -> float:
+        """Return the theoretical values of homomorphism densities of cherry density given a block model
+
+        Args:
+            theta (np.ndarray): connection matrix
+            areas (np.ndarray, optional): sizes of the blocks. Defaults to None and then supposed to be homogeneous.
+
+        Returns:
+            float: theoretical cherry density of the SBM represented by theta
+        """
 
         if not check_symmetric(theta):
             raise ValueError("connection matrix theta should be symmetric")
@@ -242,6 +261,7 @@ class SimpleMomentEstimator(BaseEstimator):
         Returns:
             [np.ndarray]: constrained matrix of connectivity of the SBM
         """
+
         return x[-1] * np.ones((K, K)) + (x[0:-1] - x[-1]) * np.eye(K)
 
     def _count_cycles(self, instance: np.ndarray) -> List[float]:
@@ -254,6 +274,7 @@ class SimpleMomentEstimator(BaseEstimator):
         Returns:
             List[float]: homomorphism densities of cycle in instance
         """
+
         return self.counter(instance)
 
 

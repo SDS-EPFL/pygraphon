@@ -19,6 +19,10 @@ ignore =
     D200
     BLK100
     D107
+    D202
+    D205
+    D100
+    N802
 exclude =
     .tox,
     .git,

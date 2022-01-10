@@ -13,6 +13,7 @@ from pygraphon.utils.utils_maltab import getMatlabPaths, npArray2Matlab, setupMa
 
 class HistogramEstimator(BaseEstimator):
     """Implements the histogram estimator from Universality of block model approximation [1].
+
     Approximate a graphon from a single adjacency matrix. Size of blocks can be  determined automaticaly.
 
     Args:
@@ -40,7 +41,7 @@ class HistogramEstimator(BaseEstimator):
         self.matlab_engine = setupMatlabEngine(eng=matlab_engine, paths=getMatlabPaths())
         self.bandwidthHist = bandwithHist
 
-    def _approximateGraphonFromAdjacency(self, adjacency_matrix: np.ndarray) -> StepGraphon:
+    def _approximate_graphon_from_adjacency(self, adjacency_matrix: np.ndarray) -> StepGraphon:
         """Estimate the graphon function f(x,y) from an adjacency matrix"""
 
         graphon_matrix, _, h = self._approximate(
@@ -55,7 +56,7 @@ class HistogramEstimator(BaseEstimator):
         bandwidthHist: float,
         matlab_engine: matlab.engine.matlabengine.MatlabEngine,
     ) -> Tuple[np.ndarray]:
-        """Use function from Universality of block model approximation [1] to approximate a graphon
+        """Use function from Universality of block model approximation [1] to approximate a graphon 
         from a single adjacency matrix.
 
         Args:
