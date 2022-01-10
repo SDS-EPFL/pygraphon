@@ -1,3 +1,4 @@
+"""Network histogram class."""
 from collections import Counter
 from typing import Tuple
 
@@ -11,12 +12,13 @@ from pygraphon.utils.utils_maltab import getMatlabPaths, npArray2Matlab, setupMa
 
 
 class HistogramEstimator(BaseEstimator):
-    """Implements the histogram estimator from Universality of block model approximation [1] to approximate a graphon from a single adjacency matrix.
-        Size of blocks can be  determined automaticaly.
+    """Implements the histogram estimator from Universality of block model approximation [1] to approximate a graphon
+    from a single adjacency matrix. Size of blocks can be  determined automaticaly.
 
     Args:
         matlabEngine (matlab.engine.MatlabEngine): matlab engine to do the approximation.
-        bandwithHist (float, optional): size of the block of the histogram. If None, automatically derived from the observation. Defaults to None.
+        bandwithHist (float, optional): size of the block of the histogram. If None, automatically derived
+        from the observation. Defaults to None.
 
 
      Sources:
@@ -42,13 +44,16 @@ class HistogramEstimator(BaseEstimator):
         bandwidthHist: float,
         matlabEngine: matlab.engine.matlabengine.MatlabEngine,
     ) -> Tuple[np.ndarray]:
-        """Use function from Universality of block model approximation [1] to approximate a graphon from a single adjacency matrix.
+        """Use function from Universality of block model approximation [1] to approximate a graphon
+        from a single adjacency matrix.
 
         Args:
             adjacencyMatrix (np.ndarray): adjacency matrix of the realized graph
             bandwidthHist (float, optional):  size of the block of the histogram. Defaults to None
-            eng (matlab.engine.matlabengine.MatlabEngine, optional): matlab engine to do the approximation. Defaults to None.
-            pathToMatlabScripts (str, optional): paths to the matlab scripts for network histogram approximation, used if not matlab engine is given. Defaults to None.
+            eng (matlab.engine.matlabengine.MatlabEngine, optional): matlab engine to do the approximation.
+            Defaults to None.
+            pathToMatlabScripts (str, optional): paths to the matlab scripts for network histogram approximation,
+                        used if not matlab engine is given. Defaults to None.
 
         Raises:
             ValueError: if no matlab engine is given and no path to maltab scripts is given
