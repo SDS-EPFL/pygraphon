@@ -21,7 +21,7 @@
     <a href="https://pypi.org/project/pygraphon">
         <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/pygraphon" />
     </a>
-    <a href="https://github.com//pygraphon/blob/main/LICENSE">
+    <a href="https://github.com/dufourc1/pygraphon/blob/master/LICENSE">
         <img alt="PyPI - License" src="https://img.shields.io/pypi/l/pygraphon" />
     </a>
     <a href='https://pygraphon.readthedocs.io/en/latest/?badge=latest'>
@@ -32,24 +32,7 @@
     </a>
 </p>
 
-python library to work with graphon
-
-## 💪 Getting Started
-
-> TODO show in a very small amount of space the **MOST** useful thing your package can do.
-Make it as short as possible! You have an entire set of docs for later.
-
-### Command Line Interface
-
-The pygraphon command line tool is automatically installed. It can
-be used from the shell with the `--help` flag to show all subcommands:
-
-```shell
-$ pygraphon --help
-```
-
-> TODO show the most useful thing the CLI does! The CLI will have documentation auto-generated
-by `sphinx`.
+Python library to work with graphons
 
 ## 🚀 Installation
 
@@ -75,6 +58,15 @@ $ git clone git+https://github.com//pygraphon.git
 $ cd pygraphon
 $ pip install -e .
 ```
+
+You will need to have matlab installed (version above `R2021a`), and run 
+
+```bash
+cd "matlabroot\extern\engines\python"
+python setup.py install --prefix="installdir"
+```
+
+where `matlabroot` is the path to your matlab installation and `ìnstalldir` is the path to your virtual environment.
 
 ## 👐 Contributing
 
