@@ -4,7 +4,7 @@
 
 import unittest
 
-from pygraphon.version import get_version
+from src.pygraphon.version import get_version
 
 
 class TestVersion(unittest.TestCase):
