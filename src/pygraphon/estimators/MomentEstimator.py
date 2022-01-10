@@ -227,7 +227,7 @@ class SimpleMomentEstimator(BaseEstimator):
 
 class MomentEstimator(SimpleMomentEstimator):
     """Estimate the moments of a block model using the moment equations.
-  
+
     Does not assume specific structure on the blockmodel fitted"""
     def _add_constraints_on_SBM(self, x, K) -> np.ndarray:
         # build theta based on x
