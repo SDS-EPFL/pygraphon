@@ -23,6 +23,7 @@ ignore =
     D205
     D100
     N802
+    D401
 exclude =
     .tox,
     .git,
