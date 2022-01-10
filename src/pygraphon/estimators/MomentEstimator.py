@@ -1,16 +1,16 @@
+from collections.abc import Iterable as IterableCollection
 from itertools import product
 from typing import Callable, Iterable, List, Union
-from collections.abc import Iterable as IterableCollection
-from scipy.optimize import fsolve
 
-import numpy as np
 import matlab.engine
+import numpy as np
+from scipy.optimize import fsolve
 
 from pygraphon.estimators.BaseEstimator import BaseEstimator
 from pygraphon.graphons.StepGraphon import StepGraphon
+from pygraphon.subgraph_isomorphism.CycleCount import CycleCount
 from pygraphon.utils.utils_graph import edge_density
 from pygraphon.utils.utils_matrix import check_symmetric
-from pygraphon.subgraph_isomorphism.CycleCount import CycleCount
 
 
 class SimpleMomentEstimator(BaseEstimator):

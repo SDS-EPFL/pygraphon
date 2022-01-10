@@ -1,6 +1,7 @@
-import numpy as np
-from typing import Tuple
 from copy import copy
+from typing import Tuple
+
+import numpy as np
 
 
 def rearangeMatrix(A, indices):

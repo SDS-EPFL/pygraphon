@@ -4,12 +4,13 @@ from typing import Callable, Tuple
 
 import matlab
 import matlab.engine
-import numpy as np
 import networkx as nx
-from ..utils.utils_maltab import npArray2Matlab, setupMatlabEngine
-from ..utils.utils_matrix import check_symmetric, permute_matrix
+import numpy as np
+
 from ..utils.utils_graph import get_ajacency_matrix_from_graph
+from ..utils.utils_maltab import npArray2Matlab, setupMatlabEngine
 from ..utils.utils_maths import generate_all_permutations
+from ..utils.utils_matrix import check_symmetric, permute_matrix
 
 
 def generate_adjacency_matrix(n, probs, rho):

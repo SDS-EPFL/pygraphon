@@ -1,5 +1,5 @@
-from typing import Iterable
 from itertools import permutations
+from typing import Iterable
 
 
 def generate_all_permutations(size: int = 3) -> Iterable:

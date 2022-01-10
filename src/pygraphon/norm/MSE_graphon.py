@@ -1,6 +1,6 @@
-from pygraphon.graphons.StepGraphon import StepGraphon
 import numpy as np
 
+from pygraphon.graphons.StepGraphon import StepGraphon
 from pygraphon.utils.utils_maths import generate_all_permutations
 from pygraphon.utils.utils_matrix import permute_matrix
 

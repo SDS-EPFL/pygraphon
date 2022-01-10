@@ -1,7 +1,8 @@
+import os
+import pathlib
+
 import matlab
 import matlab.engine
-import pathlib
-import os
 
 
 def npArray2Matlab(x):

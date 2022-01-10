@@ -1,6 +1,7 @@
 import matlab.engine
 import numpy as np
-from pygraphon.utils.utils_maltab import getMatlabPaths, setupMatlabEngine, npArray2Matlab
+
+from pygraphon.utils.utils_maltab import getMatlabPaths, npArray2Matlab, setupMatlabEngine
 
 
 class CycleCount:
