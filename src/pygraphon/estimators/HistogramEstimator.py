@@ -37,12 +37,10 @@ class HistogramEstimator(BaseEstimator):
         """
 
         super().__init__()
-        self.matlab_engine = setupMatlabEngine(
-            eng=matlab_engine, paths=getMatlabPaths())
+        self.matlab_engine = setupMatlabEngine(eng=matlab_engine, paths=getMatlabPaths())
         self.bandwidthHist = bandwithHist
 
-    def _approximateGraphonFromAdjacency(
-            self, adjacency_matrix: np.ndarray) -> StepGraphon:
+    def _approximateGraphonFromAdjacency(self, adjacency_matrix: np.ndarray) -> StepGraphon:
         """Estimate the graphon function f(x,y) from an adjacency matrix"""
 
         graphon_matrix, _, h = self._approximate(
@@ -84,16 +82,14 @@ class HistogramEstimator(BaseEstimator):
         # network histogram approximation
         # calls matlab script from paper
         if bandwidthHist is None:
-            idx, h = matlab_engine.nethist(
-                npArray2Matlab(adjacencyMatrix), nargout=2)
+            idx, h = matlab_engine.nethist(npArray2Matlab(adjacencyMatrix), nargout=2)
             bandwidthHist = h / len(idx)
         else:
             # needs this weird conversion for matlab to work, does not accept
             # int
             argh = float(int(bandwidthHist * adjacencyMatrix.shape[0]))
 
-            idx = matlab_engine.nethist(
-                npArray2Matlab(adjacencyMatrix), argh, nargout=1)
+            idx = matlab_engine.nethist(npArray2Matlab(adjacencyMatrix), argh, nargout=1)
         groupmembership = [elt[0] for elt in idx]
 
         # compute the actual values of the graphon approximation
@@ -121,8 +117,7 @@ class HistogramEstimator(BaseEstimator):
                 graphon_matrix[j][i] = graphon_matrix[i, j]
 
         # fills in the edge probability matrix from the value of the graphon
-        edge_probability_matrix = np.zeros(
-            (len(groupmembership), len(groupmembership)))
+        edge_probability_matrix = np.zeros((len(groupmembership), len(groupmembership)))
         for i in range(edge_probability_matrix.shape[0]):
             for j in np.arange(i + 1, edge_probability_matrix.shape[0]):
                 edge_probability_matrix[i, j] = graphon_matrix[

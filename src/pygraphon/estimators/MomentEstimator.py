@@ -35,13 +35,11 @@ class SimpleMomentEstimator(BaseEstimator):
 
         if type(blocks) in [int, float]:
             if int(blocks) != blocks:
-                raise ValueError(
-                    "invalid type for blocks, expecting an integer or a list of float")
+                raise ValueError("invalid type for blocks, expecting an integer or a list of float")
             blocks = np.repeat(1 / blocks, blocks)
         elif isinstance(blocks, IterableCollection) and not isinstance(blocks, str):
             if np.sum(blocks) != 1:
-                raise ValueError(
-                    f"Block sizes should add to one, but got {np.sum(blocks)}")
+                raise ValueError(f"Block sizes should add to one, but got {np.sum(blocks)}")
         else:
             raise ValueError(
                 f"Blocks argument should be either the number of blocks, or a list of size of blocks, but got {blocks}"
@@ -58,8 +56,7 @@ class SimpleMomentEstimator(BaseEstimator):
 
         self.counter = CycleCount(matlab_engine)
 
-    def _approximateGraphonFromAdjacency(
-            self, adjacency_matrix: np.ndarray) -> StepGraphon:
+    def _approximateGraphonFromAdjacency(self, adjacency_matrix: np.ndarray) -> StepGraphon:
         """Estimate the graphon function f(x,y) from an adjacency matrix by solving moment equations."""
 
         # compute densities from observed graphs
@@ -68,8 +65,7 @@ class SimpleMomentEstimator(BaseEstimator):
         # solve the moment equations
         root = fsolve(
             func=self._get_moment_equations(cycles, rho),
-            x0=np.array([rho ** (i + 1)
-                        for i in range(self.numberParameters)]),
+            x0=np.array([rho ** (i + 1) for i in range(self.numberParameters)]),
         )
         # structure the parameters into a graphon
         graphon = self._add_constraints_on_SBM(root, self.numberBlocks)
@@ -128,15 +124,13 @@ class SimpleMomentEstimator(BaseEstimator):
             if np.max(areas) > 1 or np.min(areas) < 0:
                 raise ValueError("areas should be in [0,1]")
             if np.sum(areas) != 1:
-                raise ValueError(
-                    f"areas should sum up to one, not {np.sum(areas)}")
+                raise ValueError(f"areas should sum up to one, not {np.sum(areas)}")
 
         result = 0
 
         for indices in list(product(range(K), repeat=L)):
             inter = (
-                np.prod([theta[indices[i]][indices[i + 1]]
-                        for i in range(len(indices) - 1)])
+                np.prod([theta[indices[i]][indices[i + 1]] for i in range(len(indices) - 1)])
                 * theta[indices[-1]][indices[0]]
             )
 
@@ -163,8 +157,7 @@ class SimpleMomentEstimator(BaseEstimator):
             if np.max(areas) > 1 or np.min(areas) < 0:
                 raise ValueError("areas should be in [0,1]")
             if np.sum(areas) != 1:
-                raise ValueError(
-                    f"areas should sum up to one, not {np.sum(areas)}")
+                raise ValueError(f"areas should sum up to one, not {np.sum(areas)}")
 
         result = 0
         for i, j in list(product(range(K), repeat=2)):
@@ -189,14 +182,12 @@ class SimpleMomentEstimator(BaseEstimator):
             if np.max(areas) > 1 or np.min(areas) < 0:
                 raise ValueError("areas should be in [0,1]")
             if np.sum(areas) != 1:
-                raise ValueError(
-                    f"areas should sum up to one, not {np.sum(areas)}")
+                raise ValueError(f"areas should sum up to one, not {np.sum(areas)}")
 
         result = 0
 
         for indices in list(product(range(K), repeat=3)):
-            inter = np.prod([theta[indices[i]][indices[i + 1]]
-                            for i in range(len(indices) - 1)])
+            inter = np.prod([theta[indices[i]][indices[i + 1]] for i in range(len(indices) - 1)])
 
             inter *= np.prod([areas[i] for i in indices])
             result += inter
@@ -236,9 +227,7 @@ class SimpleMomentEstimator(BaseEstimator):
                 self._edge_density_moment_theoretical(theta) - edgeDensity,
             ]
             for L in range(self.numberParameters - 1):
-                functions.append(
-                    self._cycle_moments_theoretical(
-                        L + 3, theta) - cyclesCounts[L])
+                functions.append(self._cycle_moments_theoretical(L + 3, theta) - cyclesCounts[L])
             return functions
 
         return func
@@ -277,8 +266,7 @@ class MomentEstimator(SimpleMomentEstimator):
         self, blocks: Union[int, Iterable[float]], matlab_engine: matlab.engine.MatlabEngine
     ) -> None:
         super().__init__(blocks, matlab_engine)
-        self.numberParameters = self.numberBlocks * \
-            (self.numberBlocks - 1) // 2 + self.numberBlocks
+        self.numberParameters = self.numberBlocks * (self.numberBlocks - 1) // 2 + self.numberBlocks
         if self.numberParameters > 9:
             raise ValueError("number of parameters should be <= 9")
 
