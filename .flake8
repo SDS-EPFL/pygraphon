@@ -10,6 +10,14 @@ ignore =
     S603
     W503 # Line break before binary operator (flake8 is wrong)
     E203  # whitespace before ':'
+    N803
+    N806
+    DAR401
+    DAR101
+    DAR201
+    D400
+    D200
+    BLK100
 exclude =
     .tox,
     .git,
