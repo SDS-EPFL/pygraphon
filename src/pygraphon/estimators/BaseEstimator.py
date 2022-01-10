@@ -32,9 +32,9 @@ class BaseEstimator(ABC):
             raise ValueError("graph or adjacency_matrix must be provided, not both")
         if graph is not None:
             adjacency_matrix = get_adjacency_matrix_from_graph(graph)
-        return self.approximateGraphonFromAdjacency(adjacency_matrix)
+        return self._approximateGraphonFromAdjacency(adjacency_matrix)
 
     @abstractclassmethod
-    def approximateGraphonFromAdjacency(self, adjacency_matrix: np.ndarray) -> Graphon:
+    def _approximateGraphonFromAdjacency(self, adjacency_matrix: np.ndarray) -> Graphon:
         """Estimate the graphon function f(x,y) from an adjacency matrix"""
         pass

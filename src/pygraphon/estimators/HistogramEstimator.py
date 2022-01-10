@@ -37,15 +37,15 @@ class HistogramEstimator(BaseEstimator):
         """
 
         super().__init__()
-        self.matlab_engine = setupMatlabEngine(
-            matlab_engine=matlab_engine, paths=getMatlabPaths("nethist")
-        )
+        self.matlab_engine = setupMatlabEngine(eng=matlab_engine, paths=getMatlabPaths())
         self.bandwidthHist = bandwithHist
 
-    def approximateGraphonFromAdjacency(self, adjacency_matrix: np.ndarray) -> StepGraphon:
+    def _approximateGraphonFromAdjacency(self, adjacency_matrix: np.ndarray) -> StepGraphon:
         """Estimate the graphon function f(x,y) from an adjacency matrix"""
 
-        graphon_matrix, _, h = self._approximate(adjacency_matrix, self.bandwidthHist, self.matlab_engine)
+        graphon_matrix, _, h = self._approximate(
+            adjacency_matrix, self.bandwidthHist, self.matlab_engine
+        )
         self.bandwidthHist = h
         return StepGraphon(graphon_matrix, self.bandwidthHist)
 
@@ -118,6 +118,8 @@ class HistogramEstimator(BaseEstimator):
         edge_probability_matrix = np.zeros((len(groupmembership), len(groupmembership)))
         for i in range(edge_probability_matrix.shape[0]):
             for j in np.arange(i + 1, edge_probability_matrix.shape[0]):
-                edge_probability_matrix[i, j] = graphon_matrix[int(groupmembership[i]) - 1, int(groupmembership[j]) - 1]
+                edge_probability_matrix[i, j] = graphon_matrix[
+                    int(groupmembership[i]) - 1, int(groupmembership[j]) - 1
+                ]
                 edge_probability_matrix[j, i] = edge_probability_matrix[i, j]
         return graphon_matrix, edge_probability_matrix, bandwidthHist

@@ -7,14 +7,21 @@ class Graphon(ABC):
     All graphons of this class will be scaled graphon, meaning the integral of f(x,y) over [0,1]^2 is 1.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, scaled=True) -> None:
         """Constructor for Graphon.
 
         Will check that graphon is correctly build.
         """
         super().__init__()
-        self.graphon_function = self.graphon_function_builder()
         self.check_graphon()
+        if not self.check_graphon_integral() and scaled:
+            try:
+                self.correct_graphon_integral()
+            except NotImplementedError:
+                raise ValueError(
+                    "Graphon does not integrate to 1 and cannot be automatically corrected"
+                )
+        self.graphon_function = self.graphon_function_builder()
 
     @abstractclassmethod
     def graphon_function_builder(self):
@@ -26,10 +33,38 @@ class Graphon(ABC):
     @abstractclassmethod
     def check_graphon(self):
         """
-        Check graphon integrates to 1 and other properties depending on the subclass that iplements it
+        Check graphon properties depending on the subclass that iplements it
 
         Raises:
             ValueError: if graphon does not integrate to 1 it it cannot be automatically scaled
+        """
+        pass
+
+    def check_graphon_integral(self) -> bool:
+        """Check if the graphon integrates to 1.
+
+        Args:
+            n (int): number of nodes in the graphon
+            exchangeable (bool, optional): if True the graph will be vertex exchangeable. Defaults to True.
+
+        Returns:
+            bool: True if graphon integrates to 1, False otherwise
+        """
+        return self.integral() == 1
+
+    def correct_graphon_integral(self):
+        """
+        Correct the integral of the graphon function f(x,y) to 1
+        """
+        raise NotImplementedError
+
+    @abstractclassmethod
+    def integral(self):
+        """
+        Return the integral of the graphon function f(x,y) over [0,1]^2
+
+        Returns:
+            float: integral of the graphon function
         """
         pass
 
@@ -44,7 +79,7 @@ class Graphon(ABC):
         Returns:
             np.ndarray: adjacency matrix of the realized graph (nxn)
         """
-        probs = self._get_edge_probabilities(n, exchangeable=exchangeable, wholeMatrix=True)
+        probs = self._get_edge_probabilities(n, exchangeable=exchangeable, wholeMatrix=False)
         return self._generate_adjacency_matrix(n, probs, rho)
 
     def _generate_adjacency_matrix(self, n, probs, rho):

@@ -7,7 +7,7 @@ import unittest
 from pygraphon.graphons import Graphon
 
 
-class TestVersion(unittest.TestCase):
+class TestInitialization(unittest.TestCase):
     """Trivially test a version."""
 
     def test_not_able_to_instantiate_abstract_class(self):

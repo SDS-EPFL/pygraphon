@@ -16,8 +16,7 @@ class CycleCount:
 
         # float conversion needed for matlab... Yeah I know, but ... well ...
         self.L = float(int(L))
-
-        setupMatlabEngine(eng=matlab_engine, paths=getMatlabPaths("cyclecount"))
+        self.matlab_engine = setupMatlabEngine(eng=matlab_engine, paths=getMatlabPaths())
 
     def __call__(self, adjacency_matrix: np.ndarray) -> np.ndarray:
         """Count the densities of subgraph C_l in a graph G: t(C_L,G)
@@ -28,6 +27,7 @@ class CycleCount:
         Returns:
             np.ndarray : counts of cycle of length 3 to  L
         """
-        return np.asarray(
-            self.matlabEngine.cyclecount(npArray2Matlab(adjacency_matrix), self.L, nargout=1)
+        t = np.asarray(
+            self.matlab_engine.cyclecount(npArray2Matlab(adjacency_matrix), self.L, nargout=1)
         ).flatten()
+        return (t ** (np.arange(0, len(t)) + 1))[2:]

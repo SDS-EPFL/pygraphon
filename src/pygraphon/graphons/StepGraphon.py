@@ -24,7 +24,6 @@ class StepGraphon(Graphon):
             graphon (np.ndarray): [description]. Defaults to None.
             bandwidthHist (float, optional): [description]. Defaults to None.
         """
-        super().__init__()
 
         # save args
         self.graphon = graphon
@@ -37,7 +36,7 @@ class StepGraphon(Graphon):
             self.areas[-1, :] = self.bandwidthHist * self.remainder
             self.areas[-1, -1] = self.remainder ** 2
 
-        self.graphon_function = self.graphon_function_builder()
+        super().__init__()
 
     def graphon_function_builder(self) -> Callable:
         """
@@ -60,28 +59,32 @@ class StepGraphon(Graphon):
 
         return function
 
+    def correct_graphon_integral(self):
+        return self.normalize()
+
     def check_graphon(self):
-        """ check if the graphon is symmetric, positive and normalized
+        """ check if the graphon is symmetric, positive
 
         Raises:
             ValueError: if the graphon is not symmetric,
             ValueError: if the graphon is not non negative
         """
-        if not self.integral() == 1:
-            Warning.warn("Graphon is not normalized, rescaling ...")
-            self.normalize()
         if not check_symmetric(self.graphon):
             raise ValueError("graphon matrix should be symmetric")
         if not np.all(self.graphon >= 0):
             raise ValueError("graphon matrix should be non-negative")
 
-    def integral(self) -> float:
+    def integral(self, graphon=None, areas=None) -> float:
         """Integrate the graphon over [0,1]x[0,1]
 
         Returns:
             float: the value of the integral
         """
-        return np.sum(self.graphon * self.areas)
+        if graphon is None:
+            graphon = self.graphon
+        if areas is None:
+            areas = self.areas
+        return np.sum(graphon * areas)
 
     def normalize(self) -> None:
         """Normalize graphon such that the integral is equal to 1

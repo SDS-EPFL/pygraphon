@@ -23,14 +23,12 @@ class SimpleMomentEstimator(BaseEstimator):
         self,
         blocks: Union[int, Iterable[float]],
         matlab_engine: matlab.engine.MatlabEngine,
-        numberParameters: int,
     ) -> None:
         """Initialize the estimator.
 
         Args:
             blocks (Union[int, Iterable[float]]): number of blocks or size of blocks
             matlab_engine (matlab.engine.MatlabEngine): matlab engine to use for solving moment equations
-            numberParameters (int, optional): number of parameters of the SBM model fitted.
         """
 
         super().__init__()
@@ -49,20 +47,22 @@ class SimpleMomentEstimator(BaseEstimator):
             raise ValueError(
                 f"Blocks argument should be either the number of blocks, or a list of size of blocks, but got {blocks}"
             )
+        self.blocks = blocks
+        self.numberBlocks = len(blocks)
+
+        self.numberParameters = self.numberBlocks + 1
 
         assert (
             self.numberParameters >= 2
-        ), f"no block model can have less than 2 parameters, but got {numberParameters}"
+        ), f"no block model can have less than 2 parameters, but got {self.numberParameters}"
 
         assert (
             self.numberParameters <= 9
         ), "method cannot handle more than 9 different parameters for now due to the count of cycle"
 
-        self.blocks = blocks
-        self.numberBlocks = len(blocks)
         self.counter = CycleCount(matlab_engine)
 
-    def approximateGraphonFromAdjacency(self, adjacency_matrix: np.ndarray) -> StepGraphon:
+    def _approximateGraphonFromAdjacency(self, adjacency_matrix: np.ndarray) -> StepGraphon:
         """Estimate the graphon function f(x,y) from an adjacency matrix by solving moment equations."""
 
         # compute densities from observed graphs
@@ -71,10 +71,33 @@ class SimpleMomentEstimator(BaseEstimator):
         # solve the moment equations
         root = fsolve(
             func=self._get_moment_equations(cycles, rho),
-            x0=np.array([rho**(i + 2) for i in range(self.numberParameters)]),
+            x0=np.array([rho**(i + 1) for i in range(self.numberParameters)]),
         )
         # structure the parameters into a graphon
-        return self._add_constraints_on_SBM(root, self.numberBlocks)
+        graphon = self._add_constraints_on_SBM(root, self.numberBlocks)
+        graphon = self.correct_fitted_values(graphon, type="abs")
+        return StepGraphon(graphon, 1 / self.numberBlocks)
+
+    def correct_fitted_values(self, graphon, type="abs") -> np.ndarray:
+        """Project the method of moment into the graphon space.
+
+        Args:
+            graphon ([np.ndarray]): estimated graphon
+            type (str, optional): method of projection. Either absolute value ("abs") or clipping ("clip").
+            Defaults to "abs".
+
+        Raises:
+            ValueError: if type is not in ["abs", "clip"]
+
+        Returns:
+            np.ndarray: projected graphon
+        """
+        if type == "abs":
+            return np.abs(graphon)
+        elif type == "clip":
+            return np.clip(graphon, min=0)
+        else:
+            raise ValueError("type should be either abs or clip")
 
     def _cycle_moments_theoretical(
         self, L: int, theta: np.ndarray, areas: np.ndarray = None
@@ -189,12 +212,12 @@ class SimpleMomentEstimator(BaseEstimator):
             )  # x[-1] * np.ones((K, K)) + (x[0:-1] - x[-1]) * np.eye(K)
             # TODO: if we use scaled graphon, we loose the fact that rho is informational: it is always 1 ?
             functions = [
-                self._edge_density_moment_theoretical(theta) - 1,
+                self._edge_density_moment_theoretical(theta) - edgeDensity,
             ]
             for L in range(self.numberParameters - 1):
                 functions.append(
                     self._cycle_moments_theoretical(L + 3, theta)
-                    - cyclesCounts[L] / (edgeDensity) ** (L + 3)
+                    - cyclesCounts[L]
                 )
             return functions
 
@@ -228,7 +251,13 @@ class SimpleMomentEstimator(BaseEstimator):
 class MomentEstimator(SimpleMomentEstimator):
     """Estimate the moments of a block model using the moment equations.
 
-    Does not assume specific structure on the blockmodel fitted"""
+    Does not assume specific structure on the blockmodel fitted apart from homogeneous block sizes."""
+
+    def __init__(self, blocks: Union[int, Iterable[float]], matlab_engine: matlab.engine.MatlabEngine) -> None:
+        super().__init__(blocks, matlab_engine)
+        self.numberParameters = self.numberBlocks * (self.numberBlocks - 1) // 2 + self.numberBlocks
+        assert self.numberParameters <= 9, "number of parameters should be <= 9"
+
     def _add_constraints_on_SBM(self, x, K) -> np.ndarray:
         # build theta based on x
         theta = np.zeros((K, K))

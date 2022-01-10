@@ -24,11 +24,11 @@ def setupMatlabEngine(eng: matlab.engine.MatlabEngine, paths: str):
         elif eng is None:
             eng = matlab.engine.start_matlab()
 
-        eng.addpath(paths, nargout=0)
+    eng.addpath(paths, nargout=0)
     return eng
 
 
-def getMatlabPaths(function_name="nethist"):
+def getMatlabPaths():
     """Dirty trick to get the correct paths of the matlab scripts:
 
     ### Any change in name or structure of the code directory will make this fail !
@@ -37,5 +37,5 @@ def getMatlabPaths(function_name="nethist"):
         [str]: paths to matlab file containing function_name.m
     """
     pathFile = pathlib.Path(__file__).parent.parent.absolute()
-    path = os.path.join(pathFile, "matlab_functions", f"{function_name}.m")
+    path = os.path.join(pathFile, "matlab_functions")
     return path
