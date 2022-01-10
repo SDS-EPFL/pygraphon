@@ -9,9 +9,6 @@
 </h1>
 
 <p align="center">
-    <a href="https://github.com//pygraphon/actions?query=workflow%3ATests">
-        <img alt="Tests" src="https://github.com//pygraphon/workflows/Tests/badge.svg" />
-    </a>
     <a href="https://github.com/cthoyt/cookiecutter-python-package">
         <img alt="Cookiecutter template from @cthoyt" src="https://img.shields.io/badge/Cookiecutter-python--package-yellow" /> 
     </a>
