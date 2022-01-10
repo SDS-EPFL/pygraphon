@@ -40,8 +40,22 @@ class StepGraphon(Graphon):
         self.graphon_function = self.graphon_function_builder()
 
     def graphon_function_builder(self) -> Callable:
+        """
+        Build the graphon function f(x,y)
+        """
 
-        def function(x, y, h=self.bandwidthHist, blocksValue=self.graphon):
+        def function(x: float, y: float , h: float = self.bandwidthHist, blocksValue: np.ndarray = self.graphon):
+            """return the value of the graphon at the point (x,y)
+
+            Args:
+                x ([float]):coordinate x
+                y ([type]):coordinate y
+                h ([float], optional): size of the blocks of the graphon. Defaults to self.bandwidthHist.
+                blocksValue ([np.ndarray], optional): connection matrices value. Defaults to self.graphon.
+
+            Returns:
+                [float]: f(x,h)
+            """
             return blocksValue[int(x // h)][int(y // h)]
 
         return function
@@ -80,7 +94,10 @@ class StepGraphon(Graphon):
             self.graphon = self.graphon
 
     def get_graphon(self) -> np.ndarray:
+        """Get the graphon matrix"""
         return self.graphon
 
     def get_number_groups(self) -> int:
+        """Return the number of groups of the graphon
+        """
         return 1 // self.bandwidthHist + 1

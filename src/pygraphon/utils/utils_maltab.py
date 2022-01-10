@@ -1,13 +1,20 @@
 import matlab
+import matlab.engine
 import pathlib
 import os
 
 
 def npArray2Matlab(x):
+    """Convert a numpy array to a matlab array.
+
+    """
+
     return matlab.double(x.tolist())
 
 
-def setupMatlabEngine(eng, paths):
+def setupMatlabEngine(eng: matlab.engine.MatlabEngine, paths: str):
+    """
+    Setup the matlab engine to use the correct paths to the matlab scripts."""
     if eng is None:
         if paths is None:
             raise ValueError(

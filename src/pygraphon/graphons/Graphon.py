@@ -8,6 +8,10 @@ class Graphon(ABC):
     """
 
     def __init__(self) -> None:
+        """Constructor for Graphon.
+
+        Will check that graphon is correctly build.
+        """
         super().__init__()
         self.graphon_function = self.graphon_function_builder()
         self.check_graphon()

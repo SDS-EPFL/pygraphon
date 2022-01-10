@@ -7,7 +7,15 @@ from pygraphon.utils.utils_graph import get_adjacency_matrix_from_graph
 
 
 class BaseEstimator(ABC):
+    """Base class for Graphon estimator.
+
+
+    """
     def __init__(self) -> None:
+        """Constructor.
+
+        """
+
         super().__init__()
 
     def estimate(self, graph: nx.Graph = None, adjacency_matrix: np.ndarray = None) -> Graphon:
