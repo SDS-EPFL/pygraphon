@@ -13,8 +13,10 @@ class CycleCount:
     def __init__(self, matlab_engine: matlab.engine.MatlabEngine,
                  L: int = 9) -> None:
 
-        assert L >= 3, "input L should be an integer >= 3"
-        assert L < 10, "cycleCount algorithm cannot handle L > 10"
+        if L < 3:
+            raise ValueError("input L should be an integer >= 3")
+        if L >= 10:
+            raise ValueError("cycleCount algorithm cannot handle L > 10")
 
         # float conversion needed for matlab... Yeah I know, but ... well ...
         self.L = float(int(L))

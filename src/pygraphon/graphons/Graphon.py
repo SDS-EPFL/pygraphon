@@ -69,8 +69,7 @@ class Graphon(ABC):
         """
         pass
 
-    def draw(self, rho: float, n: int,
-             exchangeable: bool = True) -> np.ndarray:
+    def draw(self, rho: float, n: int, exchangeable: bool = True) -> np.ndarray:
         """Draw a graph from the graphon with a given density and number of vertices.
 
         Args:
@@ -81,8 +80,7 @@ class Graphon(ABC):
         Returns:
             np.ndarray: adjacency matrix of the realized graph (nxn)
         """
-        probs = self._get_edge_probabilities(
-            n, exchangeable=exchangeable, wholeMatrix=False)
+        probs = self._get_edge_probabilities(n, exchangeable=exchangeable, wholeMatrix=False)
         return self._generate_adjacency_matrix(n, probs, rho)
 
     def _generate_adjacency_matrix(self, n, probs, rho):
@@ -106,9 +104,10 @@ class Graphon(ABC):
             adjacency matrix ind realisations of Bern(probs) (nxn)
         """
         if not isinstance(probs, int):
-            assert probs.shape[0] == int(
-                n * (n - 1) / 2
-            ), f"probs array wrong size compared to number of nodes: got {probs.shape} instead of { n*(n-1)/2}"
+            if probs.shape[0] != int(n * (n - 1) / 2):
+                raise ValueError(
+                    f"probs array wrong size compared to number of nodes: got {probs.shape} instead of { n*(n-1)/2}"
+                )
 
         # generate bernoulli draws with help of uniform rv
         r = (np.random.uniform(size=int(n * (n - 1) / 2)) < rho * probs) * 1
@@ -139,8 +138,7 @@ class Graphon(ABC):
         """
 
         latentVarArray = (
-            np.random.uniform(0, 1, size=n) if exchangeable else np.array(
-                [i / n for i in range(n)])
+            np.random.uniform(0, 1, size=n) if exchangeable else np.array([i / n for i in range(n)])
         )
 
         # generate edge probabilities from latent variables array
@@ -152,8 +150,7 @@ class Graphon(ABC):
         # loop ?
         I, J = np.triu_indices(n, 1)
         for index, nodes in enumerate(zip(I, J)):
-            probs[index] = self.graphon_function(
-                latentVarArray[nodes[0]], latentVarArray[nodes[1]])
+            probs[index] = self.graphon_function(latentVarArray[nodes[0]], latentVarArray[nodes[1]])
 
         if wholeMatrix:
             P = np.zeros((n, n))
