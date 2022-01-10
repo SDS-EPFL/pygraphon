@@ -50,7 +50,7 @@ class StepGraphon(Graphon):
             h: float = self.bandwidthHist,
             blocksValue: np.ndarray = self.graphon,
         ):
-            """return the value of the graphon at the point (x,y)
+            """Return the value of the graphon at the point (x,y)
 
             Args:
                 x ([float]):coordinate x
@@ -66,10 +66,11 @@ class StepGraphon(Graphon):
         return function
 
     def correct_graphon_integral(self):
+        """Normalize the graphon such that the integral is equal to 1 if needed"""
         return self.normalize()
 
     def check_graphon(self):
-        """check if the graphon is symmetric, positive
+        """Check if the graphon is symmetric, positive
 
         Raises:
             ValueError: if the graphon is not symmetric,

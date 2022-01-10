@@ -11,7 +11,7 @@ class BaseEstimator(ABC):
     """Base class for Graphon estimator."""
 
     def __init__(self) -> None:
-        """Constructor."""
+        """Initialize base estimator."""
 
         super().__init__()
 

@@ -56,7 +56,7 @@ class HistogramEstimator(BaseEstimator):
         bandwidthHist: float,
         matlab_engine: matlab.engine.matlabengine.MatlabEngine,
     ) -> Tuple[np.ndarray]:
-        """Use function from Universality of block model approximation [1] to approximate a graphon 
+        """Use function from Universality of block model approximation [1] to approximate a graphon
         from a single adjacency matrix.
 
         Args:

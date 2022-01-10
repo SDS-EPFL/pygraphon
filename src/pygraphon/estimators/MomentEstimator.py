@@ -281,7 +281,8 @@ class SimpleMomentEstimator(BaseEstimator):
 class MomentEstimator(SimpleMomentEstimator):
     """Estimate the moments of a block model using the moment equations.
 
-    Does not assume specific structure on the blockmodel fitted apart from homogeneous block sizes."""
+    Does not assume specific structure on the blockmodel fitted apart from homogeneous block sizes.
+    """
 
     def __init__(
         self, blocks: Union[int, Iterable[float]], matlab_engine: matlab.engine.MatlabEngine
