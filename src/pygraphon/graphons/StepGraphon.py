@@ -9,10 +9,11 @@ from pygraphon.utils.utils_matrix import check_symmetric
 class StepGraphon(Graphon):
     """A step function graphon, by giving the matrix representing the block model approxumation.
 
-        Args:
-            graphon (np.ndarray): [description]. Defaults to None.
-            bandwidthHist (float, optional): [description]. Defaults to None.
+    Args:
+        graphon (np.ndarray): [description]. Defaults to None.
+        bandwidthHist (float, optional): [description]. Defaults to None.
     """
+
     def __init__(
         self,
         graphon: np.ndarray,
@@ -43,7 +44,12 @@ class StepGraphon(Graphon):
         Build the graphon function f(x,y)
         """
 
-        def function(x: float, y: float , h: float = self.bandwidthHist, blocksValue: np.ndarray = self.graphon):
+        def function(
+            x: float,
+            y: float,
+            h: float = self.bandwidthHist,
+            blocksValue: np.ndarray = self.graphon,
+        ):
             """return the value of the graphon at the point (x,y)
 
             Args:
@@ -63,7 +69,7 @@ class StepGraphon(Graphon):
         return self.normalize()
 
     def check_graphon(self):
-        """ check if the graphon is symmetric, positive
+        """check if the graphon is symmetric, positive
 
         Raises:
             ValueError: if the graphon is not symmetric,
@@ -101,6 +107,5 @@ class StepGraphon(Graphon):
         return self.graphon
 
     def get_number_groups(self) -> int:
-        """Return the number of groups of the graphon
-        """
+        """Return the number of groups of the graphon"""
         return 1 // self.bandwidthHist + 1

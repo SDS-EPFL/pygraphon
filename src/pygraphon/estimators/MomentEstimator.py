@@ -40,9 +40,7 @@ class SimpleMomentEstimator(BaseEstimator):
             blocks = np.repeat(1 / blocks, blocks)
         elif isinstance(blocks, IterableCollection) and not isinstance(blocks, str):
             if np.sum(blocks) != 1:
-                raise ValueError(
-                    f"Block sizes should add to one, but got {np.sum(blocks)}"
-                )
+                raise ValueError(f"Block sizes should add to one, but got {np.sum(blocks)}")
         else:
             raise ValueError(
                 f"Blocks argument should be either the number of blocks, or a list of size of blocks, but got {blocks}"
@@ -71,7 +69,7 @@ class SimpleMomentEstimator(BaseEstimator):
         # solve the moment equations
         root = fsolve(
             func=self._get_moment_equations(cycles, rho),
-            x0=np.array([rho**(i + 1) for i in range(self.numberParameters)]),
+            x0=np.array([rho ** (i + 1) for i in range(self.numberParameters)]),
         )
         # structure the parameters into a graphon
         graphon = self._add_constraints_on_SBM(root, self.numberBlocks)
@@ -141,7 +139,9 @@ class SimpleMomentEstimator(BaseEstimator):
 
         return result
 
-    def _edge_density_moment_theoretical(self, theta: np.ndarray, areas: np.ndarray = None) -> float:
+    def _edge_density_moment_theoretical(
+        self, theta: np.ndarray, areas: np.ndarray = None
+    ) -> float:
 
         assert check_symmetric(theta), "connection matrix theta should be symmetric"
 
@@ -215,10 +215,7 @@ class SimpleMomentEstimator(BaseEstimator):
                 self._edge_density_moment_theoretical(theta) - edgeDensity,
             ]
             for L in range(self.numberParameters - 1):
-                functions.append(
-                    self._cycle_moments_theoretical(L + 3, theta)
-                    - cyclesCounts[L]
-                )
+                functions.append(self._cycle_moments_theoretical(L + 3, theta) - cyclesCounts[L])
             return functions
 
         return func
@@ -253,7 +250,9 @@ class MomentEstimator(SimpleMomentEstimator):
 
     Does not assume specific structure on the blockmodel fitted apart from homogeneous block sizes."""
 
-    def __init__(self, blocks: Union[int, Iterable[float]], matlab_engine: matlab.engine.MatlabEngine) -> None:
+    def __init__(
+        self, blocks: Union[int, Iterable[float]], matlab_engine: matlab.engine.MatlabEngine
+    ) -> None:
         super().__init__(blocks, matlab_engine)
         self.numberParameters = self.numberBlocks * (self.numberBlocks - 1) // 2 + self.numberBlocks
         assert self.numberParameters <= 9, "number of parameters should be <= 9"

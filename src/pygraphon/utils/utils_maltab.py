@@ -5,9 +5,7 @@ import os
 
 
 def npArray2Matlab(x):
-    """Convert a numpy array to a matlab array.
-
-    """
+    """Convert a numpy array to a matlab array."""
 
     return matlab.double(x.tolist())
 

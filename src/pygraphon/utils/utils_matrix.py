@@ -3,7 +3,6 @@ from typing import Tuple
 from copy import copy
 
 
-
 def rearangeMatrix(A, indices):
     """Rearange a matrix according to a permutation."""
 
@@ -22,6 +21,7 @@ def check_symmetric(a: np.ndarray, rtol: float = 1e-05, atol: float = 1e-08):
         [bool]: True if the array is symmetric, False otherwise.
     """
     return np.allclose(a, a.T, rtol=rtol, atol=atol)
+
 
 def permute_matrix(matrix: np.ndarray, permutation: Tuple) -> np.ndarray:
     """Permute a matrix according to a permutation.

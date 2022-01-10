@@ -13,4 +13,3 @@ def generate_all_permutations(size: int = 3) -> Iterable:
     """
 
     return permutations(range(size))
-
