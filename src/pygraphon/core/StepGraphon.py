@@ -28,10 +28,10 @@ def generate_adjacency_matrix(n, probs, rho):
         adjacency matrix ind realisations of Bern(probs)
     """
     if not isinstance(probs, int):
-        if probs.shape[0] != int(
-            n * (n - 1) / 2
-        ):
-            raise ValueError("probs array wrong size compared to number of nodes: got {probs.shape} instead of { n*(n-1)/2}")
+        if probs.shape[0] != int(n * (n - 1) / 2):
+            raise ValueError(
+                "probs array wrong size compared to number of nodes: got {probs.shape} instead of { n*(n-1)/2}"
+            )
 
     # generate bernoulli draws with help of uniform rv
     _R = (np.random.uniform(size=int(n * (n - 1) / 2)) < rho * probs) * 1

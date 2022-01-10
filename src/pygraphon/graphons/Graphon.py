@@ -69,7 +69,8 @@ class Graphon(ABC):
         """
         pass
 
-    def draw(self, rho: float, n: int, exchangeable: bool = True) -> np.ndarray:
+    def draw(self, rho: float, n: int,
+             exchangeable: bool = True) -> np.ndarray:
         """Draw a graph from the graphon with a given density and number of vertices.
 
         Args:
@@ -80,7 +81,8 @@ class Graphon(ABC):
         Returns:
             np.ndarray: adjacency matrix of the realized graph (nxn)
         """
-        probs = self._get_edge_probabilities(n, exchangeable=exchangeable, wholeMatrix=False)
+        probs = self._get_edge_probabilities(
+            n, exchangeable=exchangeable, wholeMatrix=False)
         return self._generate_adjacency_matrix(n, probs, rho)
 
     def _generate_adjacency_matrix(self, n, probs, rho):
@@ -138,7 +140,8 @@ class Graphon(ABC):
         """
 
         latentVarArray = (
-            np.random.uniform(0, 1, size=n) if exchangeable else np.array([i / n for i in range(n)])
+            np.random.uniform(0, 1, size=n) if exchangeable else np.array(
+                [i / n for i in range(n)])
         )
 
         # generate edge probabilities from latent variables array
@@ -150,7 +153,8 @@ class Graphon(ABC):
         # loop ?
         I, J = np.triu_indices(n, 1)
         for index, nodes in enumerate(zip(I, J)):
-            probs[index] = self.graphon_function(latentVarArray[nodes[0]], latentVarArray[nodes[1]])
+            probs[index] = self.graphon_function(
+                latentVarArray[nodes[0]], latentVarArray[nodes[1]])
 
         if wholeMatrix:
             P = np.zeros((n, n))
