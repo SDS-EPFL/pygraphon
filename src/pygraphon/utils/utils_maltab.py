@@ -14,7 +14,9 @@ def npArray2Matlab(x):
 
 def setupMatlabEngine(eng: matlab.engine.MatlabEngine, paths: str):
     """
-    Setup the matlab engine to use the correct paths to the matlab scripts."""
+    Setup the matlab engine to use the correct paths to the matlab scripts.
+    """
+
     if eng is None:
         if paths is None:
             raise ValueError(

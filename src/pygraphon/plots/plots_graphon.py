@@ -1,4 +1,5 @@
-from ..graphons.Graphon import Graphon
+from pygraphon.graphons.Graphon import Graphon
+
 from matplotlib.pyplot import Figure, Axes
 from typing import Tuple
 import matplotlib.pyplot as plt

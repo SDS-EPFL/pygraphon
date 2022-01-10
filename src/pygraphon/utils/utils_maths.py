@@ -11,4 +11,6 @@ def generate_all_permutations(size: int = 3) -> Iterable:
     Returns:
         Iterable: all permutations of the given size
     """
+
     return permutations(range(size))
+

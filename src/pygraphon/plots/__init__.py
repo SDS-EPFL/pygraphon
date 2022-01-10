@@ -1,1 +1,1 @@
-"""module for plotting graphons and matrices"""
+"""module for plotting graphons and matrices."""
