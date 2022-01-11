@@ -32,6 +32,11 @@ def distance_StepGraphon(
     # get the data we need
     graphon1_matrix = graphon1.graphon
     graphon2_matrix = graphon2.graphon
+    if graphon1_matrix.shape != graphon2_matrix.shape:
+        raise NotImplementedError(
+            "Cannot compare two graphons with different number of blocks:"
+            + f"{graphon1_matrix.shape} and {graphon2_matrix.shape}"
+        )
 
     # check that graphons have the same bandwidth for their blocks
     # this means they have the same size of blocks if the graphon have the
@@ -46,17 +51,23 @@ def distance_StepGraphon(
     # generate all possible permutations
     permutations_possible = generate_all_permutations(graphon1_matrix.shape[0])
 
-    norm_value = np.sqrt(np.sum(((graphon1 - graphon2_matrix) ** 2) * graphon1.areas))
+    norm_value = np.sqrt(np.sum(((graphon1_matrix - graphon2_matrix) ** 2) * graphon1.areas))
     if not exchangeable:
         return norm_value
     for sigma in permutations_possible:
         if norm == "MISE":
             result = np.sqrt(
-                np.sum(((graphon1 - permute_matrix(graphon2_matrix, sigma)) ** 2) * graphon1.areas)
+                np.sum(
+                    ((graphon1_matrix - permute_matrix(graphon2_matrix, sigma)) ** 2)
+                    * graphon1.areas
+                )
             )
         elif norm in ["ABS", "MAE"]:
             result = np.average(
-                np.sum(np.abs(graphon1 - permute_matrix(graphon2_matrix, sigma)) * graphon1.areas)
+                np.sum(
+                    np.abs(graphon1_matrix - permute_matrix(graphon2_matrix, sigma))
+                    * graphon1.areas
+                )
             )
         else:
             raise ValueError(f"norm not defined, got {norm}")

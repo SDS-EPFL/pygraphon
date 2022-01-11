@@ -47,7 +47,8 @@ class HistogramEstimator(BaseEstimator):
         graphon_matrix, _, h = self._approximate(
             adjacency_matrix, self.bandwidthHist, self.matlab_engine
         )
-        self.bandwidthHist = h
+        if self.bandwidthHist is None:
+            self.bandwidthHist = h
         return StepGraphon(graphon_matrix, self.bandwidthHist)
 
     def _approximate(
@@ -86,11 +87,10 @@ class HistogramEstimator(BaseEstimator):
             idx, h = matlab_engine.nethist(npArray2Matlab(adjacencyMatrix), nargout=2)
             bandwidthHist = h / len(idx)
         else:
-            # needs this weird conversion for matlab to work, does not accept
-            # int
+            # needs this weird conversion for matlab to work, does not accept int
             argh = float(int(bandwidthHist * adjacencyMatrix.shape[0]))
-
             idx = matlab_engine.nethist(npArray2Matlab(adjacencyMatrix), argh, nargout=1)
+
         groupmembership = [elt[0] for elt in idx]
 
         # compute the actual values of the graphon approximation
