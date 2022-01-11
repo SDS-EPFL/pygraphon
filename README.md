@@ -48,13 +48,13 @@ $ pip install pygraphon
 The most recent code and data can be installed directly from GitHub with:
 
 ```bash
-$ pip install git+https://github.com//pygraphon.git
+$ pip install git+https://github.com/dufourc1/pygraphon.git
 ```
 
 To install in development mode, use the following:
 
 ```bash
-$ git clone git+https://github.com//pygraphon.git
+$ git clone git+https://github.com/dufourc1/pygraphon.git
 $ cd pygraphon
 $ pip install -e .
 ```
