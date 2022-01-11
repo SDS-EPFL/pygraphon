@@ -17,7 +17,7 @@
     </a>
     <a href="https://pypi.org/project/pygraphon">
         <img alt="PyPI" src="https://img.shields.io/pypi/v/pygraphon" />
-    </a>
+    </a>—
     <a href="https://pypi.org/project/pygraphon">
         <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/pygraphon" />
     </a>
@@ -66,7 +66,7 @@ cd "matlabroot\extern\engines\python"
 python setup.py install --prefix="installdir"
 ```
 
-where `matlabroot` is the path to your matlab installation and `ìnstalldir` is the path to your virtual environment.
+where `matlabroot` is the path to your matlab installation and `ìnstalldir` is the path to your virtual environment. Please check which version of `python` works with which version of `matlab` to save you a lot of pain
 
 ## 👐 Contributing
 
