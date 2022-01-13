@@ -36,6 +36,7 @@ if ischar(A)
     A = full(A);
 end
 
+
 % Error-check inputs
 assert(ismatrix(A),'Input A must be a matrix');
 assert(all(size(A)==size(A')),'Matrix input A must be square');
@@ -316,7 +317,6 @@ for mm = 1:maxNumRestarts
     currentClusterInds = bestClusterInds;
     currentLL = bestLL;
     currentLabelVec = bestLabelVec;
-        
     for m = 1:numGreedySteps
         
         % Prepare to update quantities for trial clustering
