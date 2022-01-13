@@ -3,13 +3,12 @@ from random import sample
 from typing import List, Tuple
 
 import numpy as np
+import numpy.random as rnd
 import scipy
 import scipy.sparse.linalg
 import scipy.special
 from numpy.linalg import pinv
 from scipy.spatial.distance import pdist, squareform
-import numpy.random as rnd
-
 
 MATLAB_EPS = 2.2204e-16
 
@@ -186,7 +185,7 @@ def graphest_fastgreedy(
             orderedIndsLast, np.zeros(hbar - len(orderedIndsLast))
         )
 
-    habSqrd = np.outer(h, h) - np.diag(np.multiply(h,h) - np.multiply(h, (h - 1)) / 2)
+    habSqrd = np.outer(h, h) - np.diag(np.multiply(h, h) - np.multiply(h, (h - 1)) / 2)
 
     if not np.all(habSqrd) >= 1:
         raise RuntimeError("All clusters must contain at least 2 nodes")
@@ -210,7 +209,9 @@ def graphest_fastgreedy(
 
     initialACounts = getSampleCounts(A, initialClusterInds)
     initialLL = fastNormalizedBMLogLik(
-        upper_triangle_values(initialACounts) / upper_triangle_values(habSqrd), upper_triangle_values(habSqrd), sampleSize
+        upper_triangle_values(initialACounts) / upper_triangle_values(habSqrd),
+        upper_triangle_values(habSqrd),
+        sampleSize,
     )
 
     bestLL = initialLL
@@ -221,7 +222,9 @@ def graphest_fastgreedy(
     tolCounter = 0
 
     for mm in range(maxNumRestarts):
-        oneTwoVec = np.array(rnd.uniform(size=numGreedySteps) > 2 / 3) + np.ones(numGreedySteps, dtype=int)
+        oneTwoVec = np.array(rnd.uniform(size=numGreedySteps) > 2 / 3) + np.ones(
+            numGreedySteps, dtype=int
+        )
 
         # random integers between 0 and n-1
         iVec = np.ceil(rnd.uniform(size=numGreedySteps) * n - 1).astype(int)
@@ -239,7 +242,9 @@ def graphest_fastgreedy(
 
         bestACounts = getSampleCounts(A, bestClusterInds)
         bestLL = fastNormalizedBMLogLik(
-            upper_triangle_values(bestACounts) / upper_triangle_values(habSqrd), upper_triangle_values(habSqrd).ravel(), sampleSize
+            upper_triangle_values(bestACounts) / upper_triangle_values(habSqrd),
+            upper_triangle_values(habSqrd).ravel(),
+            sampleSize,
         )
 
         currentACounts = bestACounts
@@ -290,8 +295,8 @@ def graphest_fastgreedy(
                     )
 
                     # begin updating
-                    trialClusterInds[a,trialClusterInds[a, :] == i] = j
-                    trialClusterInds[b,trialClusterInds[b, :] == j] = i
+                    trialClusterInds[a, trialClusterInds[a, :] == i] = j
+                    trialClusterInds[b, trialClusterInds[b, :] == j] = i
                     ARowiMinusRowj = A[i, :] - A[j, :]
 
                     # concatenate all possible group indices into a a matrix
@@ -363,7 +368,7 @@ def graphest_fastgreedy(
                 currentACounts = trialACounts
                 currentClusterInds = trialClusterInds
 
-        if currentLL  > bestLL:
+        if currentLL > bestLL:
             bestLL = currentLL
             bestLabelVec = currentLabelVec
             bestCount += 1
@@ -408,20 +413,32 @@ def delta_neg(habSqrdCola, thetaCola, habSqrdColb, thetaColb, habSqrdEntryab, th
         np.multiply(
             habSqrdCola,
             np.multiply(
-                thetaCola, np.log(thetaCola) + np.multiply(np.ones_like(thetaCola) - thetaCola, np.log(np.ones_like(thetaCola) - thetaCola))
+                thetaCola,
+                np.log(thetaCola)
+                + np.multiply(
+                    np.ones_like(thetaCola) - thetaCola, np.log(np.ones_like(thetaCola) - thetaCola)
+                ),
             ),
         )
         - np.multiply(
             habSqrdColb,
             np.multiply(
-                thetaColb, np.log(thetaColb) + np.multiply(np.ones_like(thetaColb) - thetaColb, np.log(np.ones_like(thetaColb) - thetaColb))
+                thetaColb,
+                np.log(thetaColb)
+                + np.multiply(
+                    np.ones_like(thetaColb) - thetaColb, np.log(np.ones_like(thetaColb) - thetaColb)
+                ),
             ),
         )
         - np.multiply(
             habSqrdEntryab,
             np.multiply(
                 thetaEntryab,
-                np.log(thetaEntryab) + np.multiply(np.ones_like(thetaEntryab) - thetaEntryab, np.log(np.ones_like(thetaEntryab) - thetaEntryab)),
+                np.log(thetaEntryab)
+                + np.multiply(
+                    np.ones_like(thetaEntryab) - thetaEntryab,
+                    np.log(np.ones_like(thetaEntryab) - thetaEntryab),
+                ),
             ),
         )
     )
