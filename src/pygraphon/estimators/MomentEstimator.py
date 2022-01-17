@@ -281,9 +281,7 @@ class MomentEstimator(SimpleMomentEstimator):
     Does not assume specific structure on the blockmodel fitted apart from homogeneous block sizes.
     """
 
-    def __init__(
-        self, blocks: Union[int, Iterable[float]]
-    ) -> None:
+    def __init__(self, blocks: Union[int, Iterable[float]]) -> None:
         super().__init__(blocks)
         self.numberParameters = self.numberBlocks * (self.numberBlocks - 1) // 2 + self.numberBlocks
         if self.numberParameters > 9:
