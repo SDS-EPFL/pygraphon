@@ -2,7 +2,7 @@ import matlab.engine
 import numpy as np
 
 from pygraphon.utils.utils_graph import check_simple_adjacency_matrix
-from pygraphon.utils.utils_maltab import getMatlabPaths, npArray2Matlab, setupMatlabEngine
+from pygraphon.utils.utils_maltab import getMatlabPaths, setupMatlabEngine
 
 
 class CycleCount:
@@ -34,10 +34,11 @@ class CycleCount:
 
         check_simple_adjacency_matrix(adjacency_matrix)
 
-        t = np.asarray(
-            self.matlab_engine.cyclecount(npArray2Matlab(adjacency_matrix), self.L, nargout=1)
-        ).flatten()
-        return (t ** (np.arange(0, len(t)) + 1))[2:]
+        # t = np.asarray(
+        #    self.matlab_engine.cyclecount(npArray2Matlab(adjacency_matrix), self.L, nargout=1)
+        # ).flatten()
+        # return (t ** (np.arange(0, len(t)) + 1))[2:]
+        return self.network_profile(adjacency_matrix, kmax=self.L)
 
     def network_profile(self, adjacency_matrix, kmax=None) -> np.ndarray:
         """Compute the network profile of a graph
