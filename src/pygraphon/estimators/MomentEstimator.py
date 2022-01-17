@@ -2,7 +2,6 @@ from collections.abc import Iterable as IterableCollection
 from itertools import product
 from typing import Callable, Iterable, List, Union
 
-import matlab.engine
 import numpy as np
 from scipy.optimize import fsolve
 
