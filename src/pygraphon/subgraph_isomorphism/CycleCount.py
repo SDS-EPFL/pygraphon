@@ -1,8 +1,6 @@
-import matlab.engine
 import numpy as np
 
 from pygraphon.utils.utils_graph import check_simple_adjacency_matrix
-from pygraphon.utils.utils_maltab import getMatlabPaths, setupMatlabEngine
 
 
 class CycleCount:
@@ -11,16 +9,14 @@ class CycleCount:
     The algorithm is based on the paper:
     """
 
-    def __init__(self, matlab_engine: matlab.engine.MatlabEngine, L: int = 9) -> None:
+    def __init__(self, L: int = 9) -> None:
 
         if L < 3:
             raise ValueError("input L should be an integer >= 3")
         if L >= 10:
             raise ValueError("cycleCount algorithm cannot handle L > 10")
 
-        # float conversion needed for matlab... Yeah I know, but ... well ...
-        self.L = float(int(L))
-        self.matlab_engine = setupMatlabEngine(eng=matlab_engine, paths=getMatlabPaths())
+        self.L = int(L)
 
     def __call__(self, adjacency_matrix: np.ndarray) -> np.ndarray:
         """Count the densities of subgraph C_l in a graph G: t(C_L,G)
@@ -51,7 +47,7 @@ class CycleCount:
             np.ndarray: network profile of the graph
         """
         if kmax is None:
-            kmax = int(self.L)
+            kmax = self.L
         if kmax >= 10:
             raise NotImplementedError(
                 "Cannot count cycles with length >= 10:  not implemented. Please change the value of kmax."
