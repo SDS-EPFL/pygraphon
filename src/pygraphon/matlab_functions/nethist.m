@@ -110,7 +110,7 @@ end
 % Optionally, save histogram index into specified output ASCII text file
 if exist('outfile','var'),
     assert(ischar(outfile),'Optional input OUTFILE must a be string');
-    dlmwrite(outfile,idx,'delimiter',' ','precision','%.0f');
+    write(outfile,idx,'delimiter',' ','precision','%.0f');
 end
 
 % Exit if running standalone

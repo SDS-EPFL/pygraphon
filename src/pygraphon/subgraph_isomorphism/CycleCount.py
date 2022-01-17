@@ -10,15 +10,15 @@ class CycleCount:
     The algorithm is based on the paper:
     """
 
-    def __init__(self,eng, L: int = 9) -> None:
+    def __init__(self, eng, L: int = 9) -> None:
 
         if L < 3:
             raise ValueError("input L should be an integer >= 3")
         if L >= 10:
             raise ValueError("cycleCount algorithm cannot handle L > 10")
 
-        self.L = int(L)
-        self.matlab_engine = setupMatlabEngine(eng,getMatlabPaths())
+        self.L = float(int(L))
+        self.matlab_engine = setupMatlabEngine(eng, getMatlabPaths())
 
     def __call__(self, adjacency_matrix: np.ndarray) -> np.ndarray:
         """Count the densities of subgraph C_l in a graph G: t(C_L,G)
@@ -47,7 +47,6 @@ class CycleCount:
         Returns:
             np.ndarray: network profile of the graph
         """
-        n = adjacency_matrix.shape[0]
         if kmax is None:
             kmax = self.L
         if kmax >= 10:
@@ -57,19 +56,19 @@ class CycleCount:
         kmax = int(kmax)
         number_edges = np.sum(adjacency_matrix) / 2
         degrees = np.sum(adjacency_matrix, axis=0)
-        A1 = adjacency_matrix
-        non_zero_degrees = np.arange(0, degrees.shape[0])  # np.nonzero(degrees)[0]
+        non_zero_degrees = np.nonzero(degrees)[0]
+        A1 = adjacency_matrix[non_zero_degrees, :][:, non_zero_degrees]
         A2 = A1 @ A1
         dA2 = np.diag(A2)
         Ak = A2
         t = np.zeros(kmax)
         for k in range(3, kmax + 1):
-            Ak = Ak @ adjacency_matrix
+            Ak = Ak @ A1
             if k == 3:
                 dA3 = np.diag(Ak)
                 tA3 = np.sum(dA3)
                 sA3 = np.sum(Ak)
-                t[k - 1] = tA3   ** (1 / k)
+                t[k - 1] = tA3 ** (1 / k)
                 A3 = Ak
             elif k == 4:
                 dA4 = np.diag(Ak)
@@ -78,17 +77,13 @@ class CycleCount:
                     tA4
                     + 2 * number_edges
                     - 2 * (degrees[non_zero_degrees] @ degrees[non_zero_degrees])
-                ) / (
-                    n ** k
-                )  # ** (1 / k)
+                ) ** (1 / k)
                 A4 = Ak
 
             elif k == 5:
                 dA5 = np.diag(Ak)
                 tA5 = np.sum(dA5)
-                t[k - 1] = (tA5 - 5 * np.sum((degrees[non_zero_degrees] - 1) * dA3)) / (
-                    n ** k
-                )  # ** (1 / k)
+                t[k - 1] = (tA5 - 5 * np.sum((degrees[non_zero_degrees] - 1) * dA3)) ** (1 / k)
                 A5 = Ak
             elif k == 6:
                 dA6 = np.diag(Ak)
@@ -100,7 +95,7 @@ class CycleCount:
                 inter += 3 * sA3
                 inter -= 12 * np.sum(degrees[non_zero_degrees] ** 2)
                 inter += 4 * np.sum(degrees[non_zero_degrees])
-                t[k - 1] = (inter)   ** (1 / k)
+                t[k - 1] = (inter) ** (1 / k)
             elif k == 7:
                 dA7 = np.diag(Ak)
                 tA7 = np.sum(dA7)
@@ -116,7 +111,7 @@ class CycleCount:
                 inter += 7 * np.sum(dA3 * np.sum(A2, axis=1))
                 inter -= 77 * np.sum(dA3 * degrees[non_zero_degrees])
                 inter += 56 * tA3
-                t[k - 1] = (inter)   ** (1 / k)
+                t[k - 1] = (inter) ** (1 / k)
             elif k == 8:
                 inter = (
                     np.sum(np.diag(Ak))
@@ -161,7 +156,7 @@ class CycleCount:
                 for i in range(A1.shape[0]):
                     xk4 += A1[i, :] @ (A1 * (A1 @ np.diag(A1[i, :]) @ A1)) @ (A1[i, :].T)
                 inter += 22 * xk4
-                t[k - 1] = (inter)   ** (1 / k)
+                t[k - 1] = (inter) ** (1 / k)
             elif k == 9:
                 inter = (
                     np.sum(np.diag(Ak))
@@ -237,7 +232,7 @@ class CycleCount:
                         A1[i1, :] @ (A1 * (A1 @ np.diag(A1[i1, :]) @ (A1 * A2))) @ (A1[i1, :].T)
                     )
                 inter = inter - 156 * xk4
-                t[k - 1] = (inter)   ** (1 / k)
+                t[k - 1] = (inter) ** (1 / k)
             else:
                 raise ValueError("kmax should be <= 9 and >= 3")
 
