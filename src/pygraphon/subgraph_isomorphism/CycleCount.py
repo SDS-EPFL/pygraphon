@@ -1,7 +1,6 @@
 import numpy as np
 
 from pygraphon.utils.utils_graph import check_simple_adjacency_matrix
-from pygraphon.utils.utils_maltab import npArray2Matlab, setupMatlabEngine, getMatlabPaths
 
 
 class CycleCount:
@@ -10,15 +9,14 @@ class CycleCount:
     The algorithm is based on the paper:
     """
 
-    def __init__(self, eng, L: int = 9) -> None:
+    def __init__(self, L: float = 9) -> None:
 
         if L < 3:
             raise ValueError("input L should be an integer >= 3")
         if L >= 10:
             raise ValueError("cycleCount algorithm cannot handle L > 10")
 
-        self.L = float(int(L))
-        self.matlab_engine = setupMatlabEngine(eng, getMatlabPaths())
+        self.L = float(L)
 
     def __call__(self, adjacency_matrix: np.ndarray) -> np.ndarray:
         """Count the densities of subgraph C_l in a graph G: t(C_L,G)
@@ -31,11 +29,7 @@ class CycleCount:
         """
 
         check_simple_adjacency_matrix(adjacency_matrix)
-        t = np.asarray(
-            self.matlab_engine.cyclecount(npArray2Matlab(adjacency_matrix), self.L, nargout=1)
-        ).flatten()
-        return (t ** (np.arange(0, len(t)) + 1))[2:]
-        # return self.network_profile(adjacency_matrix, kmax=self.L)
+        return self.network_profile(adjacency_matrix, kmax=self.L)
 
     def network_profile(self, adjacency_matrix, kmax=None) -> np.ndarray:
         """Compute the network profile of a graph
