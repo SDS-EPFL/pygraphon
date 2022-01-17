@@ -1,5 +1,3 @@
-from cgitb import small
-from random import sample
 from typing import List, Tuple
 
 import numpy as np
@@ -24,7 +22,8 @@ def nethist(A: np.ndarray, h: int = None) -> Tuple[List, int]:
 
     Args:
         A (np.ndarray): adjacency matrix
-        h (int, optional): specifies the number of nodes in each histogram bin, which is automatically determined if h is None. Defaults to None.
+        h (int, optional): specifies the number of nodes in each histogram bin,
+        which is automatically determined if h is None. Defaults to None.
 
     Returns:
         Tuple[List,int]: [idx,h] return the vector of group membership of the nodes and the parameter h
@@ -80,7 +79,7 @@ def nethist(A: np.ndarray, h: int = None) -> Tuple[List, int]:
     return idx, h
 
 
-def oracbwplugin(A: np.ndarray, c: float, type: str = "degs", alpha: float = 1) -> float:
+def oracbwplugin(A: np.ndarray, c: float, type: str = "degs", alpha: float = 1) -> Tuple(float):
     """Oracle bandwidth plug-in estimtor for network histograms
     h = oracbwplugin(A,c,type,alpha) returns a plug-in estimate
     of the optimal histogram bandwidth (blockmodel community size) as a
