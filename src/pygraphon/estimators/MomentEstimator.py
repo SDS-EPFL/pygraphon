@@ -22,13 +22,11 @@ class SimpleMomentEstimator(BaseEstimator):
     def __init__(
         self,
         blocks: Union[int, Iterable[float]],
-        matlab_engine: matlab.engine.MatlabEngine,
     ) -> None:
         """Initialize the estimator.
 
         Args:
             blocks (Union[int, Iterable[float]]): number of blocks or size of blocks
-            matlab_engine (matlab.engine.MatlabEngine): matlab engine to use for solving moment equations
         """
 
         super().__init__()
@@ -54,7 +52,7 @@ class SimpleMomentEstimator(BaseEstimator):
                 f"block model can't have < 2 parameters or > 9 for now, but got {self.numberParameters}"
             )
 
-        self.counter = CycleCount(matlab_engine)
+        self.counter = CycleCount(self.numberParameters - 1)
 
     def _approximate_graphon_from_adjacency(self, adjacency_matrix: np.ndarray) -> StepGraphon:
         """Estimate the graphon function f(x,y) from an adjacency matrix by solving moment equations."""
