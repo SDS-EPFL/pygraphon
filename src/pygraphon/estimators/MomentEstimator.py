@@ -282,12 +282,13 @@ class MomentEstimator(SimpleMomentEstimator):
     """
 
     def __init__(
-        self, blocks: Union[int, Iterable[float]], matlab_engine: matlab.engine.MatlabEngine
+        self, blocks: Union[int, Iterable[float]]
     ) -> None:
-        super().__init__(blocks, matlab_engine)
+        super().__init__(blocks)
         self.numberParameters = self.numberBlocks * (self.numberBlocks - 1) // 2 + self.numberBlocks
         if self.numberParameters > 9:
             raise ValueError("number of parameters should be <= 9")
+        self.counter = CycleCount(self.numberParameters - 1)
 
     def _add_constraints_on_SBM(self, x, K) -> np.ndarray:
         # build theta based on x
