@@ -3,11 +3,11 @@ from typing import Tuple
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import Axes, Figure
 
-from pygraphon.graphons.Graphon import Graphon
+from pygraphon.graphons.StepGraphon import StepGraphon
 
 
 def plot(
-    graphon: Graphon, fig: Figure = None, ax: Axes = None, figsize: Tuple[int, int] = (6, 5)
+    graphon: StepGraphon, fig: Figure = None, ax: Axes = None, figsize: Tuple[int, int] = (6, 5)
 ) -> Tuple[Figure, Axes]:
     """Plot the graphon.
 
