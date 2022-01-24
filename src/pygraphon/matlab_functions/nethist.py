@@ -5,14 +5,67 @@ import numpy.random as rnd
 import scipy
 import scipy.sparse.linalg
 import scipy.special
-from numpy.linalg import pinv
 from scipy.spatial.distance import pdist, squareform
 
-MATLAB_EPS = 2.2204e-16
+MATLAB_EPS = np.spacing(1)
 
 
 def upper_triangle_values(array):
     return array[np.triu_indices(array.shape[0])]
+
+
+def first_guess_blocks(A: np.ndarray, h: int, regParam: float) -> np.ndarray:
+    """
+    This function is used to compute the first guess of the block labels.
+    """
+    n = A.shape[0]
+    distVec = pdist(A + regParam, "hamming")
+    L = 1 - squareform(distVec)
+    d = np.sum(L, axis=1)
+    d = d[:, np.newaxis]
+    L_inter = (d ** -0.5 @ np.transpose(d ** -0.5)) * L - np.sqrt(d) @ np.transpose(
+        np.sqrt(d)
+    ) / np.sqrt(d.T @ d)
+    _, u = scipy.sparse.linalg.eigs(L_inter, k=1, which="SM")
+    u = np.ravel(u.real)
+
+    # set 1st coord >= 0 wlog, to fix an arbitrary sign permutation
+    u = u * np.sign(u[0])
+    # sort on this embedding in ascending fashion
+    ind = u.argsort()[::-1]
+
+    k = int(np.ceil(n / h))
+
+    # Assign initial label vector from row-similarity ordering
+    idxInit = np.zeros(n)
+    for i in range(k):
+        idxInit[ind[i * h : min(n, (i + 1) * h)]] = i
+
+    # idxInit = np.array([1,1,1,0,0,0])
+    return idxInit
+
+
+def first_guess_blocks_python(A: np.ndarray, h: int, *args, **kwargs) -> np.ndarray:
+
+    n = A.shape[0]
+    laplacian = scipy.sparse.csgraph.laplacian(A, normed=True)
+    _, u = scipy.sparse.linalg.eigs(laplacian, k=1, which="SM")
+    u = np.ravel(u.real)
+
+    # set 1st coord >= 0 wlog, to fix an arbitrary sign permutation
+    u = u * np.sign(u[0])
+    # sort on this embedding in ascending fashion
+    ind = u.argsort()[::-1]
+
+    k = int(np.ceil(n / h))
+
+    # Assign initial label vector from row-similarity ordering
+    idxInit = np.zeros(n)
+    h = int(h)
+    for i in range(k):
+        idxInit[ind[i * h : min(n, (i + 1) * h)]] = i
+
+    return idxInit.astype(int)
 
 
 def nethist(A: np.ndarray, h: int = None) -> Tuple[List, int]:
@@ -51,35 +104,17 @@ def nethist(A: np.ndarray, h: int = None) -> Tuple[List, int]:
         h = h - 1
         lastGroupSize(n % h)
 
-    regParam = rhoHat / 4
+    #idxInit = first_guess_blocks(A, h, regParam=rhoHat / 4)
+    idxInit = first_guess_blocks_python(A, h, rhoHat / 4)
 
-    distVec = pdist(A + regParam, "hamming")
-    L = 1 - squareform(distVec)
-    d = np.sum(L, axis=1)
-    d = d[:, np.newaxis]
-    L_inter = (d ** -0.5 @ np.transpose(d ** -0.5)) * L - np.sqrt(d) @ np.transpose(
-        np.sqrt(d)
-    ) / np.sqrt(d.T @ d)
-    _, u = scipy.sparse.linalg.eigs(L_inter, k=1)
-    u = np.ravel(u.real)
-
-    # set 1st coord >= 0 wlog, to fix an arbitrary sign permutation
-    u = u * np.sign(u[0])
-    # sort on this embedding in ascending fashion
-    ind = u.argsort()[::-1]
-
-    k = int(np.ceil(n / h))
-
-    # Assign initial label vector from row-similarity ordering
-    idxInit = np.zeros(n)
-    for i in range(k):
-        idxInit[ind[i * h : min(n, (i + 1) * h)]] = i
-
+    print(idxInit)
     idx, k = graphest_fastgreedy(A=A, hbar=h, inputLabelVec=idxInit)
     return idx, h
 
 
-def oracbwplugin(A: np.ndarray, c: float, type: str = "degs", alpha: float = 1) -> Tuple(float):
+def oracbwplugin(
+    A: np.ndarray, c: float, type: str = "degs", alpha: float = 1
+) -> Tuple[float, float]:
     """Oracle bandwidth plug-in estimtor for network histograms
     h = oracbwplugin(A,c,type,alpha) returns a plug-in estimate
     of the optimal histogram bandwidth (blockmodel community size) as a
@@ -108,7 +143,7 @@ def oracbwplugin(A: np.ndarray, c: float, type: str = "degs", alpha: float = 1) 
 
     n = A.shape[0]
     midPt = np.arange(round(n / 2 - c * np.sqrt(n)), round(n / 2 + c * np.sqrt(n)))
-    sampleSize = scipy.special.comb(n, 2)
+    # sampleSize = scipy.special.comb(n, 2)
     rhoHat = np.sum(A) / (n * (n - 1))
 
     if type == "eigs":
@@ -120,20 +155,27 @@ def oracbwplugin(A: np.ndarray, c: float, type: str = "degs", alpha: float = 1) 
     else:
         raise NotImplementedError(f"Unknown input type: {type}")
 
+    pseudo_inverse_rho_hat = 1 / rhoHat if rhoHat != 0 else 1
     u = np.sort(u.ravel())
     uMid = u[midPt[0] : midPt[-1]]
     p = np.polyfit(range(1, len(u) + 1), u, 1)
     h = (
-        2
-        ^ (alpha + 1) * alpha * mult
-        ^ 2 * (p[1] + p[0] * len(uMid) / 2)
-        ^ 2 * p(1)
-        ^ 2 * pinv(rhoHat)
-    ) ^ (-1 / (2 * (alpha + 1)))
+        2 ** (alpha + 1)
+        * alpha
+        * mult ** 2
+        * (p[1] + p[0] * len(uMid) / 2) ** 2
+        * p[1] ** 2
+        * pseudo_inverse_rho_hat
+    ) ** (-1 / (2 * (alpha + 1)))
     estMSqrd = (
-        2 * mult ^ 2 * (p[1] + p(1) * len(uMid) / 2) ^ 2 * p[0] ^ 2 * pinv(rhoHat) ^ 2 * (n + 1) ^ 2
+        2
+        * mult ** 2
+        * (p[1] + p[1] * len(uMid) / 2) ** 2
+        * p[0] ** 2
+        * pseudo_inverse_rho_hat ** 2
+        * (n + 1) ** 2
     )
-    MISEfhatBnd = estMSqrd * ((2 / np.sqrt(estMSqrd)) * (sampleSize * rhoHat) ^ (-1 / 2) + 1 / n)
+    # MISEfhatBnd = estMSqrd * ((2 / np.sqrt(estMSqrd)) * (sampleSize * rhoHat) ** (-1 / 2) + 1 / n)
     return h, estMSqrd
 
 
@@ -170,6 +212,7 @@ def graphest_fastgreedy(
     equalSizeInds = np.arange(1, (k - smaller_last_group))
     orderedLabels = np.zeros((n, 1))
     h = np.zeros(k)
+    hbar = int(hbar)
     orderedClusterInds = np.zeros((k, hbar))
     for a in range(1, k - smaller_last_group + 1):
         orderedInds = np.arange((a - 1) * hbar + 1, a * hbar + 1)
@@ -471,9 +514,10 @@ def getSampleCounts(X, clusterInds):
     return Xsums
 
 
-def fastNormalizedBMLogLik(thetaVec: np.ndarray, habSqrdVec: float, sampleSize: int) -> float:
-    thetaVec[thetaVec <= 0] = np.spacing(1)
-    thetaVec[thetaVec >= 1] = np.spacing(1)
+def fastNormalizedBMLogLik(thetaVec: np.ndarray, habSqrdVec: np.ndarray, sampleSize: int) -> float:
+    thetaVec = thetaVec.astype(float)
+    thetaVec[thetaVec <= 0] = MATLAB_EPS
+    thetaVec[thetaVec >= 1] = 1 - MATLAB_EPS
     negEntVec = thetaVec * np.log(thetaVec) + (1 - thetaVec) * np.log(1 - thetaVec)
     normLogLik = sum(habSqrdVec * negEntVec) / sampleSize
     return normLogLik

@@ -99,6 +99,7 @@ idxInit = zeros(n,1);
 for i = 1:k,
     idxInit(ind(((i-1)*h+1):min(n,i*h))) = i;
 end
+idxInit
 %display(['Initial label vector assigned from row-similarity ordering; time ' num2str(toc(tstart))])
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -285,7 +286,9 @@ if smallerLastGroup
     initialClusterInds(k,1:length(find(initialLabelVec==k))) = find(initialLabelVec==k)';
 end
 initialACounts = getSampleCounts(A,initialClusterInds);
-initialLL = fastNormalizedBMLogLik(initialACounts(aLeqb)./habSqrd(aLeqb),habSqrd(aLeqb),sampleSize);
+initialACounts(aLeqb)
+habSqrd(aLeqb)
+initialLL = fastNormalizedBMLogLik(initialACounts(aLeqb)./habSqrd(aLeqb),habSqrd(aLeqb),sampleSize)
 
 bestLL = initialLL;
 oldNormalizedBestLL = bestLL*2*sampleSize/sum(A(:));
