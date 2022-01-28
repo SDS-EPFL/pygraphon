@@ -5,7 +5,7 @@ import numpy.random as rnd
 import scipy
 import scipy.sparse.linalg
 import scipy.special
-from scipy.spatial.distance import pdist, squareform
+from sklearn.metrics import pairwise_distances
 from scipy import stats
 
 MATLAB_EPS = np.spacing(1)
@@ -17,8 +17,8 @@ def upper_triangle_values(array):
 
 def oracle_analysis_badnwidth(A: np.ndarray, type: str = "degs", alpha: float = 1) -> float:
     c = min(4, np.sqrt(A.shape[0]) / 8)
-    h = oracbwplugin(A=A, c=c, type=type, alpha=alpha)
-    return h
+    h, _ = oracbwplugin(A=A, c=c, type=type, alpha=alpha)
+    return int(h)
 
 
 def oracbwplugin(
@@ -58,7 +58,7 @@ def oracbwplugin(
 
     if type == "eigs":
         mult, u = scipy.sparse.linalg.eigs(A, 1, which="LR")
-        u = u.real
+        u = u.real.ravel()
     elif type == "degs":
         u = np.sum(A, axis=1)
         mult = (u.T @ A @ u) / np.sum(u * u) ** 2
@@ -94,53 +94,29 @@ def first_guess_blocks(A: np.ndarray, h: int, regParam: float) -> np.ndarray:
     This function is used to compute the first guess of the block labels.
     """
     n = A.shape[0]
-    distVec = pdist(A + regParam, "hamming")
-    L = 1 - squareform(distVec)
+    # distVec = pdist(A + regParam, "manhattan")/n
+    distVec = pairwise_distances(A, A, metric="manhattan") / n
+    L = np.ones_like(distVec) - distVec ** 2
     d = np.sum(L, axis=1)
     d = d[:, np.newaxis]
-    L_inter = (d ** -0.5 @ np.transpose(d ** -0.5)) * L - np.sqrt(d) @ np.transpose(
-        np.sqrt(d)
-    ) / np.sqrt(d.T @ d)
-    _, u = scipy.sparse.linalg.eigs(L_inter, k=1, which="SM")
-    u = np.ravel(u.real)
+    L_inter = np.outer(d ** -0.5, d ** -0.5) * L - np.outer(np.sqrt(d), np.sqrt(d)) / np.sqrt(
+        np.sum(d ** 2)
+    )
+    _, u = scipy.sparse.linalg.eigs(L_inter, k=1, which="LR")
+    u = u.real.ravel()
 
     # set 1st coord >= 0 wlog, to fix an arbitrary sign permutation
     u = u * np.sign(u[0])
     # sort on this embedding in ascending fashion
-    ind = u.argsort()[::-1]
-
+    ind = u.argsort().astype(int)
     k = int(np.ceil(n / h))
 
     # Assign initial label vector from row-similarity ordering
+    # this is correct
     idxInit = np.zeros(n)
     for i in range(k):
         idxInit[ind[i * h : min(n, (i + 1) * h)]] = i
-
-    # idxInit = np.array([1,1,1,0,0,0])
     return idxInit
-
-
-def first_guess_blocks_python(A: np.ndarray, h: int, *args, **kwargs) -> np.ndarray:
-
-    n = A.shape[0]
-    laplacian = scipy.sparse.csgraph.laplacian(A, normed=True)
-    _, u = scipy.sparse.linalg.eigs(laplacian, k=1, which="SM")
-    u = np.ravel(u.real)
-
-    # set 1st coord >= 0 wlog, to fix an arbitrary sign permutation
-    u = u * np.sign(u[0])
-    # sort on this embedding in ascending fashion
-    ind = u.argsort()[::-1]
-
-    k = int(np.ceil(n / h))
-
-    # Assign initial label vector from row-similarity ordering
-    idxInit = np.zeros(n)
-    h = int(h)
-    for i in range(k):
-        idxInit[ind[i * h : min(n, (i + 1) * h)]] = i
-
-    return idxInit.astype(int)
 
 
 def nethist(A: np.ndarray, h: int = None) -> Tuple[List, int]:
@@ -164,7 +140,7 @@ def nethist(A: np.ndarray, h: int = None) -> Tuple[List, int]:
     rhoHat = np.sum(A) / (n * (n - 1))
 
     # use data driven h
-    h = h if h is not None else oracle_analysis_badnwidth(A)
+    h = int(h) if h is not None else oracle_analysis_badnwidth(A)
 
     # why do we have minimum h = 2 ?
     h = max(2, min(n, np.round(h)))
@@ -176,10 +152,8 @@ def nethist(A: np.ndarray, h: int = None) -> Tuple[List, int]:
         h = h - 1
         lastGroupSize(n % h)
 
-    # idxInit = first_guess_blocks(A, h, regParam=rhoHat / 4)
-    idxInit = first_guess_blocks_python(A, h, rhoHat / 4)
+    idxInit = first_guess_blocks(A, h, regParam=rhoHat / 4)
 
-    print(idxInit)
     idx, k = graphest_fastgreedy(A=A, hbar=h, inputLabelVec=idxInit)
     return idx, h
 

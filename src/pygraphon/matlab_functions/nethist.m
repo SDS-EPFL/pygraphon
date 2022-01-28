@@ -94,12 +94,10 @@ clear L; % save memory
 u = u.*sign(u(1)); %  set 1st coord >= 0 wlog, to fix an arbitrary sign permutation
 [~,ind]=sort(u,'ascend'); % sort on this embedding
 k = ceil(n/h);
-
 idxInit = zeros(n,1);
 for i = 1:k,
     idxInit(ind(((i-1)*h+1):min(n,i*h))) = i;
 end
-idxInit
 %display(['Initial label vector assigned from row-similarity ordering; time ' num2str(toc(tstart))])
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
