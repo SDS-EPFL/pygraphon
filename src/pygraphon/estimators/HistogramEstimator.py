@@ -91,11 +91,27 @@ class HistogramEstimator(BaseEstimator):
             argh = float(int(bandwidthHist * adjacencyMatrix.shape[0]))
             idx = matlab_engine.nethist(npArray2Matlab(adjacencyMatrix), argh, nargout=1)
 
-        groupmembership = [elt[0] for elt in idx]
+        # bring the cluster labels in [0,...,k-1]
+        groupmembership = np.array([elt[0] for elt in idx]) - 1
+        graphon_matrix = self._approximate_from_node_membership(adjacencyMatrix, groupmembership)
 
+        # fills in the edge probability matrix from the value of the graphon
+        edge_probability_matrix = np.zeros((len(groupmembership), len(groupmembership)))
+        for i in range(edge_probability_matrix.shape[0]):
+            for j in np.arange(i + 1, edge_probability_matrix.shape[0]):
+                edge_probability_matrix[i, j] = graphon_matrix[
+                    int(groupmembership[i]), int(groupmembership[j])
+                ]
+                edge_probability_matrix[j, i] = edge_probability_matrix[i, j]
+        return graphon_matrix, edge_probability_matrix, bandwidthHist
+
+    @staticmethod
+    def _approximate_from_node_membership(
+        adjacencyMatrix: np.ndarray, node_memberships: np.ndarray
+    ) -> np.ndarray:
         # compute the actual values of the graphon approximation
-        groups = np.unique(groupmembership)
-        countGroups = Counter(groupmembership)
+        groups = np.unique(node_memberships)
+        countGroups = Counter(node_memberships)
         ngroups = len(groups)
         rho = edge_density(adjacencyMatrix)
         rho_inv = 1 / rho if rho != 0 else 1
@@ -108,21 +124,12 @@ class HistogramEstimator(BaseEstimator):
                 total = countGroups[groups[i]] * countGroups[groups[j]]
                 graphon_matrix[i][j] = (
                     np.sum(
-                        adjacencyMatrix[np.where(groupmembership == groups[i])[0]][
-                            :, np.where(groupmembership == groups[j])[0]
+                        adjacencyMatrix[np.where(node_memberships == groups[i])[0]][
+                            :, np.where(node_memberships == groups[j])[0]
                         ]
                     )
                     / total
                 )
                 graphon_matrix[i, j] = graphon_matrix[i, j] * rho_inv
                 graphon_matrix[j][i] = graphon_matrix[i, j]
-
-        # fills in the edge probability matrix from the value of the graphon
-        edge_probability_matrix = np.zeros((len(groupmembership), len(groupmembership)))
-        for i in range(edge_probability_matrix.shape[0]):
-            for j in np.arange(i + 1, edge_probability_matrix.shape[0]):
-                edge_probability_matrix[i, j] = graphon_matrix[
-                    int(groupmembership[i]) - 1, int(groupmembership[j]) - 1
-                ]
-                edge_probability_matrix[j, i] = edge_probability_matrix[i, j]
-        return graphon_matrix, edge_probability_matrix, bandwidthHist
+        return graphon_matrix

@@ -1,4 +1,4 @@
-function [idx,h] = nethist(A,h,outfile)
+function [idx,h,trace_ll] = nethist(A,h,outfile)
 %NETHIST Network histogram.
 %   IDX = NETHIST(A, H) computes the network histogram of an N-by-N
 %   adjacency matrix, which must be 0-1 valued, symmetric, and with zero
@@ -104,7 +104,7 @@ end
 % Compute histogram from adjacency matrix
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[idx,k ]= graphest_fastgreedy(A,h,idxInit,rStream);
+[idx,k, trace_ll ]= graphest_fastgreedy(A,h,idxInit,rStream);
 
 % Optionally, save histogram index into specified output ASCII text file
 if exist('outfile','var'),
@@ -205,7 +205,7 @@ if showPlots==1,
 end
 
 
-function [bestLabelVec, k] = graphest_fastgreedy(A,hbar,inputLabelVec,rStream)
+function [bestLabelVec, k, trace_ll] = graphest_fastgreedy(A,hbar,inputLabelVec,rStream)
 %GRAPHEST_FASTGREEDY implements likelihood-based optimization for nethist.m
 %   
 %   Copyright (C) 2013 Sofia C. Olhede and Patrick J. Wolfe (arXiv:1312.5306)
@@ -240,6 +240,8 @@ if allInds
 else
     numGreedySteps = 2*10^4; %round(size(A,2).^1.67); %4*10^5; % 10^7 is a typical laptop memory limit
 end
+
+trace_ll = zeros(maxNumRestarts,1);
 
 % Compute necessary quantities
 n = size(A,2);
@@ -284,9 +286,7 @@ if smallerLastGroup
     initialClusterInds(k,1:length(find(initialLabelVec==k))) = find(initialLabelVec==k)';
 end
 initialACounts = getSampleCounts(A,initialClusterInds);
-initialACounts(aLeqb)
-habSqrd(aLeqb)
-initialLL = fastNormalizedBMLogLik(initialACounts(aLeqb)./habSqrd(aLeqb),habSqrd(aLeqb),sampleSize)
+initialLL = fastNormalizedBMLogLik(initialACounts(aLeqb)./habSqrd(aLeqb),habSqrd(aLeqb),sampleSize);
 
 bestLL = initialLL;
 oldNormalizedBestLL = bestLL*2*sampleSize/sum(A(:));
@@ -298,7 +298,7 @@ tolCounter = 0;
 tic;
 tStartOuter = tic;
 for mm = 1:maxNumRestarts
-    
+
     oneTwoVec = 1 + (rand(rStream,numGreedySteps,1)>2/3); % 1 wp x; 2 wp 1-x
     iVec = max(1,ceil(rand(rStream,numGreedySteps,1)*n));
     jVec = max(1,ceil(rand(rStream,numGreedySteps,1)*n));
@@ -428,9 +428,9 @@ for mm = 1:maxNumRestarts
             currentLabelVec = trialLabelVec;
             currentLL = trialLL;
             currentACounts = trialACounts;
-            currentClusterInds = trialClusterInds;        
+            currentClusterInds = trialClusterInds;    
         end
-        
+         
     end % for m = 1:numGreedySteps
         
     % Keep track of best clustering overall
@@ -439,12 +439,12 @@ for mm = 1:maxNumRestarts
         bestLabelVec = currentLabelVec;
         bestCount = bestCount + 1;        
     end
-    
+    trace_ll(mm) = bestLL;
     % %display progress, check termination criteria
     if ~mod(mm,5)
         tElapsedOuter = toc(tStartOuter);
         normalizedBestLL = bestLL*2*sampleSize/sum(A(:));
-        %display([num2str(normalizedBestLL) ' LL.  Iter ' int2str(mm) ' of max ' int2str(maxNumRestarts) '; ' int2str(bestCount) ' global improvements; took ' num2str(tElapsedOuter) ' s']);
+        display([num2str(normalizedBestLL) ' LL.  Iter ' int2str(mm) ' of max ' int2str(maxNumRestarts) '; ' int2str(bestCount) ' global improvements; took ' num2str(tElapsedOuter) ' s']);
         tStartOuter = tic;
         if bestCount == 0
             consecZeroImprovements = consecZeroImprovements + 1;
@@ -459,17 +459,17 @@ for mm = 1:maxNumRestarts
         end
         oldNormalizedBestLL = normalizedBestLL;
         if tolCounter >= 3
-            %display('3 consecutive likelihood improvements less than specified tolerance; quitting now');
+            display('3 consecutive likelihood improvements less than specified tolerance; quitting now');
             break
         end
         if allInds == 1
             if consecZeroImprovements == 2
-                %display('Local optimum likely reached in random-ordered greedy likelihood search; quitting now');
+                display('Local optimum likely reached in random-ordered greedy likelihood search; quitting now');
                 break
             end
         else
             if consecZeroImprovements == ceil(k*nchoosek(n,2)/numGreedySteps)
-                %display('Local optimum likely reached in random-ordered greedy likelihood search; quitting now');
+                display('Local optimum likely reached in random-ordered greedy likelihood search; quitting now');
                 break
             end
         end

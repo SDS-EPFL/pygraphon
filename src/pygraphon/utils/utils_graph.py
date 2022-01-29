@@ -43,5 +43,9 @@ def check_simple_adjacency_matrix(adjacency_matrix: np.ndarray) -> None:
         raise ValueError("Adjacency matrix should not contain self-loops")
     if not check_symmetric(adjacency_matrix):
         raise ValueError("Adjacency matrix should be symmetric")
-    if not np.all(np.logical_and(adjacency_matrix >= 0, adjacency_matrix <= 1)):
+    if not np.all(np.logical_or(adjacency_matrix == 0, adjacency_matrix == 1)):
         raise ValueError("Adjacency matrix should be binary")
+    if adjacency_matrix.shape[0] != adjacency_matrix.shape[1]:
+        raise ValueError("Adjacency matrix should be square")
+    if adjacency_matrix.shape[0] < 2:
+        raise ValueError("Adjacency matrix should be of dimension at least 2 x 2")
