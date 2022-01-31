@@ -1,7 +1,9 @@
 from copy import copy
-from typing import Tuple
+from typing import List, Tuple
 
 import numpy as np
+
+EPS = np.spacing(1)
 
 
 def rearangeMatrix(A, indices):
@@ -38,3 +40,28 @@ def permute_matrix(matrix: np.ndarray, permutation: Tuple) -> np.ndarray:
     new_matrix[permutation, :] = matrix[:, permutation]
     new_matrix[:, permutation] = new_matrix[permutation, :]
     return new_matrix
+
+
+def upper_triangle_values(array):
+    """Return the upper triangle values of an array.
+
+    Args:
+        array ([np.ndarray]): original array
+
+    Returns:
+        [np.ndarray]: upper triangle values
+    """
+    return array[np.triu_indices(array.shape[0])]
+
+
+def bound_away_from_one_and_zero_arrays(
+    arrays: List[np.ndarray], eps: float = EPS
+) -> List[np.ndarray]:
+    """
+    This function is used to bound away from 1 and 0 in the log likelihood.
+    This is done to avoid numerical issues.
+    """
+    for array in arrays:
+        array[array <= 0] = eps
+        array[array >= 1] = 1 - eps
+    return arrays

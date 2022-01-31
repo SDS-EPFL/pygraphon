@@ -18,7 +18,7 @@ import re
 import sys
 from datetime import date
 
-sys.path.insert(0, os.path.abspath('../../src'))
+sys.path.insert(0, os.path.abspath('../../src/pygraphon/'))
 
 # -- Project information -----------------------------------------------------
 
@@ -67,7 +67,8 @@ extensions = [
     'sphinx_click.ext',
     'sphinx_automodapi.automodapi',
     'sphinx_automodapi.smart_resolver',
-    # 'texext',
+    'sphinx.ext.napoleon',
+    #'texext',
 ]
 
 # generate autosummary pages

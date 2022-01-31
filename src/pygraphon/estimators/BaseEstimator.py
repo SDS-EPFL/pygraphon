@@ -26,7 +26,8 @@ class BaseEstimator(ABC):
         if graph is None and adjacency_matrix is None:
             raise ValueError("graph or adjacency_matrix must be provided")
         if graph is not None and adjacency_matrix is not None:
-            raise ValueError("graph or adjacency_matrix must be provided, not both")
+            if not np.allclose(adjacency_matrix, get_adjacency_matrix_from_graph(graph)):
+                raise ValueError("Graph and adjacency_matrix are not consistent")
         if graph is not None:
             adjacency_matrix = get_adjacency_matrix_from_graph(graph)
         return self._approximate_graphon_from_adjacency(adjacency_matrix)

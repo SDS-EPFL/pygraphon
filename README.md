@@ -17,7 +17,7 @@
     </a>
     <a href="https://pypi.org/project/pygraphon">
         <img alt="PyPI" src="https://img.shields.io/pypi/v/pygraphon" />
-    </a>—
+    </a>
     <a href="https://pypi.org/project/pygraphon">
         <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/pygraphon" />
     </a>

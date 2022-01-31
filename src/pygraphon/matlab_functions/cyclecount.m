@@ -93,9 +93,9 @@ for r = 1:N
                 elseif k==6
                     dA6 = diag(Ak);
                     tA6 = sum(diag(Ak));
-                    XC3 = tA3/6;
-                    XH6 = (1/2)*(1/2)*sum(sum(((A2).^2-A2).*A1));
-                    XH11 = (1/2)*sum((dA3./2).^2-(dA3./2)) - 2*XH6;
+                    %XC3 = tA3/6;
+                    %XH6 = (1/2)*(1/2)*sum(sum(((A2).^2-A2).*A1));
+                    %XH11 = (1/2)*sum((dA3./2).^2-(dA3./2)) - 2*XH6;
                     %c(k) = c(k) -3*sum(dA3.^2)+9*sum(sum((A2.^2).*A1))-4*sum(sum(A2.*A1)) %why not -9 rather than -4?)
                     %c(k) = c(k) - 6*tA3 + 36*(1/4)*sum(sum(A2.*(A2-1).*A1)) - 24*(1/2)*sum((dA3./2).*(dA3./2-1));
                     cA(k) = (tA6-3*sum(dA3.^2)+9*sum(sum((A2.^2).*A1))-6*sum(dA4.*(d(unz)-1))-4*sum(dA3-d(unz).^3)+3*sA3-12*sum(d(unz).^2)+4*sum(d(unz)))^(1/k);
@@ -103,10 +103,10 @@ for r = 1:N
                 elseif k==7
                     dA7 = diag(Ak);
                     tA7 = sum(dA7);
-                    XH5 = (1/2)*sum(dA3.*(d(unz)-2));
-                    XH12 = (1/2)*sum(sum(A3.*A2.*A1)) - 9*XC3 - 2*XH5 - 4*XH6;
-                    XH13 = (1/2)*(1/6)*sum(sum(((A2-2).*(A2-1).*A2).*A1));
-                    XH15 = (1/2)*(1/2)*sum(dA3.*(sum(A2.*(A2-1),2)-diag(A2.*(A2-1)))) - 6*XH6 - 2*XH12 -6*XH13;
+                    %XH5 = (1/2)*sum(dA3.*(d(unz)-2));
+                    %XH12 = (1/2)*sum(sum(A3.*A2.*A1)) - 9*XC3 - 2*XH5 - 4*XH6;
+                    %XH13 = (1/2)*(1/6)*sum(sum(((A2-2).*(A2-1).*A2).*A1));
+                    %XH15 = (1/2)*(1/2)*sum(dA3.*(sum(A2.*(A2-1),2)-diag(A2.*(A2-1)))) - 6*XH6 - 2*XH12 -6*XH13;
                     %c(k) = c(k) - 28*sum(sum((A2.^2).*A1)) + 21*sum(sum(A3.*A2.*A1)) + 56*tA3 - 77*sum(dA3.*d(unz)) + 7*sum(sum((A2.^3).*A1)) + 7*sum(dA3.*sum(A2,2));
                     cA(k) = (tA7-7*sum(dA3.*dA4)+7*sum(sum((A2.^3).*A1))-7*sum(dA5.*d(unz))+21*sum(sum(A3.*A2.*A1))+7*tA5-28*sum(sum((A2.^2).*A1))+7*sum(sum(A2.*A1.*(d(unz)*d(unz)')))+14*sum(dA3.*(d(unz).^2))+7*sum(dA3.*sum(A2,2))-77*sum(dA3.*d(unz))+56*tA3)^(1/k);
                     %full([ cA(k)^k (c(k) - 28*XH15 - 14*XH12 - 28*XH6 - 84*XH13 ) ])
@@ -131,7 +131,6 @@ for r = 1:N
                     cA(k) = cA(k)^(1/k);
                 end
             end
-         
         t(r,:) = c./s;
         tA(r,:) = cA./s;
     end
