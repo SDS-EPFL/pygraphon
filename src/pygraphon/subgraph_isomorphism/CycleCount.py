@@ -17,6 +17,8 @@ class CycleCount:
             raise ValueError("cycleCount algorithm cannot handle L > 10")
 
         self.L = float(L)
+        self.counts = None
+    
 
     def __call__(self, adjacency_matrix: np.ndarray) -> np.ndarray:
         """Count the densities of subgraph C_l in a graph G: t(C_L,G)
@@ -29,6 +31,7 @@ class CycleCount:
         """
 
         check_simple_adjacency_matrix(adjacency_matrix)
+        self.adjacency_matrix = adjacency_matrix
         return self.network_profile(adjacency_matrix, kmax=self.L)
 
     def network_profile(self, adjacency_matrix, kmax=None) -> np.ndarray:
@@ -231,5 +234,6 @@ class CycleCount:
                 raise ValueError("kmax should be <= 9 and >= 3")
 
         # normalize densities
+        self.counts = np.copy((t ** (np.arange(0, len(t)) + 1))[2:])
         t /= np.shape(adjacency_matrix)[0]
         return (t ** (np.arange(0, len(t)) + 1))[2:]
