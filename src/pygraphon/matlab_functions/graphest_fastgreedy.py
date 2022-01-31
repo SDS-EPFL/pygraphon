@@ -5,6 +5,7 @@ import numpy.random as rnd
 import scipy
 from numba import njit
 from tqdm import tqdm
+
 from pygraphon.utils.utils_matrix import bound_away_from_one_and_zero_arrays, upper_triangle_values
 
 
