@@ -59,15 +59,6 @@ $ cd pygraphon
 $ pip install -e .
 ```
 
-You will need to have matlab installed (version above `R2021a`), and run 
-
-```bash
-cd "matlabroot\extern\engines\python"
-python setup.py install --prefix="installdir"
-```
-
-where `matlabroot` is the path to your matlab installation and `ìnstalldir` is the path to your virtual environment. Please check which version of `python` works with which version of `matlab` to save you a lot of pain
-
 ## 👐 Contributing
 
 Contributions, whether filing an issue, making a pull request, or forking, are appreciated. See
