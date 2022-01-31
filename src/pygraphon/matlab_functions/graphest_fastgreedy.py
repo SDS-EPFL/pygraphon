@@ -1,15 +1,11 @@
-from typing import Iterable, Tuple
+from typing import Iterable, Optional, Tuple
 
 import numpy as np
 import numpy.random as rnd
 import scipy
-from tqdm import tqdm
-
 from numba import njit
-
-from pygraphon.utils.utils_matrix import upper_triangle_values, bound_away_from_one_and_zero_arrays
-from pygraphon.estimators.HistogramEstimator import HistogramEstimator
-import matplotlib.pyplot as plt
+from tqdm import tqdm
+from pygraphon.utils.utils_matrix import bound_away_from_one_and_zero_arrays, upper_triangle_values
 
 
 def graphest_fastgreedy(
@@ -20,8 +16,7 @@ def graphest_fastgreedy(
     maxNumRestarts: int = 500,
     verbose: bool = True,
     trace: bool = True,
-    plots: bool = False,
-) -> np.ndarray:
+) -> Tuple[np.ndarray, int, Optional[Tuple[np.ndarray, np.ndarray]]]:
     """Implements likelihood-based optimization for nethist. Returns a list of cluster labels.
 
     Args:
@@ -92,10 +87,6 @@ def graphest_fastgreedy(
     if verbose:
         print(f"Initial log-likelihood: {bestLL:.4f}")
         print(f"Initial normalized log-likelihood: {oldNormalizedBestLL:.4f}")
-        if plots:
-            plt.imshow(HistogramEstimator._approximate_from_node_membership(A, initialLabelVec))
-            plt.colorbar()
-            plt.show()
 
     bestLabelVec = initialLabelVec
     bestCount = 0
@@ -275,12 +266,6 @@ def graphest_fastgreedy(
                 pbar.set_description(
                     f"LL: {normalizedBestLL:.4f},  {bestCount} global improvements"
                 )
-                if plots:
-                    plt.imshow(
-                        HistogramEstimator._approximate_from_node_membership(A, bestLabelVec)
-                    )
-                    plt.colorbar()
-                    plt.show()
 
             if bestCount == 0:
                 conseczeroImprovement += 1

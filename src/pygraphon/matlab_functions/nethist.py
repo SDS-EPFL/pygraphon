@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import numpy as np
 import scipy
@@ -94,7 +94,7 @@ def first_guess_blocks(A: np.ndarray, h: int, regParam: float) -> np.ndarray:
     This function is used to compute the first guess of the block labels.
     """
     n = A.shape[0]
-    # distVec = pdist(A + regParam, "manhattan")/n
+
     if regParam == 0:
         distVec = pairwise_distances(A, A, metric="manhattan") / n
     else:
@@ -125,7 +125,7 @@ def first_guess_blocks(A: np.ndarray, h: int, regParam: float) -> np.ndarray:
 
 def nethist(
     A: np.ndarray, h: int = None, verbose: bool = False, trace: bool = False
-) -> Tuple[List, int]:
+) -> Tuple[List, int, Optional[Tuple[np.ndarray, np.ndarray]]]:
     """Computes the network histogram of an N-by-N
     adjacency matrix, which must be 0-1 valued, symmetric, and with zero
     main diagonal.
@@ -150,7 +150,7 @@ def nethist(
     # use data driven h
     h = int(h) if h is not None else oracle_analysis_badnwidth(A)
 
-    # why do we have minimum h = 2 ?
+    # min h i s 2 so that no node is in its own group
     h = max(2, min(n, np.round(h)))
 
     lastGroupSize = n % h

@@ -2,13 +2,12 @@
 from collections import Counter
 from typing import Tuple
 
-import matlab.engine
 import numpy as np
 
 from pygraphon.estimators.BaseEstimator import BaseEstimator
 from pygraphon.graphons.StepGraphon import StepGraphon
 from pygraphon.utils.utils_graph import edge_density
-from pygraphon.utils.utils_maltab import getMatlabPaths, npArray2Matlab, setupMatlabEngine
+from pygraphon.matlab_functions.nethist import nethist
 
 
 class HistogramEstimator(BaseEstimator):
@@ -17,7 +16,6 @@ class HistogramEstimator(BaseEstimator):
     Approximate a graphon from a single adjacency matrix. Size of blocks can be  determined automaticaly.
 
     Args:
-        matlab_engine (matlab.engine.MatlabEngine): matlab engine to do the approximation.
         bandwithHist (float, optional): size of the block of the histogram. If None, automatically derived
         from the observation. Defaults to None.
 
@@ -26,27 +24,21 @@ class HistogramEstimator(BaseEstimator):
             [1]: 2013 Sofia C. Olhede and Patrick J. Wolfe (arXiv:1312.5306)
     """
 
-    def __init__(
-        self, matlab_engine: matlab.engine.MatlabEngine, bandwithHist: float = None
-    ) -> None:
+    def __init__(self, bandwithHist: float = None) -> None:
         """Initialize the histogram estimator.
 
         Args:
-             matlab_engine (matlab.engine.MatlabEngine): matlab engine to do the approximation.
         bandwithHist (float, optional): size of the block of the histogram. If None, automatically derived
         from the observation. Defaults to None.
         """
 
         super().__init__()
-        self.matlab_engine = setupMatlabEngine(eng=matlab_engine, paths=getMatlabPaths())
         self.bandwidthHist = bandwithHist
 
     def _approximate_graphon_from_adjacency(self, adjacency_matrix: np.ndarray) -> StepGraphon:
         """Estimate the graphon function f(x,y) from an adjacency matrix"""
 
-        graphon_matrix, _, h = self._approximate(
-            adjacency_matrix, self.bandwidthHist, self.matlab_engine
-        )
+        graphon_matrix, _, h = self._approximate(adjacency_matrix, self.bandwidthHist)
         if self.bandwidthHist is None:
             self.bandwidthHist = h
         return StepGraphon(graphon_matrix, self.bandwidthHist)
@@ -55,7 +47,7 @@ class HistogramEstimator(BaseEstimator):
         self,
         adjacencyMatrix: np.ndarray,
         bandwidthHist: float,
-        matlab_engine: matlab.engine.matlabengine.MatlabEngine,
+        use_default_bandwidth: bool = False,
     ) -> Tuple[np.ndarray]:
         """Use function from Universality of block model approximation [1] to approximate a graphon
         from a single adjacency matrix.
@@ -63,13 +55,7 @@ class HistogramEstimator(BaseEstimator):
         Args:
             adjacencyMatrix (np.ndarray): adjacency matrix of the realized graph
             bandwidthHist (float, optional):  size of the block of the histogram. Defaults to None
-            eng (matlab.engine.matlabengine.MatlabEngine, optional): matlab engine to do the approximation.
-            Defaults to None.
-            pathToMatlabScripts (str, optional): paths to the matlab scripts for network histogram approximation,
-                        used if not matlab engine is given. Defaults to None.
-
-        Raises:
-            ValueError: if no matlab engine is given and no path to maltab scripts is given
+            use_default_bandwidth (bool, optional): if True, use the default bandwidth. Defaults to False.
 
         Returns:
             Tuple[np.ndarray], float : graphon_matrix, edge_probability_matrix, h. graphon_matrix is the block model
@@ -82,17 +68,15 @@ class HistogramEstimator(BaseEstimator):
         """
 
         # network histogram approximation
-        # calls matlab script from paper
-        if bandwidthHist is None:
-            idx, h = matlab_engine.nethist(npArray2Matlab(adjacencyMatrix), nargout=2)
-            bandwidthHist = h / len(idx)
-        else:
-            # needs this weird conversion for matlab to work, does not accept int
-            argh = float(int(bandwidthHist * adjacencyMatrix.shape[0]))
-            idx = matlab_engine.nethist(npArray2Matlab(adjacencyMatrix), argh, nargout=1)
+        if bandwidthHist is None and use_default_bandwidth:
+            bandwidthHist = self.bandwidthHist
+        groupmembership, h, _ = nethist(
+            A=adjacencyMatrix, h=int(bandwidthHist * adjacencyMatrix.shape[0])
+        )
 
-        # bring the cluster labels in [0,...,k-1]
-        groupmembership = np.array([elt[0] for elt in idx]) - 1
+        if bandwidthHist is None:
+            bandwidthHist = h / adjacencyMatrix.shape[0]
+
         graphon_matrix = self._approximate_from_node_membership(adjacencyMatrix, groupmembership)
 
         # fills in the edge probability matrix from the value of the graphon

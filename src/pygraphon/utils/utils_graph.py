@@ -1,3 +1,5 @@
+from collections import Counter
+
 import networkx as nx
 import numpy as np
 
@@ -49,3 +51,32 @@ def check_simple_adjacency_matrix(adjacency_matrix: np.ndarray) -> None:
         raise ValueError("Adjacency matrix should be square")
     if adjacency_matrix.shape[0] < 2:
         raise ValueError("Adjacency matrix should be of dimension at least 2 x 2")
+
+
+def _approximate_from_node_membership(
+    adjacencyMatrix: np.ndarray, node_memberships: np.ndarray
+) -> np.ndarray:
+    # compute the actual values of the graphon approximation
+    groups = np.unique(node_memberships)
+    countGroups = Counter(node_memberships)
+    ngroups = len(groups)
+    rho = edge_density(adjacencyMatrix)
+    rho_inv = 1 / rho if rho != 0 else 1
+    graphon_matrix = np.zeros((ngroups, ngroups))
+
+    # compute the number of links between groups i and j / all possible
+    # links
+    for i in range(ngroups):
+        for j in np.arange(i, ngroups):
+            total = countGroups[groups[i]] * countGroups[groups[j]]
+            graphon_matrix[i][j] = (
+                np.sum(
+                    adjacencyMatrix[np.where(node_memberships == groups[i])[0]][
+                        :, np.where(node_memberships == groups[j])[0]
+                    ]
+                )
+                / total
+            )
+            graphon_matrix[i, j] = graphon_matrix[i, j] * rho_inv
+            graphon_matrix[j][i] = graphon_matrix[i, j]
+    return graphon_matrix

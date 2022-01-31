@@ -42,7 +42,7 @@ class CycleCount:
             np.ndarray: network profile of the graph
         """
         if kmax is None:
-            kmax = self.L
+            kmax = self.L 
         if kmax >= 10:
             raise NotImplementedError(
                 "Cannot count cycles with length >= 10:  not implemented. Please change the value of kmax."

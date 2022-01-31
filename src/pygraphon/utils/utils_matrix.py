@@ -3,6 +3,8 @@ from typing import List, Tuple
 
 import numpy as np
 
+EPS = np.spacing(1)
+
 
 def rearangeMatrix(A, indices):
     """Rearange a matrix according to a permutation."""
@@ -53,7 +55,7 @@ def upper_triangle_values(array):
 
 
 def bound_away_from_one_and_zero_arrays(
-    arrays: List[np.ndarray], eps: float = np.spacing(1)
+    arrays: List[np.ndarray], eps: float = EPS
 ) -> List[np.ndarray]:
     """
     This function is used to bound away from 1 and 0 in the log likelihood.

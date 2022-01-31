@@ -51,7 +51,8 @@ class SimpleMomentEstimator(BaseEstimator):
                 f"block model can't have < 2 parameters or > 9 for now, but got {self.numberParameters}"
             )
 
-        self.counter = CycleCount(self.numberParameters - 1)
+        # count cycles of length 3,..,self.numberParameters-1
+        self.counter = CycleCount(2 + self.numberParameters - 1)
 
     def _approximate_graphon_from_adjacency(self, adjacency_matrix: np.ndarray) -> StepGraphon:
         """Estimate the graphon function f(x,y) from an adjacency matrix by solving moment equations."""
@@ -237,8 +238,7 @@ class SimpleMomentEstimator(BaseEstimator):
             theta = self._add_constraints_on_SBM(
                 x, K
             )  # x[-1] * np.ones((K, K)) + (x[0:-1] - x[-1]) * np.eye(K)
-            # TODO: if we use scaled graphon, we loose the fact that rho is
-            # informational: it is always 1 ?
+
             functions = [
                 self._edge_density_moment_theoretical(theta) - edgeDensity,
             ]
