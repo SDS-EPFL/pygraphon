@@ -34,8 +34,25 @@ class CycleCount:
         self.adjacency_matrix = adjacency_matrix
         return self.network_profile(adjacency_matrix, kmax=self.L)
 
+    def approximate_network_profile(self, adjacency_matrix: np.ndarray, kmax: int, subsample: float = 0.4, repetitions: int = 3) -> np.ndarray:
+        """Compute the network profile of a graph G by subsampling it multiple times and averaging the results.
+
+        Will compute the different network profile in parallel
+
+        Args:
+            adjacency_matrix (np.ndarray): Adjacency matrix representing the simple graph G
+            kmax (int): maximum length of cycles to consider (default: None). If None, use the value of L.
+            subsample (float): fraction of the graph to subsample (default: 0.4)
+            repetitions (int): number of times to subsample the graph (default: 3)
+
+
+        Returns:
+            np.ndarray: approximation to network profile of the graph
+        """
+        raise NotImplementedError("approximate_network_profile is not implemented")
+
     def network_profile(self, adjacency_matrix, kmax=None) -> np.ndarray:
-        """Compute the network profile of a graph
+        """Compute the network profile of a graph: normalized counts of cycles of length 3 to L
 
         Args:
             adjacency_matrix (np.ndarray): Adjacency matrix representing the simple graph G
