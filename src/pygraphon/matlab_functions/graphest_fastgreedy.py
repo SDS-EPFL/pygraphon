@@ -33,31 +33,30 @@ def graphest_fastgreedy(
     numGreedySteps, allInds = set_num_greedy_steps(n)
 
     sampleSize = int(n * (n - 1) / 2)
-    smaller_last_group = 1 if n // hbar == 0 else 0
+    smaller_last_group = 0 if n % hbar == 0 else 1
     k = int(np.ceil(n / hbar))
     equalSizeInds = np.arange(0, (k - smaller_last_group) - 1)
     orderedLabels = np.zeros((n, 1))
     h = np.zeros(k)
     hbar = int(hbar)
     orderedClusterInds = np.zeros((k, hbar))
-    for a in range(1, k - smaller_last_group + 1):
-        orderedInds = np.arange((a - 1) * hbar + 1, a * hbar + 1)
-        h[a - 1] = len(orderedInds)
+    for a in range(k - smaller_last_group):
+        orderedInds = np.arange(a * hbar, (a + 1) * hbar)
+        h[a] = len(orderedInds)
         orderedLabels[orderedInds - 1] = a
         orderedClusterInds[a - 1, :] = orderedInds
-
     if smaller_last_group:
-        orderedIndsLast = np.arange((k - 1) * hbar + 1, n)
-        h[k - 1] = len(orderedInds)
+        orderedIndsLast = np.arange((k - 1) * hbar, n)
+        h[k - 1] = len(orderedIndsLast)
         orderedClusterInds[k - 1, :] = np.concatenate(
-            orderedIndsLast, np.zeros(hbar - len(orderedIndsLast))
+            [orderedIndsLast, np.zeros(hbar - len(orderedIndsLast))]
         )
 
     habSqrd = np.outer(h, h) - np.diag(np.multiply(h, h) - np.multiply(h, (h - 1)) / 2)
 
     if not np.all(habSqrd) >= 1:
         raise RuntimeError("All clusters must contain at least 2 nodes")
-    if np.max(orderedClusterInds) != n:
+    if np.max(orderedClusterInds) != n - 1:
         raise RuntimeError("All nodes must be assigned to a cluster")
     if np.sum(h) != n:
         raise RuntimeError("All nodes must be assigned to a cluster")
@@ -71,8 +70,8 @@ def graphest_fastgreedy(
         initialClusterCentroids[a, :] = np.sum(A[:, initialClusterInds[a, :]], axis=1)
 
     if smaller_last_group:
-        initialClusterInds[k, 1 : len(np.where(initialLabelVec == k)[0])] = np.where(
-            initialLabelVec == k
+        initialClusterInds[k - 1, 0 : len(np.where(initialLabelVec == k - 1)[0])] = np.where(
+            initialLabelVec == k - 1
         )[0]
 
     initialACounts = getSampleCounts(A, initialClusterInds)
@@ -118,9 +117,10 @@ def graphest_fastgreedy(
             bestClusterInds[a, :] = np.where(bestLabelVec == a)[0]
 
         if smaller_last_group:
-            bestClusterInds[k, 1 : len(np.where(bestLabelVec == k)[0])] = np.where(
-                np.where(bestLabelVec == k)[0]
-            )
+            bestClusterInds[k - 1, 0 : len(np.where(bestLabelVec == k - 1)[0])] = np.where(
+                bestLabelVec == k - 1
+            )[0]
+
         bestACounts = getSampleCounts(A, bestClusterInds)
         bestLL = fastNormalizedBMLogLik(
             upper_triangle_values(bestACounts) / upper_triangle_values(habSqrd),
@@ -191,10 +191,10 @@ def graphest_fastgreedy(
 
                     if smaller_last_group:  # take care of last group separately if unequal size
                         sumAijEnd = np.sum(
-                            ARowiMinusRowj[trialClusterInds[k, trialClusterInds[k, :] > 0]]
+                            ARowiMinusRowj[trialClusterInds[k - 1, trialClusterInds[k - 1, :] > 0]]
                         )
-                        trialACounts[k, a] = trialACounts[k, a] - sumAijEnd
-                        trialACounts[k, b] = trialACounts[k, b] + sumAijEnd
+                        trialACounts[k - 1, a] = trialACounts[k - 1, a] - sumAijEnd
+                        trialACounts[k - 1, b] = trialACounts[k - 1, b] + sumAijEnd
 
                     # update the above for special case c==a | c==b
                     trialACounts[a, a] = trialACounts[a, a] + A[i, j]
