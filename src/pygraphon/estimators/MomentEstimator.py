@@ -54,7 +54,7 @@ class SimpleMomentEstimator(BaseEstimator):
         # count cycles of length 3,..,self.numberParameters-1
         self.counter = CycleCount(2 + self.numberParameters - 1)
 
-    def _approximate_graphon_from_adjacency(self, adjacency_matrix: np.ndarray) -> StepGraphon:
+    def _approximate_graphon_from_adjacency(self, adjacency_matrix: np.ndarray, *args, **kwargs) -> StepGraphon:
         """Estimate the graphon function f(x,y) from an adjacency matrix by solving moment equations."""
 
         # compute densities from observed graphs
