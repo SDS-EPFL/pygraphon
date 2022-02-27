@@ -70,9 +70,12 @@ class HistogramEstimator(BaseEstimator):
         # network histogram approximation
         if bandwidthHist is None and use_default_bandwidth:
             bandwidthHist = self.bandwidthHist
-        groupmembership, h, _ = nethist(
-            A=adjacencyMatrix, h=int(bandwidthHist * adjacencyMatrix.shape[0])
-        )
+
+        if bandwidthHist is None:
+            h = None
+        else:
+            h = int(bandwidthHist * adjacencyMatrix.shape[0])
+        groupmembership, h, _ = nethist(A=adjacencyMatrix, h=h)
 
         if bandwidthHist is None:
             bandwidthHist = h / adjacencyMatrix.shape[0]
