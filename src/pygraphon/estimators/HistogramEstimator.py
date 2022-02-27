@@ -39,7 +39,7 @@ class HistogramEstimator(BaseEstimator):
         self, adjacency_matrix: np.ndarray, bandwidthHist=None
     ) -> StepGraphon:
         """Estimate the graphon function f(x,y) from an adjacency matrix"""
-        
+
         if bandwidthHist is None:
             bandwidthHist = self.bandwidthHist
         graphon_matrix, _, h = self._approximate(adjacency_matrix, self.bandwidthHist)
