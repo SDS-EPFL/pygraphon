@@ -1,4 +1,5 @@
 from abc import ABC, abstractclassmethod
+from typing import Callable
 
 import numpy as np
 
@@ -25,7 +26,7 @@ class Graphon(ABC):
         self.graphon_function = self.graphon_function_builder()
 
     @abstractclassmethod
-    def graphon_function_builder(self):
+    def graphon_function_builder(self) -> Callable:
         """
         Build the graphon function f(x,y)
         """
