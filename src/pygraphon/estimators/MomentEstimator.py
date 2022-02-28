@@ -68,7 +68,7 @@ class SimpleMomentEstimator(BaseEstimator):
         # structure the parameters into a graphon
         graphon = self._add_constraints_on_SBM(root, self.numberBlocks)
         graphon = self.correct_fitted_values(graphon, type="abs")
-        return StepGraphon(graphon, 1 / self.numberBlocks)
+        return StepGraphon(graphon, 1 / self.numberBlocks, initial_rho= rho)
 
     def correct_fitted_values(self, graphon, type="abs") -> np.ndarray:
         """Project the method of moment into the graphon space.

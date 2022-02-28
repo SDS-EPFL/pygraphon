@@ -18,6 +18,7 @@ class StepGraphon(Graphon):
         self,
         graphon: np.ndarray,
         bandwidthHist: float = None,
+        initial_rho: float = None
     ) -> None:
         """Create an instance of a step function graphon, by giving the matrix representing the block model approxumation.
 
@@ -29,6 +30,7 @@ class StepGraphon(Graphon):
         # save args
         self.graphon = graphon
         self.bandwidthHist = bandwidthHist
+        self.initial_rho = initial_rho
 
         self.areas = np.ones_like(self.graphon) * self.bandwidthHist ** 2
         self.remainder = 1 - int(1 / self.bandwidthHist) * self.bandwidthHist
