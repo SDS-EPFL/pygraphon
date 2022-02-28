@@ -18,7 +18,6 @@ class CycleCount:
 
         self.L = float(L)
         self.counts = None
-    
 
     def __call__(self, adjacency_matrix: np.ndarray) -> np.ndarray:
         """Count the densities of subgraph C_l in a graph G: t(C_L,G)
@@ -34,7 +33,9 @@ class CycleCount:
         self.adjacency_matrix = adjacency_matrix
         return self.network_profile(adjacency_matrix, kmax=self.L)
 
-    def approximate_network_profile(self, adjacency_matrix: np.ndarray, kmax: int, subsample: float = 0.4, repetitions: int = 3) -> np.ndarray:
+    def approximate_network_profile(
+        self, adjacency_matrix: np.ndarray, kmax: int, subsample: float = 0.4, repetitions: int = 3
+    ) -> np.ndarray:
         """Compute the network profile of a graph G by subsampling it multiple times and averaging the results.
 
         Will compute the different network profile in parallel
@@ -102,8 +103,8 @@ class CycleCount:
             elif k == 6:
                 dA6 = np.diag(Ak)
                 tA6 = np.sum(dA6)
-                inter = tA6 - 3 * np.sum(dA3 ** 2)
-                inter += 9 * np.sum((A2 ** 2) * A1)
+                inter = tA6 - 3 * np.sum(dA3**2)
+                inter += 9 * np.sum((A2**2) * A1)
                 inter -= 6 * np.sum(dA4 * (degrees[non_zero_degrees] - 1))
                 inter -= 4 * np.sum(dA3 - degrees[non_zero_degrees] ** 3)
                 inter += 3 * sA3
@@ -113,11 +114,11 @@ class CycleCount:
             elif k == 7:
                 dA7 = np.diag(Ak)
                 tA7 = np.sum(dA7)
-                inter = tA7 - 7 * np.sum(dA3 * dA4) + 7 * np.sum((A2 ** 3) * A1)
+                inter = tA7 - 7 * np.sum(dA3 * dA4) + 7 * np.sum((A2**3) * A1)
                 inter -= 7 * np.sum(dA5 * degrees[non_zero_degrees])
                 inter += 21 * np.sum(A3 * A2 * A1)
                 inter += 7 * tA5
-                inter -= 28 * np.sum((A2 ** 2) * A1)
+                inter -= 28 * np.sum((A2**2) * A1)
                 inter += 7 * np.sum(
                     A2 * A1 * np.outer(degrees[non_zero_degrees], (degrees[non_zero_degrees]))
                 )
@@ -212,8 +213,8 @@ class CycleCount:
                     - 216 * np.sum(np.diag(dA2) @ (A1 * A3 * A2))
                     - 9 * np.sum(A3 @ np.diag(dA3))
                     - 36 * np.sum(np.diag(dA3 * dA2) @ A2)
-                    - 18 * np.sum(np.outer(dA2 ** 2, dA3) * A1)
-                    - 36 * np.sum(np.outer(dA2 ** 2, dA2) * A1 * A2)
+                    - 18 * np.sum(np.outer(dA2**2, dA3) * A1)
+                    - 36 * np.sum(np.outer(dA2**2, dA2) * A1 * A2)
                     + 336 * np.sum(A1 * A2 * A2 * A2)
                     + 288 * np.sum(np.diag(dA2) @ (A1 * A2 * A2))
                     + 684 * np.sum(A1 * A3 * A2)

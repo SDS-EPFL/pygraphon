@@ -160,12 +160,12 @@ class GraphonAbstract(ABC):
             return P
         else:
             return probs
-     
+
     def __add__(self, other):
         """
         Overload the + operator to add two graphons
         """
         if not isinstance(other, Graphon):
             raise TypeError(f"Can only add two graphons, got {type(other)} instead")
-        
+
         raise NotImplementedError

@@ -54,7 +54,9 @@ class SimpleMomentEstimator(BaseEstimator):
         # count cycles of length 3,..,self.numberParameters-1
         self.counter = CycleCount(2 + self.numberParameters - 1)
 
-    def _approximate_graphon_from_adjacency(self, adjacency_matrix: np.ndarray, *args, **kwargs) -> StepGraphon:
+    def _approximate_graphon_from_adjacency(
+        self, adjacency_matrix: np.ndarray, *args, **kwargs
+    ) -> StepGraphon:
         """Estimate the graphon function f(x,y) from an adjacency matrix by solving moment equations."""
 
         # compute densities from observed graphs
@@ -68,7 +70,7 @@ class SimpleMomentEstimator(BaseEstimator):
         # structure the parameters into a graphon
         graphon = self._add_constraints_on_SBM(root, self.numberBlocks)
         graphon = self.correct_fitted_values(graphon, type="abs")
-        return StepGraphon(graphon, 1 / self.numberBlocks, initial_rho= rho)
+        return StepGraphon(graphon, 1 / self.numberBlocks, initial_rho=rho)
 
     def correct_fitted_values(self, graphon, type="abs") -> np.ndarray:
         """Project the method of moment into the graphon space.
@@ -170,7 +172,7 @@ class SimpleMomentEstimator(BaseEstimator):
         result = 0
         for i, j in list(product(range(K), repeat=2)):
             result += theta[i][j]
-        return result / K ** 2
+        return result / K**2
 
     def _cherry_density_moment_theoretical(
         self, theta: np.ndarray, areas: np.ndarray = None

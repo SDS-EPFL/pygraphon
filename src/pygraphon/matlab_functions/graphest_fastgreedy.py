@@ -323,7 +323,7 @@ def set_num_greedy_steps(n) -> Tuple[int, bool]:
         allInds = True
     else:
         # Only a random subset of pairs will be visited on each iteration
-        numGreedySteps = 2 * 10 ** 4
+        numGreedySteps = 2 * 10**4
         allInds = False
     return numGreedySteps, allInds
 

@@ -15,7 +15,9 @@ class BaseEstimator(ABC):
 
         super().__init__()
 
-    def estimate(self, graph: nx.Graph = None, adjacency_matrix: np.ndarray = None, *args, **kwargs) -> Graphon:
+    def estimate(
+        self, graph: nx.Graph = None, adjacency_matrix: np.ndarray = None, *args, **kwargs
+    ) -> Graphon:
         """Estimate the graphon function f(x,y) from a realized graph or adjacency matrix
 
         Args:
@@ -33,6 +35,8 @@ class BaseEstimator(ABC):
         return self._approximate_graphon_from_adjacency(adjacency_matrix, *args, **kwargs)
 
     @abstractclassmethod
-    def _approximate_graphon_from_adjacency(self, adjacency_matrix: np.ndarray, *args, **kwargs) -> Graphon:
+    def _approximate_graphon_from_adjacency(
+        self, adjacency_matrix: np.ndarray, *args, **kwargs
+    ) -> Graphon:
         """Estimate the graphon function f(x,y) from an adjacency matrix"""
         pass
