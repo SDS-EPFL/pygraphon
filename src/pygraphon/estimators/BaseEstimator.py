@@ -3,7 +3,7 @@ from abc import ABC, abstractclassmethod
 import networkx as nx
 import numpy as np
 
-from pygraphon.graphons.GraphonAbstract import Graphon
+from pygraphon.graphons.GraphonAbstract import GraphonAbstract
 from pygraphon.utils.utils_graph import get_adjacency_matrix_from_graph
 
 
@@ -17,7 +17,7 @@ class BaseEstimator(ABC):
 
     def estimate(
         self, graph: nx.Graph = None, adjacency_matrix: np.ndarray = None, *args, **kwargs
-    ) -> Graphon:
+    ) -> GraphonAbstract:
         """Estimate the graphon function f(x,y) from a realized graph or adjacency matrix
 
         Args:
@@ -37,6 +37,6 @@ class BaseEstimator(ABC):
     @abstractclassmethod
     def _approximate_graphon_from_adjacency(
         self, adjacency_matrix: np.ndarray, *args, **kwargs
-    ) -> Graphon:
+    ) -> GraphonAbstract:
         """Estimate the graphon function f(x,y) from an adjacency matrix"""
         pass

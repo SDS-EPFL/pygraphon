@@ -27,7 +27,6 @@ class StepGraphon(GraphonAbstract):
         # save args
         self.graphon = graphon
         self.bandwidthHist = bandwidthHist
-        self.initial_rho = initial_rho
 
         self.areas = np.ones_like(self.graphon) * self.bandwidthHist**2
         self.remainder = 1 - int(1 / self.bandwidthHist) * self.bandwidthHist
@@ -36,7 +35,7 @@ class StepGraphon(GraphonAbstract):
             self.areas[-1, :] = self.bandwidthHist * self.remainder
             self.areas[-1, -1] = self.remainder**2
 
-        super().__init__()
+        super().__init__(initial_rho= initial_rho)
 
     def graphon_function_builder(self) -> Callable:
         """
