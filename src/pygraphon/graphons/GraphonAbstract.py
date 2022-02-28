@@ -4,7 +4,7 @@ from typing import Callable
 import numpy as np
 
 
-class Graphon(ABC):
+class GraphonAbstract(ABC):
     """Abstract class for Graphon.
     All graphons of this class will be scaled graphon, meaning the integral of f(x,y) over [0,1]^2 is 1.
     """
@@ -160,3 +160,12 @@ class Graphon(ABC):
             return P
         else:
             return probs
+     
+    def __add__(self, other):
+        """
+        Overload the + operator to add two graphons
+        """
+        if not isinstance(other, Graphon):
+            raise TypeError(f"Can only add two graphons, got {type(other)} instead")
+        
+        raise NotImplementedError

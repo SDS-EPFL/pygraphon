@@ -2,11 +2,11 @@ from typing import Callable
 
 import numpy as np
 
-from pygraphon.graphons.Graphon import Graphon
+from pygraphon.graphons.GraphonAbstract import GraphonAbstract
 from pygraphon.utils.utils_matrix import check_symmetric
 
 
-class StepGraphon(Graphon):
+class StepGraphon(GraphonAbstract):
     """A step function graphon, by giving the matrix representing the block model approxumation.
 
     Args:

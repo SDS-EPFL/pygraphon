@@ -4,7 +4,7 @@
 
 import unittest
 
-from pygraphon.graphons import Graphon
+from pygraphon.graphons.GraphonAbstract import GraphonAbstract
 
 
 class TestInitialization(unittest.TestCase):
@@ -13,4 +13,4 @@ class TestInitialization(unittest.TestCase):
     def test_not_able_to_instantiate_abstract_class(self):
         """Test the version is a string."""
         with self.assertRaises(TypeError):
-            _ = Graphon()
+            _ = GraphonAbstract()
