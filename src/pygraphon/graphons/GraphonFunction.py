@@ -22,7 +22,7 @@ class Graphon(GraphonAbstract):
         return self.graphon_function
 
     def integral(self):
-        return dblquad(self.graphon_function, 0, 1, lambda x: 0, lambda x: 1)[0]
+        return 2*dblquad(self.graphon_function, 0, 1, lambda x: 0, lambda x: x)[0]
     
 
     def __add__(self, other):
