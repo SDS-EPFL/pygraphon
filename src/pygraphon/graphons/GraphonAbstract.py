@@ -9,7 +9,7 @@ class GraphonAbstract(ABC):
     All graphons of this class will be scaled graphon, meaning the integral of f(x,y) over [0,1]^2 is 1.
     """
 
-    def __init__(self, initial_rho = None, scaled=True, check = True) -> None:
+    def __init__(self, initial_rho=None, scaled=True, check=True) -> None:
         """Constructor for Graphon.
 
         Will check that graphon is correctly build.
@@ -21,7 +21,6 @@ class GraphonAbstract(ABC):
             self.initial_rho = self.integral()
         else:
             self.initial_rho = initial_rho
-        
 
         if check:
             self.check_graphon()
@@ -43,7 +42,7 @@ class GraphonAbstract(ABC):
 
     def check_graphon(self):
         """
-        Check graphon properties depending on the subclass that iplements it. 
+        Check graphon properties depending on the subclass that iplements it.
         Only implemented in subclasses that need to impose certain properties.
 
         Raises:
