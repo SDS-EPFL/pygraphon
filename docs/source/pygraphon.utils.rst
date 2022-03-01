@@ -12,14 +12,6 @@ pygraphon.utils.utils\_graph module
    :undoc-members:
    :show-inheritance:
 
-pygraphon.utils.utils\_maltab module
-------------------------------------
-
-.. automodule:: pygraphon.utils.utils_maltab
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 pygraphon.utils.utils\_maths module
 -----------------------------------
 
