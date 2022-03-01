@@ -7,7 +7,7 @@ Submodules
 pygraphon.graphons.Graphon module
 ---------------------------------
 
-.. automodule:: pygraphon.graphons.Graphon
+.. automodule:: pygraphon.graphons.GraphonAbstract
    :members:
    :undoc-members:
    :show-inheritance:
