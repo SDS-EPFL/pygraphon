@@ -9,6 +9,7 @@ PyGraphon |release| Documentation
    installation
    usage
    cli
+   modules
 
 Indices and Tables
 ------------------
