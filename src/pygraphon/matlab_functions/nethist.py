@@ -158,7 +158,7 @@ def nethist(
     # step down h to avoid singleton group
     while lastGroupSize == 1 and h > 2:
         h = h - 1
-        lastGroupSize(n % h)
+        lastGroupSize = n % h
 
     idxInit = first_guess_blocks(A, h, regParam=rhoHat / 4)
     if trace:
