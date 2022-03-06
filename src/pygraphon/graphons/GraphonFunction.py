@@ -7,6 +7,7 @@ from scipy.integrate import dblquad
 from pygraphon.utils.utils_func import copy_func
 
 from .GraphonAbstract import GraphonAbstract
+from copy import deepcopy
 
 
 class Graphon(GraphonAbstract):
@@ -14,16 +15,17 @@ class Graphon(GraphonAbstract):
     basic Graphon only composed of a single function
     """
 
-    def __init__(self, function: Callable, scaled=True, check=True) -> None:
+    def __init__(
+        self, function: Callable, scaled=True, check=True, initial_rho: float = None
+    ) -> None:
         """
         Initialize a non scaled graphon defined only by its function f(x,y) (the function should be between 0 and 1) ?
         Args:
             function (Callable): graphon function f(x,y)
         """
-
         self.integral_value = None
         self.graphon_function = function
-        super().__init__(initial_rho=self.integral(), scaled=scaled, check=check)
+        super().__init__(initial_rho=initial_rho, scaled=scaled, check=check)
 
     def correct_graphon_integral(self):
         integral = self.integral()

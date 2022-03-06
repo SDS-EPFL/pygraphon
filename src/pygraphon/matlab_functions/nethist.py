@@ -52,7 +52,7 @@ def oracbwplugin(
     A = A.astype(float)
 
     n = A.shape[0]
-    midPt = np.arange(round(n / 2 - c * np.sqrt(n) - 1), round(n / 2 + c * np.sqrt(n)))
+    midPt = np.arange(round(n / 2 - c * np.sqrt(n)) - 1, round(n / 2 + c * np.sqrt(n)))
     rhoHat = np.sum(A) / (n * (n - 1))
     pseudo_inverse_rho_hat = 1 / rhoHat if rhoHat != 0 else 0
 
@@ -65,18 +65,31 @@ def oracbwplugin(
     else:
         raise NotImplementedError(f"Unknown input type: {type}")
 
-    u = np.sort(u.ravel())
-    uMid = u[midPt]
-    reg = stats.linregress(np.arange(1, len(uMid) + 1), uMid)
-    p = (reg[1], reg[0])
-    h = (
-        2 ** (alpha + 1)
-        * alpha
-        * mult**2
-        * (p[0] + p[1] * len(uMid) / 2) ** 2
-        * p[1] ** 2
-        * pseudo_inverse_rho_hat
-    ) ** (-1 / (2 * (alpha + 1)))
+   
+    # if all the degrees are the same, there is no information in there
+    if np.unique(u).size == 1:
+        h = 1
+    # if the slope is 0, we have an issue: we need to have a non uniform array
+    # of degrees to compute the slope: we augment the value of c to get a non uniform array
+    # if needed
+    else:
+        u = np.sort(u.ravel())
+        uMid = u[midPt]
+        increment = 1
+        while np.unique(uMid).size == 1:
+            midPt = np.arange(round(n / 2 - c * np.sqrt(n)) - 1 - increment, round(n / 2 + c * np.sqrt(n)) + increment)
+            uMid = u[midPt]
+            increment += 1
+        reg = stats.linregress(np.arange(1, len(uMid) + 1), uMid)
+        p = (reg[1], reg[0])
+        h = (
+            2 ** (alpha + 1)
+            * alpha
+            * mult**2
+            * (p[0] + p[1] * len(uMid) / 2) ** 2
+            * p[1] ** 2
+            * pseudo_inverse_rho_hat
+        ) ** (-1 / (2 * (alpha + 1)))
     estMSqrd = (
         2
         * mult**2
@@ -148,7 +161,7 @@ def nethist(
     rhoHat = np.sum(A) / (n * (n - 1))
 
     # use data driven h
-    h = int(h) if h is not None else oracle_analysis_badnwidth(A)
+    h = int(h) if h is not None else oracle_analysis_badnwidth(A=A)
 
     # min h i s 2 so that no node is in its own group
     h = max(2, min(n, np.round(h)))

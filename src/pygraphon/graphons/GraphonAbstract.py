@@ -1,5 +1,6 @@
 from abc import ABC, abstractclassmethod
 from typing import Callable
+from copy import deepcopy
 
 import numpy as np
 
@@ -18,9 +19,9 @@ class GraphonAbstract(ABC):
 
         # remember the original edge density of the graphon
         if initial_rho is None:
-            self.initial_rho = self.integral()
+            self.initial_rho = deepcopy(self.integral())
         else:
-            self.initial_rho = initial_rho
+            self.initial_rho = deepcopy(initial_rho)
 
         if check:
             self.check_graphon()
