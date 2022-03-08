@@ -51,7 +51,7 @@ class HistogramEstimator(BaseEstimator):
     def _approximate(
         self,
         adjacencyMatrix: np.ndarray,
-        bandwidthHist: float,
+        bandwidthHist: float = None,
         use_default_bandwidth: bool = False,
     ) -> Tuple[np.ndarray]:
         """Use function from Universality of block model approximation [1] to approximate a graphon
