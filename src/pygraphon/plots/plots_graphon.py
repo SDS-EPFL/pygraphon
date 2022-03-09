@@ -28,7 +28,7 @@ def plot_sample(
     ax: Axes = None,
     colorbar=False,
     integrate_to_1: bool = False,
-) -> np.ndarray:
+) ->  Tuple[Figure, Axes]:
     x1, x2 = np.linspace(0, 1, resolution, endpoint=False), np.linspace(
         0, 1, resolution, endpoint=False
     )
