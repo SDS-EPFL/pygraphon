@@ -69,6 +69,7 @@ def oracbwplugin(
     # if all the degrees are the same, there is no information in there
     if np.unique(u).size == 1:
         h = 1
+        estMSqrd = 0
     # if the slope is 0, we have an issue: we need to have a non uniform array
     # of degrees to compute the slope: we augment the value of c to get a non uniform array
     # if needed
@@ -90,14 +91,14 @@ def oracbwplugin(
             * p[1] ** 2
             * pseudo_inverse_rho_hat
         ) ** (-1 / (2 * (alpha + 1)))
-    estMSqrd = (
-        2
-        * mult**2
-        * (p[0] + p[1] * len(uMid) / 2) ** 2
-        * p[1] ** 2
-        * pseudo_inverse_rho_hat**2
-        * (n + 1) ** 2
-    )
+        estMSqrd = (
+            2
+            * mult**2
+            * (p[0] + p[1] * len(uMid) / 2) ** 2
+            * p[1] ** 2
+            * pseudo_inverse_rho_hat**2
+            * (n + 1) ** 2
+        )
     # MISEfhatBnd = estMSqrd * ((2 / np.sqrt(estMSqrd)) * (sampleSize * rhoHat) ** (-1 / 2) + 1 / n)
     return h, estMSqrd
 
