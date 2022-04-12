@@ -103,8 +103,8 @@ class HistogramEstimator(BaseEstimator):
         groups = np.unique(node_memberships)
         countGroups = Counter(node_memberships)
         ngroups = len(groups)
-        #rho = edge_density(adjacencyMatrix)
-        #rho_inv = 1 / rho if rho != 0 else 0
+        # rho = edge_density(adjacencyMatrix)
+        # rho_inv = 1 / rho if rho != 0 else 0
         graphon_matrix = np.zeros((ngroups, ngroups))
 
         # compute the number of links between groups i and j / all possible
@@ -120,6 +120,6 @@ class HistogramEstimator(BaseEstimator):
                     )
                     / total
                 )
-                graphon_matrix[i, j] = graphon_matrix[i, j] #* rho_inv
+                graphon_matrix[i, j] = graphon_matrix[i, j]  # * rho_inv
                 graphon_matrix[j][i] = graphon_matrix[i, j]
         return graphon_matrix

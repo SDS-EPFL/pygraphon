@@ -12,7 +12,7 @@ from pygraphon.utils.utils_graph import check_simple_adjacency_matrix
 from .graphest_fastgreedy import graphest_fastgreedy
 
 
-def oracle_analysis_badnwidth(A: np.ndarray, type: str = "degs", alpha: float = 1) -> float:
+def _oracle_analysis_badnwidth(A: np.ndarray, type: str = "degs", alpha: float = 1) -> float:
     c = min(4, np.sqrt(A.shape[0]) / 8)
     h, _ = oracbwplugin(A=A, c=c, type=type, alpha=alpha)
     return int(h)
@@ -65,7 +65,6 @@ def oracbwplugin(
     else:
         raise NotImplementedError(f"Unknown input type: {type}")
 
-   
     # if all the degrees are the same, there is no information in there
     if np.unique(u).size == 1:
         h = 1
@@ -78,7 +77,10 @@ def oracbwplugin(
         uMid = u[midPt]
         increment = 1
         while np.unique(uMid).size == 1:
-            midPt = np.arange(round(n / 2 - c * np.sqrt(n)) - 1 - increment, round(n / 2 + c * np.sqrt(n)) + increment)
+            midPt = np.arange(
+                round(n / 2 - c * np.sqrt(n)) - 1 - increment,
+                round(n / 2 + c * np.sqrt(n)) + increment,
+            )
             uMid = u[midPt]
             increment += 1
         reg = stats.linregress(np.arange(1, len(uMid) + 1), uMid)
@@ -86,17 +88,17 @@ def oracbwplugin(
         h = (
             2 ** (alpha + 1)
             * alpha
-            * mult**2
+            * mult ** 2
             * (p[0] + p[1] * len(uMid) / 2) ** 2
             * p[1] ** 2
             * pseudo_inverse_rho_hat
         ) ** (-1 / (2 * (alpha + 1)))
         estMSqrd = (
             2
-            * mult**2
+            * mult ** 2
             * (p[0] + p[1] * len(uMid) / 2) ** 2
             * p[1] ** 2
-            * pseudo_inverse_rho_hat**2
+            * pseudo_inverse_rho_hat ** 2
             * (n + 1) ** 2
         )
     # MISEfhatBnd = estMSqrd * ((2 / np.sqrt(estMSqrd)) * (sampleSize * rhoHat) ** (-1 / 2) + 1 / n)
@@ -114,11 +116,11 @@ def first_guess_blocks(A: np.ndarray, h: int, regParam: float) -> np.ndarray:
     else:
         A_inter = A + regParam * np.ones_like(A) * regParam
         distVec = pairwise_distances(A_inter, A_inter, metric="manhattan") / n
-    L = np.ones_like(distVec) - distVec**2
+    L = np.ones_like(distVec) - distVec ** 2
     d = np.sum(L, axis=1)
     d = d[:, np.newaxis]
-    L_inter = np.outer(d**-0.5, d**-0.5) * L - np.outer(np.sqrt(d), np.sqrt(d)) / np.sqrt(
-        np.sum(d**2)
+    L_inter = np.outer(d ** -0.5, d ** -0.5) * L - np.outer(np.sqrt(d), np.sqrt(d)) / np.sqrt(
+        np.sum(d ** 2)
     )
     _, u = scipy.sparse.linalg.eigs(L_inter, k=1, which="LR")
     u = u.real.ravel()
@@ -162,7 +164,7 @@ def nethist(
     rhoHat = np.sum(A) / (n * (n - 1))
 
     # use data driven h
-    h = int(h) if h is not None else oracle_analysis_badnwidth(A=A)
+    h = int(h) if h is not None else _oracle_analysis_badnwidth(A=A)
 
     # min h i s 2 so that no node is in its own group
     h = max(2, min(n, np.round(h)))

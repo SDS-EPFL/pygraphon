@@ -28,7 +28,8 @@ def plot_sample(
     ax: Axes = None,
     colorbar=False,
     integrate_to_1: bool = False,
-) ->  Tuple[Figure, Axes]:
+) -> Tuple[Figure, Axes]:
+    """Sample from [0,1]^2, evaluate and plot the graphon."""
     x1, x2 = np.linspace(0, 1, resolution, endpoint=False), np.linspace(
         0, 1, resolution, endpoint=False
     )
