@@ -9,7 +9,6 @@ Subpackages
 
    pygraphon.estimators
    pygraphon.graphons
-   pygraphon.matlab_functions
    pygraphon.norm
    pygraphon.plots
    pygraphon.subgraph_isomorphism
