@@ -39,6 +39,8 @@ version = parsed_version.expand('\g<major>.\g<minor>.\g<patch>')
 if parsed_version.group('release'):
     tags.add('prerelease')
 
+autodoc_mock_imports = ['sklearn','numba']
+
 # -- General configuration ---------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.

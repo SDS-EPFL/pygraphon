@@ -1,6 +1,6 @@
 from abc import ABC, abstractclassmethod
-from typing import Callable
 from copy import deepcopy
+from typing import Callable
 
 import numpy as np
 

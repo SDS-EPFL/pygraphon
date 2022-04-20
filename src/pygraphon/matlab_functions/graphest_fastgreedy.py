@@ -74,8 +74,8 @@ def graphest_fastgreedy(
             initialLabelVec == k - 1
         )[0]
 
-    initialACounts = getSampleCounts(A, initialClusterInds)
-    initialLL = fastNormalizedBMLogLik(
+    initialACounts = _getSampleCounts(A, initialClusterInds)
+    initialLL = _fastNormalizedBMLogLik(
         upper_triangle_values(initialACounts) / upper_triangle_values(habSqrd),
         upper_triangle_values(habSqrd),
         sampleSize,
@@ -84,9 +84,9 @@ def graphest_fastgreedy(
     bestLL = initialLL
     oldNormalizedBestLL = bestLL * 2 * sampleSize / np.sum(A)
 
-    if verbose:
-        print(f"Initial log-likelihood: {bestLL:.4f}")
-        print(f"Initial normalized log-likelihood: {oldNormalizedBestLL:.4f}")
+    # if verbose:
+    #    print(f"Initial log-likelihood: {bestLL:.4f}")
+    #    print(f"Initial normalized log-likelihood: {oldNormalizedBestLL:.4f}")
 
     bestLabelVec = initialLabelVec
     bestCount = 0
@@ -121,8 +121,8 @@ def graphest_fastgreedy(
                 bestLabelVec == k - 1
             )[0]
 
-        bestACounts = getSampleCounts(A, bestClusterInds)
-        bestLL = fastNormalizedBMLogLik(
+        bestACounts = _getSampleCounts(A, bestClusterInds)
+        bestLL = _fastNormalizedBMLogLik(
             upper_triangle_values(bestACounts) / upper_triangle_values(habSqrd),
             upper_triangle_values(habSqrd).ravel(),
             sampleSize,
@@ -229,10 +229,10 @@ def graphest_fastgreedy(
                     )
 
                     # For this to work, we will have had to subtract out terms prior to updating
-                    deltaNegEnt = delta_neg(
+                    deltaNegEnt = _delta_neg(
                         habSqrdCola, thetaCola, habSqrdColb, thetaColb, habSqrdEntryab, thetaEntryab
                     )
-                    oldDeltaNegEnt = delta_neg(
+                    oldDeltaNegEnt = _delta_neg(
                         habSqrdCola,
                         oldThetaCola,
                         habSqrdColb,
@@ -244,7 +244,6 @@ def graphest_fastgreedy(
                     # Update the log-likelihood - O(k)
                     trialLL = trialLL + (deltaNegEnt - oldDeltaNegEnt) / sampleSize
 
-            assert trialLL <= 0, "likelihood should always be negative"
             # Metropolis or greedy step; if trial clustering accepted, then update current <- trial
             if trialLL > currentLL:
                 currentLabelVec = trialLabelVec
@@ -280,26 +279,26 @@ def graphest_fastgreedy(
             oldNormalizedBestLL = normalizedBestLL
             # if 3 consecutive likelihood improvements less than specified tolerance break
             if tolCounter >= 3:
-                if verbose:
-                    print(
-                        "3 consecutive likelihood improvements less than specified tolerance; quitting now"
-                    )
+                # if verbose:
+                #    print(
+                #        "3 consecutive likelihood improvements less than specified tolerance; quitting now"
+                #   )
                 break
             if allInds:
                 # local optimum likely reached in random-ordered greedy like likelihood search
                 if conseczeroImprovement == 2:
-                    if verbose:
-                        print(
-                            "Local optimum likely reached in random-ordered greedy likelihood search; quitting now"
-                        )
+                    # if verbose:
+                    #    print(
+                    #        "Local optimum likely reached in random-ordered greedy likelihood search; quitting now"
+                    #    )
                     break
             else:
                 # Local optimum likely reached in random ordere greedy like likelihood search
                 if conseczeroImprovement == np.ceil(k * scipy.special.binom(n, 2) / numGreedySteps):
-                    if verbose:
-                        print(
-                            "Local optimum likely reached in random-ordered greedy likelihood search; quitting now"
-                        )
+                    # if verbose:
+                    #    print(
+                    #        "Local optimum likely reached in random-ordered greedy likelihood search; quitting now"
+                    #    )
                     break
     if verbose:
         pbar.close()
@@ -323,14 +322,14 @@ def set_num_greedy_steps(n) -> Tuple[int, bool]:
         allInds = True
     else:
         # Only a random subset of pairs will be visited on each iteration
-        numGreedySteps = 2 * 10**4
+        numGreedySteps = 2 * 10 ** 4
         allInds = False
     return numGreedySteps, allInds
 
 
 # works
 @njit
-def delta_neg(habSqrdCola, thetaCola, habSqrdColb, thetaColb, habSqrdEntryab, thetaEntryab):
+def _delta_neg(habSqrdCola, thetaCola, habSqrdColb, thetaColb, habSqrdEntryab, thetaEntryab):
     return np.sum(
         habSqrdCola * (thetaCola * np.log(thetaCola) + (1 - thetaCola) * np.log(1 - thetaCola))
         + habSqrdColb * (thetaColb * np.log(thetaColb) + (1 - thetaColb) * np.log(1 - thetaColb))
@@ -340,7 +339,7 @@ def delta_neg(habSqrdCola, thetaCola, habSqrdColb, thetaColb, habSqrdEntryab, th
 
 
 # works
-def getSampleCounts(X, clusterInds):
+def _getSampleCounts(X, clusterInds):
 
     numClusters = clusterInds.shape[0]
     Xsums = np.zeros((numClusters, numClusters), dtype=int)
@@ -358,7 +357,7 @@ def getSampleCounts(X, clusterInds):
 
 
 # works
-def fastNormalizedBMLogLik(thetaVec: np.ndarray, habSqrdVec: np.ndarray, sampleSize: int) -> float:
+def _fastNormalizedBMLogLik(thetaVec: np.ndarray, habSqrdVec: np.ndarray, sampleSize: int) -> float:
     thetaVec = bound_away_from_one_and_zero_arrays([thetaVec.astype(float)])[0]
     negEntVec = thetaVec * np.log(thetaVec) + (1 - thetaVec) * np.log(1 - thetaVec)
     normLogLik = np.sum(habSqrdVec * negEntVec) / sampleSize

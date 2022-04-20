@@ -20,4 +20,3 @@ class TestVersion(unittest.TestCase):
         """
         version = get_version()
         self.assertIsInstance(version, str)
-
