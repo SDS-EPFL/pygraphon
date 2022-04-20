@@ -3,9 +3,21 @@ from typing import Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.pyplot import Axes, Figure
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from pygraphon.graphons.GraphonFunction import Graphon
 from pygraphon.graphons.StepGraphon import StepGraphon
+from mpl_toolkits import axes_grid1
+
+def add_colorbar(im, aspect=20, pad_fraction=0.5, **kwargs):
+    """Add a vertical color bar to an image plot."""
+    divider = axes_grid1.make_axes_locatable(im.axes)
+    width = axes_grid1.axes_size.AxesY(im.axes, aspect=1./aspect)
+    pad = axes_grid1.axes_size.Fraction(pad_fraction, width)
+    current_ax = plt.gca()
+    cax = divider.append_axes("right", size=width, pad=pad)
+    plt.sca(current_ax)
+    return im.axes.figure.colorbar(im, cax=cax, **kwargs)
 
 
 def plot_graphon_function(
@@ -29,6 +41,7 @@ def plot_sample(
     colorbar=False,
     integrate_to_1: bool = False,
 ) ->  Tuple[Figure, Axes]:
+    
     x1, x2 = np.linspace(0, 1, resolution, endpoint=False), np.linspace(
         0, 1, resolution, endpoint=False
     )
@@ -41,7 +54,7 @@ def plot_sample(
 
     im = ax.imshow(result, cmap="binary", vmin=0, vmax=1)
     if colorbar:
-        fig.colorbar(im, ax=ax)
+        add_colorbar(im, ax=ax)
     _make_pretty(ax)
     return fig, ax
 

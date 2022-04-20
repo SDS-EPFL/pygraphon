@@ -51,6 +51,7 @@ class HistogramEstimator(BaseEstimator):
         adjacencyMatrix: np.ndarray,
         bandwidthHist: float = None,
         use_default_bandwidth: bool = False,
+        return_membership: bool = False,
     ) -> Tuple[np.ndarray]:
         """Use function from Universality of block model approximation [1] to approximate a graphon
         from a single adjacency matrix.
@@ -93,7 +94,10 @@ class HistogramEstimator(BaseEstimator):
                     int(groupmembership[i]), int(groupmembership[j])
                 ]
                 edge_probability_matrix[j, i] = edge_probability_matrix[i, j]
-        return graphon_matrix, edge_probability_matrix, bandwidthHist
+        if return_membership:
+            return graphon_matrix, edge_probability_matrix, bandwidthHist, groupmembership
+        else:
+            return graphon_matrix, edge_probability_matrix, bandwidthHist
 
     @staticmethod
     def _approximate_from_node_membership(
