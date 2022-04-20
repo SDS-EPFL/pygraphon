@@ -28,12 +28,12 @@ class StepGraphon(GraphonAbstract):
         self.graphon = graphon
         self.bandwidthHist = bandwidthHist
 
-        self.areas = np.ones_like(self.graphon) * self.bandwidthHist ** 2
+        self.areas = np.ones_like(self.graphon) * self.bandwidthHist**2
         self.remainder = 1 - int(1 / self.bandwidthHist) * self.bandwidthHist
         if self.remainder != 0:
             self.areas[:, -1] = self.bandwidthHist * self.remainder
             self.areas[-1, :] = self.bandwidthHist * self.remainder
-            self.areas[-1, -1] = self.remainder ** 2
+            self.areas[-1, -1] = self.remainder**2
 
         super().__init__(initial_rho=initial_rho)
 

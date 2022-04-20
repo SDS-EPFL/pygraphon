@@ -17,12 +17,12 @@ def distance_StepGraphon(
         graphon2 (StepGraphon): second stepgraphon to compare
         norm (str, optional): in ["MAE","MISE"]. Defaults to "MISE".
         exchangeable (bool, optional): if sets to true, the norm will try all possible permutations of the blocks to
-        find the lowest distance.
+            find the lowest distance.
         Otherwise assume correspondance between the blocks of the first and second graphon. Defaults to True.
 
     Raises:
         NotImplementedError: if the two graphons are not of the same size (different number of blocks or heteogeneous
-        size of blocks)
+            size of blocks)
         ValueError: if norm not in MAE or MISE
 
     Returns:
