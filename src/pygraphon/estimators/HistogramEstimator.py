@@ -17,20 +17,14 @@ class HistogramEstimator(BaseEstimator):
 
     Args:
         bandwithHist (float, optional): size of the block of the histogram. If None, automatically derived
-        from the observation. Defaults to None.
+            from the observation. Defaults to None.
 
 
-     Sources:
-            [1]: 2013 Sofia C. Olhede and Patrick J. Wolfe (arXiv:1312.5306)
+    Sources:
+        [1]: 2013 Sofia C. Olhede and Patrick J. Wolfe (arXiv:1312.5306)
     """
 
     def __init__(self, bandwithHist: float = None) -> None:
-        """Initialize the histogram estimator.
-
-        Args:
-        bandwithHist (float, optional): size of the block of the histogram. If None, automatically derived
-        from the observation. Defaults to None.
-        """
 
         super().__init__()
         self.bandwidthHist = bandwithHist

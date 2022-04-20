@@ -1,4 +1,4 @@
-from abc import ABC, abstractclassmethod
+from abc import abstractclassmethod
 
 import networkx as nx
 import numpy as np
@@ -7,11 +7,10 @@ from pygraphon.graphons.GraphonAbstract import GraphonAbstract
 from pygraphon.utils.utils_graph import get_adjacency_matrix_from_graph
 
 
-class BaseEstimator(ABC):
+class BaseEstimator:
     """Base class for Graphon estimator."""
 
     def __init__(self) -> None:
-        """Initialize base estimator."""
 
         super().__init__()
 

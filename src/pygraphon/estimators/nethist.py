@@ -21,24 +21,26 @@ def _oracle_analysis_badnwidth(A: np.ndarray, type: str = "degs", alpha: float =
 def oracbwplugin(
     A: np.ndarray, c: float, type: str = "degs", alpha: float = 1
 ) -> Tuple[float, float]:
-    """Oracle bandwidth plug-in estimtor for network histograms
-    h = oracbwplugin(A,c,type,alpha) returns a plug-in estimate
+    """Oracle bandwidth plug-in estimtor for network histograms.
+
+    The call h = oracbwplugin(A,c,type,alpha) returns a plug-in estimate
     of the optimal histogram bandwidth (blockmodel community size) as a
     function of the following inputs
 
-     Args:
-         A (np.ndarray): Adjacency matrix (must be a simple graph)
-         c (float): positive multiplier by which to estimate slope 1/- sqrt(n)
-         type (str, optional): Estimate slope from sorted vector ('degs' or 'eigs'). Defaults to "degs".
-         alpha (float, optional): Holder exponent. Defaults to 1.
+    Args:
+        A (np.ndarray): Adjacency matrix (must be a simple graph)
+        c (float): positive multiplier by which to estimate slope 1/- sqrt(n)
+        type (str, optional): Estimate slope from sorted vector ('degs' or 'eigs'). Defaults to "degs".
+        alpha (float, optional): Holder exponent. Defaults to 1.
 
-     Returns:
-         float: h
+    Returns:
+        optimal histogram bandwidth, estimated mean squared error
 
 
      Examples:
-         >> h = oracbwplugin(A,3,'eigs',1); # returns h = 73.5910
-         >> h = oracbwplugin(A,3,'degs',1); # returns h = 74.1031
+        >> h, _ = oracbwplugin(A,3,'eigs',1); # returns h = 73.5910
+
+        >> h, _ = oracbwplugin(A,3,'degs',1); # returns h = 74.1031
     """
 
     # input checks
@@ -88,17 +90,17 @@ def oracbwplugin(
         h = (
             2 ** (alpha + 1)
             * alpha
-            * mult**2
+            * mult ** 2
             * (p[0] + p[1] * len(uMid) / 2) ** 2
             * p[1] ** 2
             * pseudo_inverse_rho_hat
         ) ** (-1 / (2 * (alpha + 1)))
         estMSqrd = (
             2
-            * mult**2
+            * mult ** 2
             * (p[0] + p[1] * len(uMid) / 2) ** 2
             * p[1] ** 2
-            * pseudo_inverse_rho_hat**2
+            * pseudo_inverse_rho_hat ** 2
             * (n + 1) ** 2
         )
     # MISEfhatBnd = estMSqrd * ((2 / np.sqrt(estMSqrd)) * (sampleSize * rhoHat) ** (-1 / 2) + 1 / n)
@@ -116,11 +118,11 @@ def first_guess_blocks(A: np.ndarray, h: int, regParam: float) -> np.ndarray:
     else:
         A_inter = A + regParam * np.ones_like(A) * regParam
         distVec = pairwise_distances(A_inter, A_inter, metric="manhattan") / n
-    L = np.ones_like(distVec) - distVec**2
+    L = np.ones_like(distVec) - distVec ** 2
     d = np.sum(L, axis=1)
     d = d[:, np.newaxis]
-    L_inter = np.outer(d**-0.5, d**-0.5) * L - np.outer(np.sqrt(d), np.sqrt(d)) / np.sqrt(
-        np.sum(d**2)
+    L_inter = np.outer(d ** -0.5, d ** -0.5) * L - np.outer(np.sqrt(d), np.sqrt(d)) / np.sqrt(
+        np.sum(d ** 2)
     )
     _, u = scipy.sparse.linalg.eigs(L_inter, k=1, which="LR")
     u = u.real.ravel()
