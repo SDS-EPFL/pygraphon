@@ -28,6 +28,22 @@ pygraphon.estimators.MomentEstimator module
    :undoc-members:
    :show-inheritance:
 
+pygraphon.estimators.graphest\_fastgreedy module
+------------------------------------------------
+
+.. automodule:: pygraphon.estimators.graphest_fastgreedy
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pygraphon.estimators.nethist module
+-----------------------------------
+
+.. automodule:: pygraphon.estimators.nethist
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

@@ -4,6 +4,14 @@ pygraphon.utils package
 Submodules
 ----------
 
+pygraphon.utils.utils\_func module
+----------------------------------
+
+.. automodule:: pygraphon.utils.utils_func
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 pygraphon.utils.utils\_graph module
 -----------------------------------
 

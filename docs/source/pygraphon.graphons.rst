@@ -4,10 +4,18 @@ pygraphon.graphons package
 Submodules
 ----------
 
-pygraphon.graphons.Graphon module
----------------------------------
+pygraphon.graphons.GraphonAbstract module
+-----------------------------------------
 
 .. automodule:: pygraphon.graphons.GraphonAbstract
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pygraphon.graphons.GraphonFunction module
+-----------------------------------------
+
+.. automodule:: pygraphon.graphons.GraphonFunction
    :members:
    :undoc-members:
    :show-inheritance:
