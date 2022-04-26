@@ -93,7 +93,8 @@ class GraphonAbstract(ABC):
         probs = self._get_edge_probabilities(n, exchangeable=exchangeable, wholeMatrix=False)
         return self._generate_adjacency_matrix(n, probs, rho)
 
-    def _generate_adjacency_matrix(self, n, probs, rho):
+    @staticmethod
+    def _generate_adjacency_matrix(n, probs, rho):
         """
         Generate adjacency matrix A_ij = 1 with probability rho*probs_ij
 
