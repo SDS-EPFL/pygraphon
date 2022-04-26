@@ -72,7 +72,8 @@ class SimpleMomentEstimator(BaseEstimator):
         graphon = self.correct_fitted_values(graphon, type="abs")
         return StepGraphon(graphon, 1 / self.numberBlocks, initial_rho=rho)
 
-    def correct_fitted_values(self, graphon, type="abs") -> np.ndarray:
+    @staticmethod
+    def correct_fitted_values(graphon, type="abs") -> np.ndarray:
         """Project the method of moment into the graphon space.
 
         Args:
@@ -94,8 +95,9 @@ class SimpleMomentEstimator(BaseEstimator):
         else:
             raise ValueError("type should be either abs or clip")
 
+    @staticmethod
     def _cycle_moments_theoretical(
-        self, L: int, theta: np.ndarray, areas: np.ndarray = None
+        L: int, theta: np.ndarray, areas: np.ndarray = None
     ) -> float:
         """Return the theoretical values of homomorphism densities of cycle of length L given a block model
             represented by a connection matrix theta and sizes of the blocks areas.
@@ -140,8 +142,9 @@ class SimpleMomentEstimator(BaseEstimator):
 
         return result
 
+    @staticmethod
     def _edge_density_moment_theoretical(
-        self, theta: np.ndarray, areas: np.ndarray = None
+        theta: np.ndarray, areas: np.ndarray = None
     ) -> float:
         """Return the theoretical values of homomorphism densities of edge density given a block model
 
@@ -174,8 +177,9 @@ class SimpleMomentEstimator(BaseEstimator):
             result += theta[i][j]
         return result / K ** 2
 
+    @staticmethod
     def _cherry_density_moment_theoretical(
-        self, theta: np.ndarray, areas: np.ndarray = None
+        theta: np.ndarray, areas: np.ndarray = None
     ) -> float:
         """Return the theoretical values of homomorphism densities of cherry density given a block model
 
@@ -250,7 +254,8 @@ class SimpleMomentEstimator(BaseEstimator):
 
         return func
 
-    def _add_constraints_on_SBM(self, x, K) -> np.ndarray:
+    @staticmethod
+    def _add_constraints_on_SBM(x, K) -> np.ndarray:
         """Return a structured array with the constraints on the SBM parameters.
 
         Args:
