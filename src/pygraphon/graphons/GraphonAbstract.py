@@ -168,8 +168,7 @@ class GraphonAbstract(ABC):
             P[np.triu_indices(n, 1)] = probs
             P[np.tril_indices(n, -1)] = P.T[np.tril_indices(n, -1)]
             return P
-        else:
-            return probs
+        return probs
 
     def __add__(self, other):
         """

@@ -90,8 +90,7 @@ class HistogramEstimator(BaseEstimator):
                 edge_probability_matrix[j, i] = edge_probability_matrix[i, j]
         if return_membership:
             return graphon_matrix, edge_probability_matrix, bandwidthHist, groupmembership
-        else:
-            return graphon_matrix, edge_probability_matrix, bandwidthHist
+        return graphon_matrix, edge_probability_matrix, bandwidthHist
 
     @staticmethod
     def _approximate_from_node_membership(

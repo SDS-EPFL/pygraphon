@@ -304,8 +304,7 @@ def graphest_fastgreedy(
         pbar.close()
     if trace:
         return bestLabelVec, k, (lls_trace, normalized_best_ll_trace)
-    else:
-        return bestLabelVec, k
+    return bestLabelVec, k
 
 
 def set_num_greedy_steps(n) -> Tuple[int, bool]:
