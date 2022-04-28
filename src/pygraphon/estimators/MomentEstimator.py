@@ -90,10 +90,9 @@ class SimpleMomentEstimator(BaseEstimator):
 
         if type == "abs":
             return np.abs(graphon)
-        elif type == "clip":
+        if type == "clip":
             return np.clip(graphon, min=0)
-        else:
-            raise ValueError("type should be either abs or clip")
+        raise ValueError("type should be either abs or clip")
 
     @staticmethod
     def _cycle_moments_theoretical(
