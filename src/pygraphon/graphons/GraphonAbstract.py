@@ -39,7 +39,6 @@ class GraphonAbstract(ABC):
         """
         Build the graphon function f(x,y)
         """
-        pass
 
     def check_graphon(self):
         """
@@ -49,7 +48,6 @@ class GraphonAbstract(ABC):
         Raises:
             ValueError: if graphon does not integrate to 1 it it cannot be automatically scaled
         """
-        pass
 
     def check_graphon_integral(self) -> bool:
         """Check if the graphon integrates to 1.
@@ -77,7 +75,6 @@ class GraphonAbstract(ABC):
         Returns:
             float: integral of the graphon function
         """
-        pass
 
     def draw(self, rho: float, n: int, exchangeable: bool = True) -> np.ndarray:
         """Draw a graph from the graphon with a given density and number of vertices.

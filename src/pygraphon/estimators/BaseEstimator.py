@@ -34,4 +34,3 @@ class BaseEstimator:
         self, adjacency_matrix: np.ndarray, *args, **kwargs
     ) -> GraphonAbstract:
         """Estimate the graphon function f(x,y) from an adjacency matrix"""
-        pass
