@@ -37,9 +37,7 @@ class StepGraphon(GraphonAbstract):
         super().__init__(initial_rho=initial_rho)
 
     def graphon_function_builder(self) -> Callable:
-        """
-        Build the graphon function f(x,y)
-        """
+        """Build the graphon function f(x,y)"""
 
         def function(
             x: float,

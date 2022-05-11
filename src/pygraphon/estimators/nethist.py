@@ -107,9 +107,7 @@ def oracbwplugin(
 
 
 def first_guess_blocks(A: np.ndarray, h: int, regParam: float) -> np.ndarray:
-    """
-    This function is used to compute the first guess of the block labels.
-    """
+    """This function is used to compute the first guess of the block labels."""
     n = A.shape[0]
 
     if regParam == 0:
