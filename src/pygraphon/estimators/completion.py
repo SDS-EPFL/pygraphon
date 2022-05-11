@@ -8,12 +8,12 @@ class Completion(BaseEstimator):
         self,
         rank: int = None,
         tol: float = 1e-3,
-        iter: int = 20,
+        iternumber: int = 20,
         progress: bool = False,
         adjust: bool = True,
     ) -> None:
         self.rank = rank
         self.tol = tol
-        self.iter = iter
+        self.iternumber = iternumber
         self.progress = progress
         self.adjust = adjust

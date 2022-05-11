@@ -71,25 +71,25 @@ class SimpleMomentEstimator(BaseEstimator):
         return StepGraphon(graphon, 1 / self.numberBlocks, initial_rho=rho)
 
     @staticmethod
-    def correct_fitted_values(graphon, type="abs") -> np.ndarray:
+    def correct_fitted_values(graphon, type_="abs") -> np.ndarray:
         """Project the method of moment into the graphon space.
 
         Args:
             graphon ([np.ndarray]): estimated graphon
-            type (str, optional): method of projection. Either absolute value ("abs") or clipping ("clip").
+            type_ (str, optional): method of projection. Either absolute value ("abs") or clipping ("clip").
             Defaults to "abs".
 
         Raises:
-            ValueError: if type is not in ["abs", "clip"]
+            ValueError: if type_ is not in ["abs", "clip"]
 
         Returns:
             np.ndarray: projected graphon
         """
-        if type == "abs":
+        if type_ == "abs":
             return np.abs(graphon)
-        if type == "clip":
+        if type_ == "clip":
             return np.clip(graphon, min=0)
-        raise ValueError("type should be either abs or clip")
+        raise ValueError("type_ should be either abs or clip")
 
     @staticmethod
     def _cycle_moments_theoretical(L: int, theta: np.ndarray, areas: np.ndarray = None) -> float:
