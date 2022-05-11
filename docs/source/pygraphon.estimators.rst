@@ -12,6 +12,14 @@ pygraphon.estimators.BaseEstimator module
    :undoc-members:
    :show-inheritance:
 
+pygraphon.estimators.EmpiricalDegrees module
+--------------------------------------------
+
+.. automodule:: pygraphon.estimators.EmpiricalDegrees
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 pygraphon.estimators.HistogramEstimator module
 ----------------------------------------------
 
@@ -28,6 +36,22 @@ pygraphon.estimators.MomentEstimator module
    :undoc-members:
    :show-inheritance:
 
+pygraphon.estimators.UniversalSingularValueDecomposition module
+---------------------------------------------------------------
+
+.. automodule:: pygraphon.estimators.UniversalSingularValueDecomposition
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pygraphon.estimators.completion module
+--------------------------------------
+
+.. automodule:: pygraphon.estimators.completion
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 pygraphon.estimators.graphest\_fastgreedy module
 ------------------------------------------------
 
@@ -36,10 +60,26 @@ pygraphon.estimators.graphest\_fastgreedy module
    :undoc-members:
    :show-inheritance:
 
+pygraphon.estimators.nbdsmooth module
+-------------------------------------
+
+.. automodule:: pygraphon.estimators.nbdsmooth
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 pygraphon.estimators.nethist module
 -----------------------------------
 
 .. automodule:: pygraphon.estimators.nethist
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pygraphon.estimators.sba module
+-------------------------------
+
+.. automodule:: pygraphon.estimators.sba
    :members:
    :undoc-members:
    :show-inheritance:
