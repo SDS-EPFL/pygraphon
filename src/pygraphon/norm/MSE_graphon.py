@@ -28,7 +28,6 @@ def distance_StepGraphon(
     Returns:
         distance between the two graphons
     """
-
     # get the data we need
     graphon1_matrix = graphon1.graphon
     graphon2_matrix = graphon2.graphon

@@ -40,7 +40,6 @@ def check_simple_adjacency_matrix(adjacency_matrix: np.ndarray) -> None:
     Raises:
         ValueError: if self loops, non-binary or non-symmetric
     """
-
     if np.sum(np.diag(adjacency_matrix)) != 0:
         raise ValueError("Adjacency matrix should not contain self-loops")
     if not check_symmetric(adjacency_matrix):

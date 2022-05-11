@@ -27,7 +27,6 @@ class SimpleMomentEstimator(BaseEstimator):
         Args:
             blocks (Union[int, Iterable[float]]): number of blocks or size of blocks
         """
-
         super().__init__()
 
         if type(blocks) in [int, float]:
@@ -58,7 +57,6 @@ class SimpleMomentEstimator(BaseEstimator):
         self, adjacency_matrix: np.ndarray, *args, **kwargs
     ) -> StepGraphon:
         """Estimate the graphon function f(x,y) from an adjacency matrix by solving moment equations."""
-
         # compute densities from observed graphs
         cycles = self._count_cycles(adjacency_matrix)
         rho = edge_density(adjacency_matrix)
@@ -87,7 +85,6 @@ class SimpleMomentEstimator(BaseEstimator):
         Returns:
             np.ndarray: projected graphon
         """
-
         if type == "abs":
             return np.abs(graphon)
         if type == "clip":
@@ -111,7 +108,6 @@ class SimpleMomentEstimator(BaseEstimator):
         Returns:
             float: t(C_L,W)
         """
-
         if not check_symmetric(theta):
             raise ValueError("connection matrix theta should be symmetric")
 
@@ -154,7 +150,6 @@ class SimpleMomentEstimator(BaseEstimator):
         Returns:
             float: theoretical edge density of the SBM represented by theta
         """
-
         if not check_symmetric(theta):
             raise ValueError("connection matrix theta should be symmetric")
 
@@ -189,7 +184,6 @@ class SimpleMomentEstimator(BaseEstimator):
         Returns:
             float: theoretical cherry density of the SBM represented by theta
         """
-
         if not check_symmetric(theta):
             raise ValueError("connection matrix theta should be symmetric")
 
@@ -231,7 +225,6 @@ class SimpleMomentEstimator(BaseEstimator):
         Returns:
             Callable: system of equation to solve to pass to scipy.optimize
         """
-
         K = self.numberBlocks
 
         def func(x):
@@ -264,7 +257,6 @@ class SimpleMomentEstimator(BaseEstimator):
         Returns:
             [np.ndarray]: constrained matrix of connectivity of the SBM
         """
-
         return x[-1] * np.ones((K, K)) + (x[0:-1] - x[-1]) * np.eye(K)
 
     def _count_cycles(self, instance: np.ndarray) -> List[float]:
@@ -277,7 +269,6 @@ class SimpleMomentEstimator(BaseEstimator):
         Returns:
             List[float]: homomorphism densities of cycle in instance
         """
-
         return self.counter(instance)
 
 

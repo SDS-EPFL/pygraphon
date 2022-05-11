@@ -28,7 +28,6 @@ class CycleCount:
         Returns:
             np.ndarray : counts of cycle of length 3 to  L
         """
-
         check_simple_adjacency_matrix(adjacency_matrix)
         self.adjacency_matrix = adjacency_matrix
         return self.network_profile(adjacency_matrix, kmax=self.L)

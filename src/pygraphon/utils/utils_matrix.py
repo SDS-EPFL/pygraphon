@@ -8,7 +8,6 @@ EPS = np.spacing(1)
 
 def rearangeMatrix(A, indices):
     """Rearange a matrix according to a permutation."""
-
     return A[indices][:, indices]
 
 
