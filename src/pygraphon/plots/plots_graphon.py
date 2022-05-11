@@ -42,7 +42,6 @@ def plot_sample(
     integrate_to_1: bool = False,
 ) -> Tuple[Figure, Axes]:
     """Plot the graphon."""
-
     x1, x2 = np.linspace(0, 1, resolution, endpoint=False), np.linspace(
         0, 1, resolution, endpoint=False
     )
@@ -74,7 +73,6 @@ def plot(
     Returns:
         Tuple[Figure, Axes]: figure and axis of the plot.
     """
-
     if ax is None:
         fig, ax = plt.subplots(1, 1, figsize=figsize)
     sc = ax.imshow(graphon.graphon, cmap=plt.cm.get_cmap("jet"), aspect="auto")

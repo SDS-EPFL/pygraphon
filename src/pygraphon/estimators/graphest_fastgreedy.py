@@ -28,7 +28,6 @@ def graphest_fastgreedy(
     Returns:
         np.ndarray: cluster labels.
     """
-
     n = A.shape[0]
     numGreedySteps, allInds = set_num_greedy_steps(n)
 

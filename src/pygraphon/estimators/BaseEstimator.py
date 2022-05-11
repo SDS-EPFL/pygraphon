@@ -19,7 +19,6 @@ class BaseEstimator:
             graph (nx.Graph, optional): networkx simple graph. Defaults to None.
             adjacency_matrix (np.ndarray, optional): adjancency matrix representing the graph. Defaults to None.
         """
-
         if graph is None and adjacency_matrix is None:
             raise ValueError("graph or adjacency_matrix must be provided")
         if graph is not None and adjacency_matrix is not None:

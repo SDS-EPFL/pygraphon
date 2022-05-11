@@ -144,7 +144,6 @@ class GraphonAbstract(ABC):
         Returns:
             np.ndarray: matrix of edge probabilities (nxn) if wholeMatrix (n*(n-1)/2) if not wholeMatrix
         """
-
         latentVarArray = (
             np.random.uniform(0, 1, size=n) if exchangeable else np.array([i / n for i in range(n)])
         )

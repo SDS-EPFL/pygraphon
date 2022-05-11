@@ -23,7 +23,6 @@ class StepGraphon(GraphonAbstract):
             graphon (np.ndarray): [description]. Defaults to None.
             bandwidthHist (float, optional): [description]. Defaults to None.
         """
-
         # save args
         self.graphon = graphon
         self.bandwidthHist = bandwidthHist

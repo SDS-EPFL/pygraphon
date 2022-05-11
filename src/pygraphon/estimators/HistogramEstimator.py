@@ -33,7 +33,6 @@ class HistogramEstimator(BaseEstimator):
         self, adjacency_matrix: np.ndarray, bandwidthHist=None, *args, **kwargs
     ) -> StepGraphon:
         """Estimate the graphon function f(x,y) from an adjacency matrix"""
-
         rho = edge_density(adjacency_matrix)
         if bandwidthHist is None:
             bandwidthHist = self.bandwidthHist
@@ -64,7 +63,6 @@ class HistogramEstimator(BaseEstimator):
         Sources:
             [1]: 2013 Sofia C. Olhede and Patrick J. Wolfe (arXiv:1312.5306)
         """
-
         # network histogram approximation
         if bandwidthHist is None and use_default_bandwidth:
             bandwidthHist = self.bandwidthHist

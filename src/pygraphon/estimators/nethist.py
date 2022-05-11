@@ -42,7 +42,6 @@ def oracbwplugin(
 
         >> h, _ = oracbwplugin(A,3,'degs',1); # returns h = 74.1031
     """
-
     # input checks
     if c <= 0:
         raise ValueError("c must be positive")
