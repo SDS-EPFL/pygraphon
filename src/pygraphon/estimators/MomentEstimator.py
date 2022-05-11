@@ -67,7 +67,7 @@ class SimpleMomentEstimator(BaseEstimator):
         )
         # structure the parameters into a graphon
         graphon = self._add_constraints_on_SBM(root, self.numberBlocks)
-        graphon = self.correct_fitted_values(graphon, type="abs")
+        graphon = self.correct_fitted_values(graphon, type_="abs")
         return StepGraphon(graphon, 1 / self.numberBlocks, initial_rho=rho)
 
     @staticmethod
