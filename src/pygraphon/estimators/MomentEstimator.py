@@ -67,29 +67,29 @@ class SimpleMomentEstimator(BaseEstimator):
         )
         # structure the parameters into a graphon
         graphon = self._add_constraints_on_SBM(root, self.numberBlocks)
-        graphon = self.correct_fitted_values(graphon, type_="abs")
+        graphon = self.correct_fitted_values(graphon, kind="abs")
         return StepGraphon(graphon, 1 / self.numberBlocks, initial_rho=rho)
 
     @staticmethod
-    def correct_fitted_values(graphon, type_="abs") -> np.ndarray:
+    def correct_fitted_values(graphon, kind="abs") -> np.ndarray:
         """Project the method of moment into the graphon space.
 
         Args:
             graphon ([np.ndarray]): estimated graphon
-            type_ (str, optional): method of projection. Either absolute value ("abs") or clipping ("clip").
+            kind (str, optional): method of projection. Either absolute value ("abs") or clipping ("clip").
             Defaults to "abs".
 
         Raises:
-            ValueError: if type_ is not in ["abs", "clip"]
+            ValueError: if kind is not in ["abs", "clip"]
 
         Returns:
             np.ndarray: projected graphon
         """
-        if type_ == "abs":
+        if kind == "abs":
             return np.abs(graphon)
-        if type_ == "clip":
+        if kind == "clip":
             return np.clip(graphon, min=0)
-        raise ValueError("type_ should be either abs or clip")
+        raise ValueError("kind should be either abs or clip")
 
     @staticmethod
     def _cycle_moments_theoretical(L: int, theta: np.ndarray, areas: np.ndarray = None) -> float:
@@ -165,7 +165,7 @@ class SimpleMomentEstimator(BaseEstimator):
         result = 0
         for i, j in list(product(range(K), repeat=2)):
             result += theta[i][j]
-        return result / K ** 2
+        return result / K**2
 
     @staticmethod
     def _cherry_density_moment_theoretical(theta: np.ndarray, areas: np.ndarray = None) -> float:
