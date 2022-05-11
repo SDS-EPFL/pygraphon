@@ -92,9 +92,7 @@ class SimpleMomentEstimator(BaseEstimator):
         raise ValueError("type should be either abs or clip")
 
     @staticmethod
-    def _cycle_moments_theoretical(
-        L: int, theta: np.ndarray, areas: np.ndarray = None
-    ) -> float:
+    def _cycle_moments_theoretical(L: int, theta: np.ndarray, areas: np.ndarray = None) -> float:
         """Return the theoretical values of homomorphism densities of cycle of length L given a block model
             represented by a connection matrix theta and sizes of the blocks areas.
 
@@ -138,9 +136,7 @@ class SimpleMomentEstimator(BaseEstimator):
         return result
 
     @staticmethod
-    def _edge_density_moment_theoretical(
-        theta: np.ndarray, areas: np.ndarray = None
-    ) -> float:
+    def _edge_density_moment_theoretical(theta: np.ndarray, areas: np.ndarray = None) -> float:
         """Return the theoretical values of homomorphism densities of edge density given a block model
 
         Args:
@@ -172,9 +168,7 @@ class SimpleMomentEstimator(BaseEstimator):
         return result / K ** 2
 
     @staticmethod
-    def _cherry_density_moment_theoretical(
-        theta: np.ndarray, areas: np.ndarray = None
-    ) -> float:
+    def _cherry_density_moment_theoretical(theta: np.ndarray, areas: np.ndarray = None) -> float:
         """Return the theoretical values of homomorphism densities of cherry density given a block model
 
         Args:
