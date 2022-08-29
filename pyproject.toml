@@ -1,7 +1,18 @@
-# See https://setuptools.readthedocs.io/en/latest/build_meta.html
+[tool.poetry]
+name = "pygraphon"
+version = "0.1.0"
+description = "Python library to work with graphons"
+authors = ["dufourc1 <dufourc115@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+[tool.poetry.dev-dependencies]
+
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta:__legacy__"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 line-length = 100
