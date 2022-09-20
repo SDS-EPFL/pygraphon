@@ -12,7 +12,11 @@ class Graphon(GraphonAbstract):
     """Basic Graphon only composed of a single function."""
 
     def __init__(
-        self, function: Callable, scaled=True, check=True, initial_rho: float = None
+        self,
+        function: Callable,
+        initial_rho: float = None,
+        scaled=True,
+        check=True,
     ) -> None:
         """Initialize a graphon defined only by its function f(x,y).
 

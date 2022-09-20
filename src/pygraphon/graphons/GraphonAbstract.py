@@ -1,3 +1,4 @@
+"""Abstract class for graphons."""
 from abc import ABC, abstractclassmethod
 from copy import deepcopy
 from typing import Callable
@@ -7,13 +8,31 @@ import numpy as np
 
 class GraphonAbstract(ABC):
     """Abstract class for Graphon.
+
     All graphons of this class will be scaled graphon, meaning the integral of f(x,y) over [0,1]^2 is 1.
     """
 
-    def __init__(self, initial_rho=None, scaled=True, check=True) -> None:
-        """Constructor for Graphon.
+    def __init__(self, initial_rho: float = None, scaled=True, check=True) -> None:
+        """Initialize a graphon defined only by its function f(x,y).
 
-        Will check that graphon is correctly build.
+        If scaled, will initialize a scaled graphon with integral equal to 1.
+        The initial_rho parameter is used to keep track of the original edge density of the graphon.
+        If additionaly check is true, will check if the graphon integrates to 1 and if not, will try to correct it.
+
+        Parameters
+        ----------
+        initial_rho : float
+            initial edge density, by default None
+        scaled : bool
+            Should the graphon be scaled (integrate to 1), by default True
+        check : bool
+            Should we try to enforce scaled graphon, by default True
+
+
+        Raises
+        ------
+        ValueError
+            If the graphon does not integrate to 1 and cannot be automatically scaled
         """
         super().__init__()
 
@@ -36,13 +55,11 @@ class GraphonAbstract(ABC):
 
     @abstractclassmethod
     def graphon_function_builder(self) -> Callable:
-        """
-        Build the graphon function f(x,y)
-        """
+        """Build the graphon function f(x,y)."""
 
     def check_graphon(self):
-        """
-        Check graphon properties depending on the subclass that iplements it.
+        """Check graphon properties depending on the subclass that iplements it.
+
         Only implemented in subclasses that need to impose certain properties.
 
         Raises:
@@ -52,48 +69,56 @@ class GraphonAbstract(ABC):
     def check_graphon_integral(self) -> bool:
         """Check if the graphon integrates to 1.
 
-        Args:
-            n (int): number of nodes in the graphon
-            exchangeable (bool, optional): if True the graph will be vertex exchangeable. Defaults to True.
-
-        Returns:
-            bool: True if graphon integrates to 1, False otherwise
+        Returns
+        -------
+        bool
+            True if graphon integrates to 1, False otherwise
         """
         return self.integral() == 1
 
     def correct_graphon_integral(self):
-        """
-        Correct the integral of the graphon function f(x,y) to 1
+        """Correct the integral of the graphon function f(x,y) to 1.
+
+        Raises
+        ------
+        NotImplementedError
+            If the graphon has not method to be automatically corrected
         """
         raise NotImplementedError
 
     @abstractclassmethod
     def integral(self):
-        """
-        Return the integral of the graphon function f(x,y) over [0,1]^2
+        """Return the integral of the graphon function f(x,y) over [0,1]^2.
 
-        Returns:
-            float: integral of the graphon function
+        Returns
+        -------
+        float
+            integral of the graphon function
         """
 
     def draw(self, rho: float, n: int, exchangeable: bool = True) -> np.ndarray:
         """Draw a graph from the graphon with a given density and number of vertices.
 
-        Args:
-            rho (float): edge density of the realized graph
-            n (int): number of vertices of the realized graph
-            exchangeable (bool, optional): if True, the graph is exchangeable. Defaults to True.
+        Parameters
+        ----------
+        rho : float
+            edge density of the realized graph
+        n : int
+             number of vertices of the realized graph
+        exchangeable : bool
+            if True, the graph generated is exchangeable. Defaults to True.
 
-        Returns:
-            np.ndarray: adjacency matrix of the realized graph (nxn)
+        Returns
+        -------
+        np.ndarray
+            adjacency matrix of the realized graph (nxn)
         """
         probs = self._get_edge_probabilities(n, exchangeable=exchangeable, wholeMatrix=False)
         return self._generate_adjacency_matrix(n, probs, rho)
 
     @staticmethod
     def _generate_adjacency_matrix(n, probs, rho):
-        """
-        Generate adjacency matrix A_ij = 1 with probability rho*probs_ij
+        """Generate adjacency matrix A_ij = 1 with probability rho*probs_ij.
 
         Parameters
         ----------
@@ -110,6 +135,11 @@ class GraphonAbstract(ABC):
         -------
         np.array
             adjacency matrix ind realisations of Bern(probs) (nxn)
+
+        Raises
+        ------
+        ValueError
+            if  probs and n do not agree on size
         """
         if not isinstance(probs, int):
             if probs.shape[0] != int(n * (n - 1) / 2):
@@ -133,16 +163,22 @@ class GraphonAbstract(ABC):
         exchangeable: bool = True,
         wholeMatrix: bool = True,
     ) -> np.ndarray:
-        """Generate a matrix P_ij with  0 =< i,j <= n-1
+        """Generate a matrix P_ij with  0 =< i,j <= n-1.
 
-        Args:
-            n (int): number of nodes in the edge probability matrix returned
-            exchangeable (bool, optional): if True the graph will be vertex exchangeable. Defaults to True.
-            wholeMatrix (bool, optional): if True return the square symmetric matrix, otherwise return the upper
+        Parameters
+        ----------
+        n : int
+            number of nodes in the edge probability matrix returned
+        exchangeable : bool
+            if True the graph will be vertex exchangeable. Defaults to True.
+        wholeMatrix : bool
+             if True return the square symmetric matrix, otherwise return the upper
             diagonal. Defaults to True.
 
-        Returns:
-            np.ndarray: matrix of edge probabilities (nxn) if wholeMatrix (n*(n-1)/2) if not wholeMatrix
+        Returns
+        -------
+        np.ndarray
+            matrix of edge probabilities (nxn) if wholeMatrix (n*(n-1)/2) if not wholeMatrix
         """
         latentVarArray = (
             np.random.uniform(0, 1, size=n) if exchangeable else np.array([i / n for i in range(n)])
@@ -167,8 +203,19 @@ class GraphonAbstract(ABC):
         return probs
 
     def __add__(self, other):
-        """
-        Overload the + operator to add two graphons
+        """Overload the + operator to add two graphons.
+
+        Parameters
+        ----------
+        other : AbstractGraphon
+            other graphon to add
+
+        Raises
+        ------
+        TypeError
+            if other is not of type AbstractGraphon
+        NotImplementedError
+            if the subclass did not implement it
         """
         if not isinstance(other, GraphonAbstract):
             raise TypeError(f"Can only add two graphons, got {type(other)} instead")
