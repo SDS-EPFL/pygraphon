@@ -10,24 +10,29 @@ from pygraphon.utils.utils_matrix import check_symmetric
 class StepGraphon(GraphonAbstract):
     """A step function graphon, by giving the matrix representing the block model approxumation.
 
-    Args:
-        graphon (np.ndarray): [description]. Defaults to None.
-        bandwidthHist (float, optional): [description]. Defaults to None.
+    Parameters
+    ----------
+        graphon : np.ndarray
+            np array representing the theta matrix
+        bandwidthHist : float
+            size of the groups (between 0 and 1), by default None
+        initial_rho : float
+            initial edge density (used to keep track in case of normalization), by default None
     """
 
     def __init__(
-        self, graphon: np.ndarray, bandwidthHist: float = None, initial_rho: float = None
+        self, graphon: np.ndarray, bandwidthHist: float, initial_rho: float = None
     ) -> None:
         """Create an instance of a step function graphon, by giving the matrix representing the block model approx.
 
         Parameters
         ----------
         graphon : np.ndarray
-            test
+            np array representing the theta matrix
         bandwidthHist : float
-            test, by default None
+            size of the groups (between 0 and 1), by default None
         initial_rho : float
-            test, by default None
+            initial edge density (used to keep track in case of normalization), by default None
         """
         # save args
         self.graphon = graphon
