@@ -1,3 +1,4 @@
+"""Exact permutation distance between block graphons."""
 import numpy as np
 
 from pygraphon.graphons.StepGraphon import StepGraphon
@@ -5,28 +6,42 @@ from pygraphon.utils.utils_maths import generate_all_permutations
 from pygraphon.utils.utils_matrix import permute_matrix
 
 
-def distance_StepGraphon(
+def permutation_distance(
     graphon1: StepGraphon, graphon2: StepGraphon, norm: str = "MISE", exchangeable: bool = True
 ) -> float:
-    """Implement the mean squared error and mean absolute error for stepgraphons of same size (same number of blocks
-    and same areas of blocks)
+    """Exact permutation distance between two graphons.
 
+    Implement the mean squared error and mean absolute error for stepgraphons of same size (same number of blocks
+    and same areas of blocks).
 
-    Args:
-        graphon1 (StepGraphon): first stepgraphon to compare
-        graphon2 (StepGraphon): second stepgraphon to compare
-        norm (str, optional): in ["MAE","MISE"]. Defaults to "MISE".
-        exchangeable (bool, optional): if sets to true, the norm will try all possible permutations of the blocks to
-            find the lowest distance. Otherwise assume correspondance between the blocks of the first and second
-            graphon. Defaults to True.
+    Parameters
+    ----------
+    graphon1 : StepGraphon
+        first stepgraphon to compare
+    graphon2 : StepGraphon
+        second stepgraphon to compare
+    norm : str
+        ["MAE","MISE"]. Defaults to "MISE".
+    exchangeable : bool
+        if sets to true, the norm will try all possible permutations of the blocks to
+        find the lowest distance. Otherwise assume correspondance between the blocks of the first and second
+        graphon. Defaults to True.
 
-    Raises:
-        NotImplementedError: if the two graphons are not of the same size (different number of blocks or heteogeneous
-            size of blocks)
-        ValueError: if norm not in MAE or MISE
+    Returns
+    -------
+    float
+         distance between the two graphons
 
-    Returns:
-        distance between the two graphons
+    Raises
+    ------
+    NotImplementedError
+        different number of blocks
+    NotImplementedError
+       different bandwithHist
+    NotImplementedError
+        if heteregenous block size
+    ValueError
+        if norm not in MAE or MISE
     """
     # get the data we need
     graphon1_matrix = graphon1.graphon

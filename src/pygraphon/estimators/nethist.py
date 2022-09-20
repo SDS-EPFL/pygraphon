@@ -1,3 +1,4 @@
+"""Implementation of network histogram estimator."""
 from typing import List, Optional, Tuple
 
 import numpy as np
@@ -23,21 +24,37 @@ def oracbwplugin(
 ) -> Tuple[float, float]:
     """Oracle bandwidth plug-in estimtor for network histograms.
 
-    The call h = oracbwplugin(A,c,type,alpha) returns a plug-in estimate
+     The call h = oracbwplugin(A,c,type,alpha) returns a plug-in estimate
     of the optimal histogram bandwidth (blockmodel community size) as a
     function of the following inputs
 
-    Args:
-        A (np.ndarray): Adjacency matrix (must be a simple graph)
-        c (float): positive multiplier by which to estimate slope 1/- sqrt(n)
-        type (str, optional): Estimate slope from sorted vector ('degs' or 'eigs'). Defaults to "degs".
-        alpha (float, optional): Holder exponent. Defaults to 1.
+    Parameters
+    ----------
+    A : np.ndarray
+        Adjacency matrix (must be a simple graph)
+    c : float
+        positive multiplier by which to estimate slope 1/- sqrt(n)
+    type : str
+         Estimate slope from sorted vector ('degs' or 'eigs'). Defaults to "degs".
+    alpha : float
+         Holder exponent. Defaults to 1.
 
-    Returns:
+    Returns
+    -------
+    Tuple[float, float]
         optimal histogram bandwidth, estimated mean squared error
 
+    Raises
+    ------
+    ValueError
+        if c is not positive
+    NotImplementedError
+        alpha not 1
+    NotImplementedError
+        type not degs or eigs
 
-     Examples:
+    Examples
+    --------
         >> h, _ = oracbwplugin(A,3,'eigs',1); # returns h = 73.5910
 
         >> h, _ = oracbwplugin(A,3,'degs',1); # returns h = 74.1031
@@ -106,8 +123,23 @@ def oracbwplugin(
     return h, estMSqrd
 
 
-def first_guess_blocks(A: np.ndarray, h: int, regParam: float) -> np.ndarray:
-    """This function is used to compute the first guess of the block labels."""
+def _first_guess_blocks(A: np.ndarray, h: int, regParam: float) -> np.ndarray:
+    """Compute the first guess of the node membership (block labels).
+
+    Parameters
+    ----------
+    A : np.ndarray
+        adjacency matrix
+    h : int
+        number of nodes per block
+    regParam : float
+        regularisation parameter to help decomposing the adjacency matrix
+
+    Returns
+    -------
+    np.ndarray
+        first guess of the node membership (block labels)
+    """
     n = A.shape[0]
 
     if regParam == 0:
@@ -141,17 +173,25 @@ def first_guess_blocks(A: np.ndarray, h: int, regParam: float) -> np.ndarray:
 def nethist(
     A: np.ndarray, h: int = None, verbose: bool = False, trace: bool = False
 ) -> Tuple[List, int, Optional[Tuple[np.ndarray, np.ndarray]]]:
-    """Computes the network histogram of an N-by-N
-    adjacency matrix, which must be 0-1 valued, symmetric, and with zero
-    main diagonal.
+    """Compute the network histogram of an N-by-N adjacency matrix.
 
-    Args:
-        A (np.ndarray): adjacency matrix
-        h (int, optional): specifies the number of nodes in each histogram bin,
-        which is automatically determined if h is None. Defaults to None.
+    adjacency matrix is assumed to be  0-1 valued, symmetric, and with zero on the diagonal.
 
-    Returns:
-        Tuple[List,int]: [idx,h] return the vector of group membership of the nodes and the parameter h
+    Parameters
+    ----------
+    A : np.ndarray
+        adjacency matrix
+    h : int
+        specifies the number of nodes in each histogram bin,, by default is optimized based on input.
+    verbose : bool
+        if True logs progress of optimization , by default False
+    trace : bool
+        if True trace the optimization, by default False
+
+    Returns
+    -------
+    Tuple[List, int, Optional[Tuple[np.ndarray, np.ndarray]]]
+        [idx,h] return the vector of group membership of the nodes and the parameter h
     """
     check_simple_adjacency_matrix(A)
 
@@ -175,7 +215,7 @@ def nethist(
         h = h - 1
         lastGroupSize = n % h
 
-    idxInit = first_guess_blocks(A, h, regParam=rhoHat / 4)
+    idxInit = _first_guess_blocks(A, h, regParam=rhoHat / 4)
     if trace:
         idx, k, trace = graphest_fastgreedy(
             A=A, hbar=h, inputLabelVec=idxInit, verbose=verbose, trace=trace

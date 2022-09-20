@@ -1,1 +1,1 @@
-"""Estimators of graphons"""
+"""Estimators of graphons."""
