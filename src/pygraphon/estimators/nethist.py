@@ -4,7 +4,6 @@ from typing import List, Optional, Tuple
 import numpy as np
 import scipy
 import scipy.sparse.linalg
-import scipy.special
 from scipy import stats
 from sklearn.metrics import pairwise_distances
 
