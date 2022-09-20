@@ -1,3 +1,4 @@
+"""Base class for graphon estimators."""
 from abc import abstractclassmethod
 
 import networkx as nx
@@ -13,11 +14,30 @@ class BaseEstimator:
     def estimate(
         self, graph: nx.Graph = None, adjacency_matrix: np.ndarray = None, *args, **kwargs
     ) -> GraphonAbstract:
-        """Estimate the graphon function f(x,y) from a realized graph or adjacency matrix
+        """Estimate the graphon function f(x,y) from a realized graph or adjacency matrix.
 
-        Args:
-            graph (nx.Graph, optional): networkx simple graph. Defaults to None.
-            adjacency_matrix (np.ndarray, optional): adjancency matrix representing the graph. Defaults to None.
+        Parameters
+        ----------
+        graph : nx.Graph, optional
+            networkx simple graph. Defaults to None.
+        adjacency_matrix : np.ndarray, optional
+            adjancency matrix representing the graph. Defaults to None.
+        args: optional
+            additional arguments
+        kwargs: optional
+            additional arguments
+
+        Returns
+        -------
+        GraphonAbstract
+            approximated graphon
+
+        Raises
+        ------
+        ValueError
+            if neither a graph or an adjacency matrix is provided
+        ValueError
+            if both a graph and an adjacency matrix are provided and do not agree
         """
         if graph is None and adjacency_matrix is None:
             raise ValueError("graph or adjacency_matrix must be provided")
@@ -32,4 +52,19 @@ class BaseEstimator:
     def _approximate_graphon_from_adjacency(
         self, adjacency_matrix: np.ndarray, *args, **kwargs
     ) -> GraphonAbstract:
-        """Estimate the graphon function f(x,y) from an adjacency matrix"""
+        """Estimate the graphon function f(x,y) from an adjacency matrix.
+
+        Parameters
+        ----------
+        adjacency_matrix : np.ndarray
+            adjacency matrix
+        args: optional
+            additional arguments
+        kwargs: optional
+            additional arguments
+
+        Returns
+        -------
+        GraphonAbstract
+            approximated graphon
+        """
