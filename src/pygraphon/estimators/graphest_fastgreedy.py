@@ -78,7 +78,7 @@ def graphest_fastgreedy(
 
     habSqrd = np.outer(h, h) - np.diag(np.multiply(h, h) - np.multiply(h, (h - 1)) / 2)
 
-    if not np.all(habSqrd) >= 1:
+    if np.all(habSqrd) < 1:
         raise RuntimeError("All clusters must contain at least 2 nodes")
     if np.max(orderedClusterInds) != n - 1 or np.sum(h) != n:
         raise RuntimeError("All nodes must be assigned to a cluster")
