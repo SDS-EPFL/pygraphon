@@ -24,7 +24,7 @@ def oracbwplugin(
 ) -> Tuple[float, float]:
     """Oracle bandwidth plug-in estimtor for network histograms.
 
-     The call h = oracbwplugin(A,c,type,alpha) returns a plug-in estimate
+    The call h = oracbwplugin(A,c,type,alpha) returns a plug-in estimate
     of the optimal histogram bandwidth (blockmodel community size) as a
     function of the following inputs
 
@@ -55,9 +55,9 @@ def oracbwplugin(
 
     Examples
     --------
-        >> h, _ = oracbwplugin(A,3,'eigs',1); # returns h = 73.5910
+    >> h, _ = oracbwplugin(A,3,'eigs',1); # returns h = 73.5910
 
-        >> h, _ = oracbwplugin(A,3,'degs',1); # returns h = 74.1031
+    >> h, _ = oracbwplugin(A,3,'degs',1); # returns h = 74.1031
     """
     # input checks
     if c <= 0:
