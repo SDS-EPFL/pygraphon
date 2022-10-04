@@ -42,8 +42,9 @@ def permutation_distance(
         if heteregenous block size
     ValueError
         if norm not in MAE or MSE
+    TypeError
+        if the graphons are not stepgraphons
     """
-
     if not isinstance(graphon1, StepGraphon) or not isinstance(graphon2, StepGraphon):
         raise TypeError("graphons should be stepgraphons")
 
@@ -81,13 +82,11 @@ def permutation_distance(
     values = [norm_value]
     for permutation in permutations_possible:
         graphon2_permuted = permute_matrix(graphon2_matrix, permutation)
-        print(graphon2_permuted)
         result = norm_function(graphon1_matrix, graphon2_permuted, graphon1.areas)
         values.append(result)
         if result == 0:
             break
 
-    print(values)
     return min(values)
 
 
