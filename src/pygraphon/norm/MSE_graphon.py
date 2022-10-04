@@ -41,7 +41,7 @@ def permutation_distance(
     NotImplementedError
         if heteregenous block size
     ValueError
-        if norm not in MAE or MISE
+        if norm not in MAE or MSE
     """
 
     if not isinstance(graphon1, StepGraphon) or not isinstance(graphon2, StepGraphon):

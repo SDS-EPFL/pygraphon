@@ -17,11 +17,7 @@ def graphon():
     return StepGraphon(
         graphon=np.array(
             [
-                [
-                    0.8,
-                    0.3,
-                    0.2,
-                ],
+                [0.8, 0.3, 0.2],
                 [0.3, 0.5, 0.34],
                 [0.2, 0.34, 0.7],
             ]
