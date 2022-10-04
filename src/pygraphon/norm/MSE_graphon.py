@@ -7,7 +7,7 @@ from pygraphon.utils.utils_matrix import permute_matrix
 
 
 def permutation_distance(
-    graphon1: StepGraphon, graphon2: StepGraphon, norm: str = "MISE", exchangeable: bool = True
+    graphon1: StepGraphon, graphon2: StepGraphon, norm: str = "MSE", exchangeable: bool = True
 ) -> float:
     """Exact permutation distance between two graphons.
 
@@ -21,7 +21,7 @@ def permutation_distance(
     graphon2 : StepGraphon
         second stepgraphon to compare
     norm : str
-        ["MAE","MISE"]. Defaults to "MISE".
+        ["MAE","MSE"]. Defaults to "MSE".
     exchangeable : bool
         if sets to true, the norm will try all possible permutations of the blocks to
         find the lowest distance. Otherwise assume correspondance between the blocks of the first and second
@@ -43,6 +43,13 @@ def permutation_distance(
     ValueError
         if norm not in MAE or MISE
     """
+
+    if not isinstance(graphon1, StepGraphon) or not isinstance(graphon2, StepGraphon):
+        raise TypeError("graphons should be stepgraphons")
+
+    if norm not in ["MAE", "MSE"]:
+        raise ValueError(f"norm should be MAE or MSE, but got {norm}")
+
     # get the data we need
     graphon1_matrix = graphon1.graphon
     graphon2_matrix = graphon2.graphon
@@ -66,25 +73,59 @@ def permutation_distance(
     permutations_possible = generate_all_permutations(graphon1_matrix.shape[0])
 
     norm_value = np.sqrt(np.sum(((graphon1_matrix - graphon2_matrix) ** 2) * graphon1.areas))
-    if not exchangeable:
+    if not exchangeable or norm_value == 0:
         return norm_value
-    for sigma in permutations_possible:
-        if norm == "MISE":
-            result = np.sqrt(
-                np.sum(
-                    ((graphon1_matrix - permute_matrix(graphon2_matrix, sigma)) ** 2)
-                    * graphon1.areas
-                )
-            )
-        elif norm in ["ABS", "MAE"]:
-            result = np.average(
-                np.sum(
-                    np.abs(graphon1_matrix - permute_matrix(graphon2_matrix, sigma))
-                    * graphon1.areas
-                )
-            )
-        else:
-            raise ValueError(f"norm not defined, got {norm}")
-        norm_value = min(norm_value, result)
 
-    return norm_value
+    norm_function = _mse_graphon if norm == "MSE" else _mae_graphon
+
+    values = [norm_value]
+    for permutation in permutations_possible:
+        graphon2_permuted = permute_matrix(graphon2_matrix, permutation)
+        print(graphon2_permuted)
+        result = norm_function(graphon1_matrix, graphon2_permuted, graphon1.areas)
+        values.append(result)
+        if result == 0:
+            break
+
+    print(values)
+    return min(values)
+
+
+def _mse_graphon(graphon1_matrix, graphon2_matrix, areas):
+    """Compute the MSE between two graphons.
+
+    Parameters
+    ----------
+    graphon1_matrix : np.ndarray
+        first graphon
+    graphon2_matrix : np.ndarray
+        second graphon
+    areas : np.ndarray
+        areas of the blocks
+
+    Returns
+    -------
+    float
+        MSE between the two graphons
+    """
+    return np.mean(((graphon1_matrix - graphon2_matrix) ** 2) * areas)
+
+
+def _mae_graphon(graphon1_matrix, graphon2_matrix, areas):
+    """Compute the MAE between two graphons.
+
+    Parameters
+    ----------
+    graphon1_matrix : np.ndarray
+        first graphon
+    graphon2_matrix : np.ndarray
+        second graphon
+    areas : np.ndarray
+        areas of the blocks
+
+    Returns
+    -------
+    float
+        MAE between the two graphons
+    """
+    return np.mean(np.abs(graphon1_matrix - graphon2_matrix) * areas)

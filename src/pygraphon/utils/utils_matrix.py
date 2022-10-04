@@ -35,7 +35,8 @@ def permute_matrix(matrix: np.ndarray, permutation: Tuple) -> np.ndarray:
     matrix : np.ndarray
         matrix to permute
     permutation : Tuple
-         permutation to apply: (4,2,1,3)  is interpreted as (1,2,3,4) -> (4,2,1,3)
+         permutation to apply: (3,1,2,0)  is interpreted as (0,1,2,3) -> (3,1,2,0) (only swap the first and last
+         indices)
 
     Returns
     -------
@@ -44,7 +45,6 @@ def permute_matrix(matrix: np.ndarray, permutation: Tuple) -> np.ndarray:
     """
     new_matrix = copy(matrix)
     new_matrix[permutation, :] = matrix[:, permutation]
-    new_matrix[:, permutation] = new_matrix[permutation, :]
     return new_matrix
 
 
