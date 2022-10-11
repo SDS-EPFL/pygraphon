@@ -59,17 +59,21 @@ def check_simple_adjacency_matrix(adjacency_matrix: np.ndarray) -> None:
         if the adjacency matrix is not square
     ValueError
         if the adjacency matrix is not 2D
+    ValueError
+        if the adjacency matrix is not at least 2x2
     """
+    if len(adjacency_matrix.shape) != 2:
+        raise ValueError("Adjacency matrix should be 2D")
+    if adjacency_matrix.shape[0] != adjacency_matrix.shape[1]:
+        raise ValueError("Adjacency matrix should be square")
+    if adjacency_matrix.shape[0] < 2:
+        raise ValueError("Adjacency matrix should be of dimension at least 2 x 2")
     if np.sum(np.diag(adjacency_matrix)) != 0:
         raise ValueError("Adjacency matrix should not contain self-loops")
     if not check_symmetric(adjacency_matrix):
         raise ValueError("Adjacency matrix should be symmetric")
     if not np.all(np.logical_or(adjacency_matrix == 0, adjacency_matrix == 1)):
         raise ValueError("Adjacency matrix should be binary")
-    if adjacency_matrix.shape[0] != adjacency_matrix.shape[1]:
-        raise ValueError("Adjacency matrix should be square")
-    if adjacency_matrix.shape[0] < 2:
-        raise ValueError("Adjacency matrix should be of dimension at least 2 x 2")
 
 
 def _approximate_from_node_membership(

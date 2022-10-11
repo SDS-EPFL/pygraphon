@@ -49,7 +49,7 @@ def permute_matrix(matrix: np.ndarray, permutation: Tuple) -> np.ndarray:
 
 
 def upper_triangle_values(array):
-    """Return the upper triangle values of an array.
+    """Return the upper triangle values of an array (including the diagonal).
 
     Parameters
     ----------
