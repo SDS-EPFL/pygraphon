@@ -1,5 +1,6 @@
 """Base class for graphon estimators."""
 from abc import abstractclassmethod
+from typing import Tuple
 
 import networkx as nx
 import numpy as np
@@ -11,10 +12,11 @@ from pygraphon.utils.utils_graph import get_adjacency_matrix_from_graph
 class BaseEstimator:
     """Base class for Graphon estimator."""
 
-    def estimate(
-        self, graph: nx.Graph = None, adjacency_matrix: np.ndarray = None, *args, **kwargs
-    ) -> GraphonAbstract:
-        """Estimate the graphon function f(x,y) from a realized graph or adjacency matrix.
+    def __init__(self) -> None:
+        self.fitted = False
+
+    def fit(self, graph: nx.Graph = None, adjacency_matrix: np.ndarray = None, *args, **kwargs):
+        """Estimate the graphon function f(x,y) values from a realized graph or adjacency matrix.
 
         Parameters
         ----------
@@ -26,11 +28,6 @@ class BaseEstimator:
             additional arguments
         kwargs: optional
             additional arguments
-
-        Returns
-        -------
-        GraphonAbstract
-            approximated graphon
 
         Raises
         ------
@@ -46,12 +43,15 @@ class BaseEstimator:
                 raise ValueError("Graph and adjacency_matrix are not consistent")
         if graph is not None:
             adjacency_matrix = get_adjacency_matrix_from_graph(graph)
-        return self._approximate_graphon_from_adjacency(adjacency_matrix, *args, **kwargs)
+        self.graphon, self.edge_connectivity = self._approximate_graphon_from_adjacency(
+            adjacency_matrix, *args, **kwargs
+        )
+        self.fitted = True
 
     @abstractclassmethod
     def _approximate_graphon_from_adjacency(
         self, adjacency_matrix: np.ndarray, *args, **kwargs
-    ) -> GraphonAbstract:
+    ) -> Tuple[GraphonAbstract, np.ndarray]:
         """Estimate the graphon function f(x,y) from an adjacency matrix.
 
         Parameters
@@ -65,6 +65,32 @@ class BaseEstimator:
 
         Returns
         -------
-        GraphonAbstract
-            approximated graphon
+        Tuple[GraphonAbstract, np.ndarray]
+            approximated graphon and matrix of connection Pij of size n x n
         """
+
+    def get_graphon(self) -> GraphonAbstract:
+        """Return the estimated graphon if available.
+
+        If model is not fitted or graphon is not available, returns None.
+
+        Returns
+        -------
+        GraphonAbstract
+            graphon
+        """
+        if self.fitted:
+            return self.graphon
+
+    def get_edge_connectivity(self) -> np.ndarray:
+        """Return the estimated edge connectivity if available.
+
+        If model is not fitted or graphon is not available, returns None.
+
+        Returns
+        -------
+        np.ndarray
+            edge connectivity
+        """
+        if self.fitted:
+            return self.edge_connectivity

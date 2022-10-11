@@ -1,7 +1,7 @@
 """Estimator based on method of moments for cycle counts."""
 from collections.abc import Iterable as IterableCollection
 from itertools import product
-from typing import Callable, Iterable, List, Union
+from typing import Callable, Iterable, List, Tuple, Union
 
 import numpy as np
 from scipy.optimize import fsolve
@@ -67,8 +67,12 @@ class SimpleMomentEstimator(BaseEstimator):
         # count cycles of length 3,..,self.numberParameters-1
         self.counter = CycleCount(2 + self.numberParameters - 1)
 
-    def _approximate_graphon_from_adjacency(self, adjacency_matrix: np.ndarray) -> StepGraphon:
+    def _approximate_graphon_from_adjacency(
+        self, adjacency_matrix: np.ndarray
+    ) -> Tuple[StepGraphon, None]:
         """Estimate the graphon function f(x,y) from an adjacency matrix by solving moment equations.
+
+        The P matrix is not returned as it is not used in the estimation.
 
         Parameters
         ----------
@@ -77,8 +81,8 @@ class SimpleMomentEstimator(BaseEstimator):
 
         Returns
         -------
-        StepGraphon
-            approximated graphon
+        StepGraphon, None
+            approximated graphon and None
         """
         # compute densities from observed graphs
         cycles = self._count_cycles(adjacency_matrix)
@@ -91,7 +95,7 @@ class SimpleMomentEstimator(BaseEstimator):
         # structure the parameters into a graphon
         graphon = self._add_constraints_on_SBM(root, self.numberBlocks)
         graphon = self.correct_fitted_values(graphon, kind="abs")
-        return StepGraphon(graphon, 1 / self.numberBlocks, initial_rho=rho)
+        return StepGraphon(graphon, 1 / self.numberBlocks, initial_rho=rho), None
 
     @staticmethod
     def correct_fitted_values(graphon, kind="abs") -> np.ndarray:
