@@ -14,6 +14,8 @@ class BaseEstimator:
 
     def __init__(self) -> None:
         self.fitted = False
+        self.graphon = None
+        self.edge_connectivity = None
 
     def fit(self, graph: nx.Graph = None, adjacency_matrix: np.ndarray = None, *args, **kwargs):
         """Estimate the graphon function f(x,y) values from a realized graph or adjacency matrix.
@@ -79,8 +81,7 @@ class BaseEstimator:
         GraphonAbstract
             graphon
         """
-        if self.fitted:
-            return self.graphon
+        return self.graphon
 
     def get_edge_connectivity(self) -> np.ndarray:
         """Return the estimated edge connectivity if available.
@@ -92,5 +93,4 @@ class BaseEstimator:
         np.ndarray
             edge connectivity
         """
-        if self.fitted:
-            return self.edge_connectivity
+        return self.edge_connectivity
