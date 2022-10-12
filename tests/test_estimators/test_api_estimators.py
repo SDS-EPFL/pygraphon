@@ -11,12 +11,15 @@ from pygraphon.utils.utils_matrix import check_symmetric
 
 @pytest.fixture(scope="module")
 def sbm_3():
+    """Return a 3-block SBM."""
     return nx.stochastic_block_model(
         [10, 10, 10], [[0.5, 0.1, 0.1], [0.1, 0.5, 0.1], [0.1, 0.1, 0.5]], seed=0
     )
 
 
 class TestApiHistogramEstimator:
+    """Test API test for histogram estimator."""
+
     @pytest.fixture
     def estimator(self):
         hist = HistogramEstimator(bandwithHist=1 / 3)
@@ -42,6 +45,8 @@ class TestApiHistogramEstimator:
 
 
 class TestApiMoment(TestApiHistogramEstimator):
+    """Test api for Moment estimator."""
+
     @pytest.fixture
     def estimator(self):
         return SimpleMomentEstimator(blocks=3)

@@ -2,5 +2,3 @@
 
 from .HistogramEstimator import HistogramEstimator
 from .MomentEstimator import MomentEstimator, SimpleMomentEstimator
-
-__all__ = ["HistogramEstimator", "MomentEstimator", "SimpleMomentEstimator"]
