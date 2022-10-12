@@ -11,18 +11,18 @@ from pygraphon.estimators.utils.graphest_fastgreedy import graphest_fastgreedy
 from pygraphon.utils.utils_graph import check_simple_adjacency_matrix
 
 
-def _oracle_analysis_badnwidth(A: np.ndarray, type: str = "degs", alpha: float = 1) -> float:
+def _oracle_analysis_badnwidth(A: np.ndarray, type_: str = "degs", alpha: float = 1) -> float:
     c = min(4, np.sqrt(A.shape[0]) / 8)
-    h, _ = oracbwplugin(A=A, c=c, type=type, alpha=alpha)
+    h, _ = oracbwplugin(A=A, c=c, type_=type_, alpha=alpha)
     return int(h)
 
 
 def oracbwplugin(
-    A: np.ndarray, c: float, type: str = "degs", alpha: float = 1
+    A: np.ndarray, c: float, type_: str = "degs", alpha: float = 1
 ) -> Tuple[float, float]:
     """Oracle bandwidth plug-in estimtor for network histograms.
 
-    The call h = oracbwplugin(A,c,type,alpha) returns a plug-in estimate
+    The call h = oracbwplugin(A,c,type_,alpha) returns a plug-in estimate
     of the optimal histogram bandwidth (blockmodel community size) as a
     function of the following inputs
 
@@ -32,7 +32,7 @@ def oracbwplugin(
         Adjacency matrix (must be a simple graph)
     c : float
         positive multiplier by which to estimate slope 1/- sqrt(n)
-    type : str
+    type_ : str
          Estimate slope from sorted vector ('degs' or 'eigs'). Defaults to "degs".
     alpha : float
          Holder exponent. Defaults to 1.
@@ -49,7 +49,7 @@ def oracbwplugin(
     NotImplementedError
         alpha not 1
     NotImplementedError
-        type not degs or eigs
+        type_ not degs or eigs
 
     Examples
     --------
@@ -72,14 +72,14 @@ def oracbwplugin(
     rhoHat = np.sum(A) / (n * (n - 1))
     pseudo_inverse_rho_hat = 1 / rhoHat if rhoHat != 0 else 0
 
-    if type == "eigs":
+    if type_ == "eigs":
         mult, u = scipy.sparse.linalg.eigs(A, 1, which="LR")
         u = u.real.ravel()
-    elif type == "degs":
+    elif type_ == "degs":
         u = np.sum(A, axis=1)
         mult = (u.T @ A @ u) / np.sum(u * u) ** 2
     else:
-        raise NotImplementedError(f"Unknown input type: {type}")
+        raise NotImplementedError(f"Unknown input type_: {type_}")
 
     # if all the degrees are the same, there is no information in there
     if np.unique(u).size == 1:
@@ -215,11 +215,11 @@ def nethist(
 
     idxInit = _first_guess_blocks(A, h, regParam=rhoHat / 4)
     if trace:
-        idx, k, trace = graphest_fastgreedy(
+        idx, _, trace = graphest_fastgreedy(
             A=A, hbar=h, inputLabelVec=idxInit, verbose=verbose, trace=trace
         )
     else:
-        idx, k = graphest_fastgreedy(
+        idx, _ = graphest_fastgreedy(
             A=A, hbar=h, inputLabelVec=idxInit, verbose=verbose, trace=trace
         )
     return idx, h, trace
