@@ -50,7 +50,7 @@ class BaseEstimator:
 
     @abstractclassmethod
     def _approximate_graphon_from_adjacency(
-        cls, adjacency_matrix: np.ndarray, *args, **kwargs
+        self, adjacency_matrix: np.ndarray, *args, **kwargs
     ) -> Tuple[GraphonAbstract, np.ndarray]:
         """Estimate the graphon function f(x,y) from an adjacency matrix.
 
