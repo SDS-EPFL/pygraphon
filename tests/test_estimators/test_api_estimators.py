@@ -4,7 +4,7 @@ import networkx as nx
 import numpy as np
 import pytest
 
-from pygraphon.estimators import HistogramEstimator, SimpleMomentEstimator
+from pygraphon.estimators import USVT, HistogramEstimator, SimpleMomentEstimator
 from pygraphon.graphons import StepGraphon
 from pygraphon.utils.utils_matrix import check_symmetric
 
@@ -54,3 +54,11 @@ class TestApiMoment(TestApiHistogramEstimator):
     def test_pij(self, fitted_estimator, sbm_3):
         """Test that the pij estimator is not available."""
         assert fitted_estimator.get_edge_connectivity() is None
+
+
+class TestApiUSVT(TestApiHistogramEstimator):
+    """Test api for USVT estimator."""
+
+    @pytest.fixture
+    def estimator(self):
+        return USVT()
