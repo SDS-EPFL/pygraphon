@@ -4,7 +4,7 @@ from typing import Tuple
 import numpy as np
 
 from pygraphon.estimators.BaseEstimator import BaseEstimator
-from pygraphon.graphons import Graphon, StepGraphon
+from pygraphon.graphons import StepGraphon
 from pygraphon.utils.utils_graph import edge_density
 
 
@@ -35,7 +35,7 @@ class USVT(BaseEstimator):
 
     def _approximate_graphon_from_adjacency(
         self, adjacency_matrix: np.ndarray
-    ) -> Tuple[Graphon, np.ndarray]:
+    ) -> Tuple[StepGraphon, np.ndarray]:
 
         rho = edge_density(adjacency_matrix)
         if rho == 0:
