@@ -115,24 +115,16 @@ class Graphon:
         """
         return self.integral() == 1
 
-    def integral(self, force_recompute=False) -> float:
+    def integral(self) -> float:
         """Compute the integral of the graphon.
-
-        Parameters
-        ----------
-        force_recompute : bool
-            If False, check for cached value, by default False
 
         Returns
         -------
         float
             integral value of the graphon
         """
-        if self.integral_value is None:
-            self.integral_value = (
-                2 * dblquad(self.graphon_function, 0, 1, lambda x: 0, lambda x: x)[0]
-            )
-        return self.integral_value
+        integral = 2 * dblquad(self.graphon_function, 0, 1, lambda x: 0, lambda x: x)[0]
+        return integral
 
     def draw(self, rho: float, n: int, exchangeable: bool = True) -> np.ndarray:
         """Draw a graph from the graphon with a given density and number of vertices.

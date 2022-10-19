@@ -1,4 +1,4 @@
 """Core functionnalities."""
 
-from .GraphonFunction import Graphon
+from .Graphon import Graphon
 from .StepGraphon import StepGraphon

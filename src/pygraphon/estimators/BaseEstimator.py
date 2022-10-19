@@ -5,7 +5,7 @@ from typing import Tuple, Union
 import networkx as nx
 import numpy as np
 
-from pygraphon.graphons.GraphonAbstract import GraphonAbstract
+from pygraphon.graphons.Graphon import Graphon
 from pygraphon.utils.utils_graph import get_adjacency_matrix_from_graph
 
 
@@ -52,7 +52,7 @@ class BaseEstimator:
     @abstractclassmethod
     def _approximate_graphon_from_adjacency(
         self, adjacency_matrix: np.ndarray, *args, **kwargs
-    ) -> Tuple[GraphonAbstract, np.ndarray]:
+    ) -> Tuple[Graphon, np.ndarray]:
         """Estimate the graphon function f(x,y) from an adjacency matrix.
 
         Parameters
@@ -66,18 +66,18 @@ class BaseEstimator:
 
         Returns
         -------
-        Tuple[GraphonAbstract, np.ndarray]
+        Tuple[Graphon, np.ndarray]
             approximated graphon and matrix of connection Pij of size n x n
         """
 
-    def get_graphon(self) -> GraphonAbstract:
+    def get_graphon(self) -> Graphon:
         """Return the estimated graphon if available.
 
         If model is not fitted or graphon is not available, returns None.
 
         Returns
         -------
-        GraphonAbstract
+        Graphon
             graphon
         """
         return self.graphon
