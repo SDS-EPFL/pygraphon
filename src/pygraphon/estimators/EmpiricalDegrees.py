@@ -9,7 +9,7 @@ from pygraphon.utils.utils_graph import _approximate_P_from_node_membership
 
 
 class LG(BaseEstimator):
-    """Larget Gap algorithm estimates graphons based on empirical degrees. [1]
+    """Larget Gap algorithm estimates graphons based on empirical degrees [1].
 
     Parameters
     ----------
@@ -63,10 +63,8 @@ class LG(BaseEstimator):
 
         # find the K biggest differences between consecutive degrees and find corresponding indices
         ind = np.argpartition(np.diff(degrees_sorted), -self.K + 1)[-self.K + 1 :]
-        print(ind)
         gaps_indices = [0] + list(ind) + [adjacency_matrix.shape[0] - 1]
 
-        print(gaps_indices)
         # assign the nodes to the blocks
         blocks = []
         for i in range(self.K):
