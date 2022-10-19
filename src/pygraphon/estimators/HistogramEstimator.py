@@ -5,7 +5,7 @@ from typing import Tuple
 import numpy as np
 
 from pygraphon.estimators.BaseEstimator import BaseEstimator
-from pygraphon.estimators.nethist import nethist
+from pygraphon.estimators.utils.nethist import nethist
 from pygraphon.graphons.StepGraphon import StepGraphon
 from pygraphon.utils.utils_graph import edge_density
 
@@ -31,7 +31,7 @@ class HistogramEstimator(BaseEstimator):
 
     def _approximate_graphon_from_adjacency(
         self, adjacency_matrix: np.ndarray, bandwidthHist: float = None
-    ) -> StepGraphon:
+    ) -> Tuple[StepGraphon, np.ndarray]:
         """Estimate the graphon function f(x,y) from an adjacency matrix.
 
         Parameters
@@ -43,14 +43,14 @@ class HistogramEstimator(BaseEstimator):
 
         Returns
         -------
-        StepGraphon
-            approximated graphon
+        Tuple[StepGraphon, np.ndarray]
+            approximated graphon and matrix of connection Pij of size n x n
         """
         rho = edge_density(adjacency_matrix)
         if bandwidthHist is None:
             bandwidthHist = self.bandwidthHist
-        graphon_matrix, _, h = self._approximate(adjacency_matrix, bandwidthHist)
-        return StepGraphon(graphon_matrix, h, rho)
+        graphon_matrix, P, h = self._approximate(adjacency_matrix, bandwidthHist)
+        return StepGraphon(graphon_matrix, rho, h), P
 
     def _approximate(
         self,
