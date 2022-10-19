@@ -1,18 +1,39 @@
-"""Abstract class for graphons."""
-from abc import ABC, abstractclassmethod
+"""Graphon based on a continuous function."""
 from copy import deepcopy
-from typing import Callable
+from typing import Callable, Optional
 
 import numpy as np
+from scipy.integrate import dblquad
+
+from pygraphon.utils.utils_func import copy_func
 
 
-class GraphonAbstract(ABC):
-    """Abstract class for Graphon.
+class Graphon:
+    """Basic Graphon defined only by its function f(x,y).
 
-    All graphons of this class will be scaled graphon, meaning the integral of f(x,y) over [0,1]^2 is 1.
+    If scaled, will initialize a scaled graphon with integral equal to 1.
+    The initial_rho parameter is used to keep track of the original edge density of the graphon.
+    If additionaly check is true, will check if the graphon integrates to 1 and if not, will try to correct it.
+
+    Parameters
+    ----------
+    function : Callable
+        graphon function f(x,y)
+    scaled : bool
+        Should the graphon be scaled (integrate to 1), by default True
+    check : bool
+        Should we try to enforce scaled graphon, by default True
+    initial_rho : Optional[float]
+        initial edge density, by default None
     """
 
-    def __init__(self, initial_rho: float = None, scaled=True, check=True) -> None:
+    def __init__(
+        self,
+        function: Callable,
+        initial_rho: Optional[float] = None,
+        scaled=True,
+        check=True,
+    ) -> None:
         """Initialize a graphon defined only by its function f(x,y).
 
         If scaled, will initialize a scaled graphon with integral equal to 1.
@@ -21,20 +42,23 @@ class GraphonAbstract(ABC):
 
         Parameters
         ----------
-        initial_rho : float
-            initial edge density, by default None
+        function : Callable
+            graphon function f(x,y)
         scaled : bool
             Should the graphon be scaled (integrate to 1), by default True
         check : bool
             Should we try to enforce scaled graphon, by default True
-
+        initial_rho : Optional[float]
+            initial edge density, by default None
 
         Raises
         ------
         ValueError
-            If the graphon does not integrate to 1 and cannot be automatically scaled
+            if graphon does not integrate to 1 and cannot be automatically scaled
         """
-        super().__init__()
+        self.integral_value = None
+        self.graphon_function = function
+        self.scaled = scaled
 
         # remember the original edge density of the graphon
         if initial_rho is None:
@@ -42,29 +66,44 @@ class GraphonAbstract(ABC):
         else:
             self.initial_rho = deepcopy(initial_rho)
 
+        #
         if check:
             self.check_graphon()
-            if not self.check_graphon_integral() and scaled:
+            if not self.check_graphon_integral() and self.scaled:
                 try:
                     self.correct_graphon_integral()
                 except NotImplementedError:
                     raise ValueError(
                         "Graphon does not integrate to 1 and cannot be automatically corrected"
                     )
-        self.graphon_function = self.graphon_function_builder()
-
-    @abstractclassmethod
-    def graphon_function_builder(self) -> Callable:
-        """Build the graphon function f(x,y)."""
 
     def check_graphon(self):
         """Check graphon properties depending on the subclass that iplements it.
 
-        Only implemented in subclasses that need to impose certain properties.
 
-        Raises:
-            ValueError: if graphon does not integrate to 1 it it cannot be automatically scaled
+        Raises
+        ------
+        ValueError
+            if the graphon function is not callable
         """
+        if not callable(self.graphon_function):
+            raise ValueError("Graphon function must be callable")
+
+    def correct_graphon_integral(self):
+        """Normalize the graphon function to 1 if possible.
+
+        Raises
+        ------
+        ValueError
+             if graphon integrates to 0.
+        """
+        integral = self.integral()
+        if integral == 0:
+            raise ValueError("graphon integrates to 0, cannot be automatically corrected")
+        # keep copy of old graphon function to be able to rescale it
+        # without having infinite recursion
+        self.old_func = copy_func(self.graphon_function)
+        self.graphon_function = lambda x, y: self.old_func(x, y) / integral
 
     def check_graphon_integral(self) -> bool:
         """Check if the graphon integrates to 1.
@@ -76,25 +115,24 @@ class GraphonAbstract(ABC):
         """
         return self.integral() == 1
 
-    def correct_graphon_integral(self):
-        """Correct the integral of the graphon function f(x,y) to 1.
+    def integral(self, force_recompute=False) -> float:
+        """Compute the integral of the graphon.
 
-        Raises
-        ------
-        NotImplementedError
-            If the graphon has not method to be automatically corrected
-        """
-        raise NotImplementedError
-
-    @abstractclassmethod
-    def integral(self):
-        """Return the integral of the graphon function f(x,y) over [0,1]^2.
+        Parameters
+        ----------
+        force_recompute : bool
+            If False, check for cached value, by default False
 
         Returns
         -------
         float
-            integral of the graphon function
+            integral value of the graphon
         """
+        if self.integral_value is None:
+            self.integral_value = (
+                2 * dblquad(self.graphon_function, 0, 1, lambda x: 0, lambda x: x)[0]
+            )
+        return self.integral_value
 
     def draw(self, rho: float, n: int, exchangeable: bool = True) -> np.ndarray:
         """Draw a graph from the graphon with a given density and number of vertices.
@@ -204,21 +242,20 @@ class GraphonAbstract(ABC):
         return probs
 
     def __add__(self, other):
-        """Overload the + operator to add two graphons.
+        """Add and normalize two graphons.
 
         Parameters
         ----------
-        other : AbstractGraphon
-            other graphon to add
+        other : Graphon
+             other graphon to add.
 
-        Raises
-        ------
-        TypeError
-            if other is not of type AbstractGraphon
-        NotImplementedError
-            if the subclass did not implement it
+        Returns
+        -------
+        Graphon
+            graphon f1(x,y) + f2(x,y) (normalized to 1)
         """
-        if not isinstance(other, GraphonAbstract):
-            raise TypeError(f"Can only add two graphons, got {type(other)} instead")
 
-        raise NotImplementedError
+        def _function(x, y):
+            return 0.5 * self.graphon_function(x, y) + 0.5 * other.graphon_function(x, y)
+
+        return Graphon(_function, check=False)

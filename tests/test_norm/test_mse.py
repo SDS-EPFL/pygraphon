@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 from numpy.testing import assert_allclose
 
-from pygraphon.graphons.GraphonFunction import Graphon
+from pygraphon.graphons.Graphon import Graphon
 from pygraphon.graphons.StepGraphon import StepGraphon
 from pygraphon.norm.MSE_graphon import permutation_distance
 

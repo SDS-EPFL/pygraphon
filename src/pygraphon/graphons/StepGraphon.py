@@ -3,11 +3,11 @@ from typing import Callable
 
 import numpy as np
 
-from pygraphon.graphons.GraphonAbstract import GraphonAbstract
+from pygraphon.graphons.Graphon import Graphon
 from pygraphon.utils.utils_matrix import check_symmetric
 
 
-class StepGraphon(GraphonAbstract):
+class StepGraphon(Graphon):
     """A step function graphon, by giving the matrix representing the block model approxumation.
 
     Parameters
@@ -38,14 +38,14 @@ class StepGraphon(GraphonAbstract):
         self.graphon = graphon
         self.bandwidthHist = bandwidthHist
 
-        self.areas = np.ones_like(self.graphon) * self.bandwidthHist**2
+        self.areas = np.ones_like(self.graphon) * self.bandwidthHist ** 2
         self.remainder = 1 - int(1 / self.bandwidthHist) * self.bandwidthHist
         if self.remainder != 0:
             self.areas[:, -1] = self.bandwidthHist * self.remainder
             self.areas[-1, :] = self.bandwidthHist * self.remainder
-            self.areas[-1, -1] = self.remainder**2
+            self.areas[-1, -1] = self.remainder ** 2
 
-        super().__init__(initial_rho=initial_rho)
+        super().__init__(function=self.graphon_function_builder(), initial_rho=initial_rho)
 
     def graphon_function_builder(self) -> Callable:
         """Build the graphon function f(x,y).
@@ -56,12 +56,7 @@ class StepGraphon(GraphonAbstract):
             graphon function
         """
 
-        def _function(
-            x: float,
-            y: float,
-            h: float = self.bandwidthHist,
-            blocksValue: np.ndarray = self.graphon,
-        ) -> float:
+        def _function(x: float, y: float) -> float:
             """Return the value of the graphon at the point (x,y).
 
             Parameters
@@ -70,17 +65,13 @@ class StepGraphon(GraphonAbstract):
                 coordinate x (first latent variable)
             y : float
                 coordinate y (second latent variable)
-            h : float
-                site of the blocks of the graphon (between 0 and 1), by default self.bandwidthHist
-            blocksValue : np.ndarray, optional
-                connection matrix values, by default self.graphon
 
             Returns
             -------
             float
                 f(x,y)
             """
-            return blocksValue[int(x // h)][int(y // h)]
+            return self.graphon[int(x // self.bandwidthHist)][int(y // self.bandwidthHist)]
 
         return _function
 
@@ -153,4 +144,4 @@ class StepGraphon(GraphonAbstract):
         int
             number of groups
         """
-        return 1 // self.bandwidthHist + 1
+        return int(1 // self.bandwidthHist) + 1

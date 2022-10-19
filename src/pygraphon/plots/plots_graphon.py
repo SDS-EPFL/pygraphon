@@ -6,7 +6,7 @@ import numpy as np
 from matplotlib.pyplot import Axes, Figure
 from mpl_toolkits import axes_grid1
 
-from pygraphon.graphons.GraphonFunction import Graphon
+from pygraphon.graphons.Graphon import Graphon
 from pygraphon.graphons.StepGraphon import StepGraphon
 
 
