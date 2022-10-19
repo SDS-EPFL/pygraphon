@@ -1,5 +1,10 @@
 """Implementation of the SBA estimator."""
+from typing import Tuple
+
+import numpy as np
+
 from pygraphon.estimators.BaseEstimator import BaseEstimator
+from pygraphon.graphons import Graphon
 
 
 class SBA(BaseEstimator):
@@ -15,3 +20,8 @@ class SBA(BaseEstimator):
         if delta < 0:
             raise ValueError("delta must be larger than 0")
         self.delta = delta
+
+    def _approximate_graphon_from_adjacency(
+        self, adjacency_matrix: np.ndarray
+    ) -> Tuple[Graphon, np.ndarray]:
+        raise NotImplementedError()
