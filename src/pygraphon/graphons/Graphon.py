@@ -80,7 +80,6 @@ class Graphon:
     def check_graphon(self):
         """Check graphon properties depending on the subclass that iplements it.
 
-
         Raises
         ------
         ValueError
