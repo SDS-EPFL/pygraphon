@@ -42,7 +42,9 @@ class SBA(BaseEstimator):
 
             # compute the distance between the pivot and the other nodes
             distances = self._compute_dij(
-                index_i=index, index_j=list(non_clustered_indices), adjacency_matrix=adjacency_matrix
+                index_i=index,
+                index_j=list(non_clustered_indices),
+                adjacency_matrix=adjacency_matrix,
             )
 
             # find the close nodes and add them to the community
@@ -58,8 +60,9 @@ class SBA(BaseEstimator):
         graphon_hat = StepGraphon(P_hat, bandwidthHist=1 / adjacency_matrix.shape[0])
         return graphon_hat, P_hat
 
-
-    def _compute_dij(self,index_i: int, index_j: List[int], adjacency_matrix: np.ndarray) -> np.ndarray:
+    def _compute_dij(
+        self, index_i: int, index_j: List[int], adjacency_matrix: np.ndarray
+    ) -> np.ndarray:
         """Compute the distance betweem two nodes as defined in [1] eq. 5.
 
         Parameters
