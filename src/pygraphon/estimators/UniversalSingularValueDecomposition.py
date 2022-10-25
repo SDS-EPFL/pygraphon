@@ -15,8 +15,6 @@ class USVT(BaseEstimator):
     ----------
     eta : float
         Threshold for singular values. Must be between 0 and 1.
-    soft_thresholding : bool
-        If True, use soft thresholding instead of hard thresholding. (see [2])
 
 
     References
@@ -27,11 +25,10 @@ class USVT(BaseEstimator):
         International Conference on Machine Learning. PMLR, 2018.
     """
 
-    def __init__(self, eta: float = 0.01, soft_thresholding: bool = False) -> None:
+    def __init__(self, eta: float = 0.01) -> None:
         if eta < 0 or eta > 1:
             raise ValueError("eta must be between 0 and 1")
         self.eta = eta
-        self.soft_thresholding = soft_thresholding
 
     def _approximate_graphon_from_adjacency(
         self, adjacency_matrix: np.ndarray

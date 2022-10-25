@@ -1,4 +1,5 @@
 """Stepgraphon class represent all stepfunction approximation of a continuous graphon."""
+import math
 from typing import Callable
 
 import numpy as np
@@ -37,6 +38,7 @@ class StepGraphon(Graphon):
         # save args
         self.graphon = graphon
         self.bandwidthHist = bandwidthHist
+        assert self.graphon.shape[0] == int(math.ceil(1 / self.bandwidthHist))
 
         self.areas = np.ones_like(self.graphon) * self.bandwidthHist**2
         self.remainder = 1 - int(1 / self.bandwidthHist) * self.bandwidthHist
