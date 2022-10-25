@@ -1,10 +1,12 @@
 """Implementation of the SBA estimator."""
-from typing import Tuple
+from typing import List, Tuple
 
 import numpy as np
+from numba import jit
 
 from pygraphon.estimators.BaseEstimator import BaseEstimator
-from pygraphon.graphons import Graphon
+from pygraphon.graphons import StepGraphon
+from pygraphon.utils.utils_graph import _approximate_P_from_node_membership
 
 
 class SBA(BaseEstimator):
@@ -23,5 +25,64 @@ class SBA(BaseEstimator):
 
     def _approximate_graphon_from_adjacency(
         self, adjacency_matrix: np.ndarray
-    ) -> Tuple[Graphon, np.ndarray]:
+    ) -> Tuple[StepGraphon, np.ndarray]:
+
+        n = adjacency_matrix.shape[0]
+        k = 0
+        set_index = set(range(n))
+        membership = np.zeros(n, dtype=np.int64)
+
+        # iterate over all nodes
+        while set_index:
+            # set membership of the pivot
+            index = set_index.pop()
+            membership[index] = k
+
+            # list all of the nodes non attributed to a community
+            non_clustered_indices = np.array(list(set_index))
+
+            # compute the distance between the pivot and the other nodes
+            distances = self._compute_dij(
+                index_i=index, index_j=non_clustered_indices, adjacency_matrix=adjacency_matrix
+            )
+
+            # find the close nodes and add them to the community
+            close_j = non_clustered_indices[np.where(distances < self.delta**2)[0]]
+            for j in close_j:
+                membership[j] = k
+                set_index.remove(j)
+            # update community number
+            k += 1
+
+        # format output and return
+        P_hat = _approximate_P_from_node_membership(adjacency_matrix, membership)
+        graphon_hat = StepGraphon(P_hat, bandwidthHist=1 / adjacency_matrix.shape[0])
+        return graphon_hat, P_hat
+
+
+    @jit(nopython=True)
+    def _compute_dij(
+        self, index_i: int, index_j: np.ndarray, adjacency_matrix: np.ndarray
+    ) -> np.ndarray:
+        """Compute the distance betweem two nodes as defined in [1] eq. 5.
+
+        Parameters
+        ----------
+        index_i : int
+            index of the reference node
+        index_j : np.ndarray
+            list of indices of the other nodes to compute the distance
+        adjacency_matrix : np.ndarray
+            adjacency matrix of the graph
+
+        Returns
+        -------
+        np.ndarray
+            distance (len(index_j),)
+
+        Notes
+        ------
+        In the case of a unique simple undirected graph, the formula boils down to: d_ij = (c__ii - 2*c_ij + c_jj)
+        which is what is implemented here. This is not the case if multiple inputs are provided.
+        """
         raise NotImplementedError()
