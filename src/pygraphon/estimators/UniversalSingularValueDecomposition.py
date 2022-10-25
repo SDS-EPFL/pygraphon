@@ -45,10 +45,7 @@ class USVT(BaseEstimator):
 
         # compute the singular value decomposition and threshold
         u, s, v = np.linalg.svd(adjacency_matrix, full_matrices=False)
-        if self.soft_thresholding:
-            s = np.maximum(s - threshold, 0)
-        else:
-            s[s < threshold] = 0
+        s[s < threshold] = 0
 
         # reconstruct
         P_hat = u @ np.diag(s) @ v
