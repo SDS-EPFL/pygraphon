@@ -2,7 +2,6 @@
 from typing import List, Tuple
 
 import numpy as np
-from numba import jit
 
 from pygraphon.estimators.BaseEstimator import BaseEstimator
 from pygraphon.graphons import StepGraphon
@@ -43,7 +42,7 @@ class SBA(BaseEstimator):
 
             # compute the distance between the pivot and the other nodes
             distances = self._compute_dij(
-                index_i=index, index_j=non_clustered_indices, adjacency_matrix=adjacency_matrix
+                index_i=index, index_j=list(non_clustered_indices), adjacency_matrix=adjacency_matrix
             )
 
             # find the close nodes and add them to the community
@@ -60,10 +59,7 @@ class SBA(BaseEstimator):
         return graphon_hat, P_hat
 
 
-    @jit(nopython=True)
-    def _compute_dij(
-        self, index_i: int, index_j: np.ndarray, adjacency_matrix: np.ndarray
-    ) -> np.ndarray:
+    def _compute_dij(self,index_i: int, index_j: List[int], adjacency_matrix: np.ndarray) -> np.ndarray:
         """Compute the distance betweem two nodes as defined in [1] eq. 5.
 
         Parameters
@@ -85,4 +81,6 @@ class SBA(BaseEstimator):
         In the case of a unique simple undirected graph, the formula boils down to: d_ij = (c__ii - 2*c_ij + c_jj)
         which is what is implemented here. This is not the case if multiple inputs are provided.
         """
-        raise NotImplementedError()
+        n = adjacency_matrix.shape[0]
+        c = np.dot(adjacency_matrix, adjacency_matrix)[index_i, :]
+        return c[index_i] / (n - 1) - 2 * c[index_j] / (n - 2) + c[index_j] / (n - 1)
