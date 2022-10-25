@@ -34,11 +34,17 @@ class StepGraphon(Graphon):
             size of the groups (between 0 and 1), by default None
         initial_rho : float
             initial edge density (used to keep track in case of normalization), by default None
+
+        Raises
+        ------
+        ValueError
+            if the graphon is and the bandwidthHist are not compatible.
         """
         # save args
         self.graphon = graphon
         self.bandwidthHist = bandwidthHist
-        assert self.graphon.shape[0] == int(math.ceil(1 / self.bandwidthHist))
+        if self.graphon.shape[0] != int(math.ceil(1 / self.bandwidthHist)):
+            raise ValueError("The graphon matrix should have size consisten with the bandwidth.")
 
         self.areas = np.ones_like(self.graphon) * self.bandwidthHist**2
         self.remainder = 1 - int(1 / self.bandwidthHist) * self.bandwidthHist
