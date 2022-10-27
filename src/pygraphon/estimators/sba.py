@@ -34,7 +34,8 @@ class SBA(BaseEstimator):
         # iterate over all nodes
         while set_index:
             # set membership of the pivot
-            index = set_index.pop()
+            index = random.sample(set_index,1)[0]
+            set_index.remove()
             membership[index] = k
 
             # list all of the nodes non attributed to a community
