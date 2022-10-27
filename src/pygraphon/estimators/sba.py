@@ -1,6 +1,7 @@
 """Implementation of the SBA estimator."""
-from typing import List, Tuple
 import random
+from typing import List, Tuple
+
 import numpy as np
 
 from pygraphon.estimators.BaseEstimator import BaseEstimator
@@ -34,8 +35,8 @@ class SBA(BaseEstimator):
         # iterate over all nodes
         while set_index:
             # set membership of the pivot
-            index = random.sample(set_index,1)[0]
-            set_index.remove()
+            index = random.sample(set_index, 1)[0]
+            set_index.remove(index)
             membership[index] = k
 
             # list all of the nodes non attributed to a community
