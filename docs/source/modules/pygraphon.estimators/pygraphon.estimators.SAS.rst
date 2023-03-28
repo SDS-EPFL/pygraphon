@@ -1,8 +1,8 @@
-﻿SBA
+SAS
 ===
 
 .. currentmodule:: pygraphon.estimators
 
-.. autoclass:: SBA
+.. autoclass:: SAS
    :show-inheritance:
    :members:
