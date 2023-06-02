@@ -1,45 +1,83 @@
 import numpy as np
-from sklearn.metrics import average_precision_score, roc_auc_score
+import sklearn.metrics
 
-from pygraphon.graphons import Graphon
-from pygraphon.norm.BaseMetric import BaseMetric
+from .BaseMetric import ClassificationMetric
 
 
-class AUCEdge(BaseMetric):
-    def __init__(self, n_nodes: int = 100) -> None:
+class SklearnBinaryMetric(ClassificationMetric):
+    """Use a binary classification metric from sklearn.metrics to measure edge predictions.
+
+    Parameters
+    ----------
+    method : str
+        name of the method from `sklearn.metrics`, by default "roc_auc_score".
+        Should take these first two arguments: y_true and y_pred (or y_score).
+    """
+
+    def __init__(
+        self,
+        method: str = "roc_auc_score",
+        **kwargs,
+    ) -> None:
+        """Initialise the metric.
+
+        Parameters
+        ----------
+        method : str
+            name of the method from `sklearn.metrics`, by default "roc_auc_score".
+            Should take these first two arguments: y_true and y_pred (or y_score).
+
+        Raises
+        ------
+        ValueError
+            if the method is not found in `sklearn.metrics`
+        """
         super().__init__()
-        self.n_nodes = n_nodes
+        try:
+            self.method = getattr(sklearn.metrics, method)
+        except AttributeError:
+            raise ValueError(f"method {method} not found in sklearn.metrics")
 
     def _compute(
         self,
-        graphon: Graphon,
-        estimated: Graphon,
         adjacency_matrix: np.ndarray,
-    ):
-        p_hat = estimated.get_edge_probabilities(self.n_nodes, exchangeable=False)
-        if not adjacency_matrix.shape == p_hat.shape:
-            raise ValueError("Adjacency matrix and probabilities matrix have different shapes")
-        return roc_auc_score(adjacency_matrix, p_hat)
+        pij: np.ndarray,
+        **kwargs,
+    ) -> float:
+        """
+        Compute a metric between the probability matrix estimated from an adjacency matrix.
 
-    def __str__(self):
-        return "AUC on probabily matrix"
+        Parameters
+        ----------
+        adjacency_matrix: np.ndarray
+            adjacency matrix of the graph
+        pij: np.ndarray
+            probability matrix
+        kwargs: dict
+            additional arguments to pass to `self.method`
+
+        Returns
+        -------
+        float
+            Binary classification metric on the probability matrix.
+
+        """
+        indices = np.triu_indices(adjacency_matrix.shape[0], k=1)
+        return self.method(adjacency_matrix[indices], pij[indices], **kwargs)
+
+    def __str__(self) -> str:
+        return f"{self.method.__name__} on probability matrix"
 
 
-class AUPRCEdge(BaseMetric):
-    def __init__(self, n_nodes: int = 100) -> None:
-        super().__init__()
-        self.n_nodes = n_nodes
+class AUCEdge(SklearnBinaryMetric):
+    """AUC for edge prediction."""
 
-    def _compute(
-        self,
-        graphon: Graphon,
-        estimated: Graphon,
-        adjacency_matrix: np.ndarray,
-    ):
-        p_hat = estimated.get_edge_probabilities(self.n_nodes, exchangeable=False)
-        if not adjacency_matrix.shape == p_hat.shape:
-            raise ValueError("Adjacency matrix and probabilities matrix have different shapes")
-        return average_precision_score(adjacency_matrix, p_hat)
+    def __init__(self, **kwargs) -> None:
+        super().__init__(method="roc_auc_score", **kwargs)
 
-    def __str__(self):
-        return "AUPRC on probabily matrix"
+
+class AUPRCEdge(SklearnBinaryMetric):
+    """AUPRC for edge prediction."""
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__(method="average_precision_score", **kwargs)
