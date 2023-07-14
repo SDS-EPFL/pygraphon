@@ -388,8 +388,8 @@ class SmoothNetHist(BaseEstimator):
                     best_pij = pij
                     self._num_par_smooth = n_link_com[i]
 
-        self._bic = best_bic
-        logger.debug(f"Best BIC: {best_bic}, with {best_num_link} link communities.")
+            self._bic = best_bic
+            logger.debug(f"Best BIC: {best_bic}, with {best_num_link} link communities.")
         return best_graphon, best_pij
 
     def get_bic(self) -> float:
