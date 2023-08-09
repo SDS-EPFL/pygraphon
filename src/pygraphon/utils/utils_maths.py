@@ -6,6 +6,8 @@ from typing import Iterable
 import numpy as np
 from scipy.stats import bernoulli
 
+from kneed import KneeLocator
+
 EPS = np.spacing(1)
 
 
@@ -25,7 +27,7 @@ def generate_all_permutations(size: int = 3) -> Iterable:
     return permutations(range(size))
 
 
-def bic(log_likelihood_val: float, n: int, num_par: int) -> float:
+def bic(log_likelihood_val: float, n: int, num_par: int, *args, **kwargs) -> float:
     """Compute the BIC score of the graphon.
 
     Parameters
@@ -43,6 +45,42 @@ def bic(log_likelihood_val: float, n: int, num_par: int) -> float:
         BIC score of the graphon
     """
     return -2 * log_likelihood_val + num_par * math.log(n * (n - 1) / 2)
+
+
+def aic(log_likelihood_val: float, num_par: int, *args, **kwargs) -> float:
+    """Compute the AIC score of the graphon.
+
+    Parameters
+    ----------
+    log_likelihood_val : float
+        log-likelihood of the graphon given the adjacency matrix
+    num_par : int
+        number of parameters of the graphon
+
+    Returns
+    -------
+    float
+        AIC score of the graphon
+    """
+    return -2 * log_likelihood_val + 2 * num_par
+
+
+def elbow_point(norm: np.ndarray, *args, **kwargs) -> int:
+    """ Return the index of the elbow point of the curve.
+
+    Parameters
+    ----------
+    norm : np.ndarray
+        values of the norm
+
+    Returns
+    -------
+    int
+        index of the elbow point of the curve
+    """
+    x = np.arange(len(norm))
+    kn = KneeLocator(x, norm, S=1, curve="convex", direction="decreasing")
+    return kn.knee
 
 
 def log_likelihood(probs: np.ndarray, A: np.ndarray) -> float:
@@ -86,5 +124,6 @@ def log_likelihood(probs: np.ndarray, A: np.ndarray) -> float:
         For this reason, only the upper triangular part of :py:obj:`probs` and :py:obj:`A` are considered.
     """
     if np.any(np.triu(probs, k=1) > 1):
-        raise ValueError("The probability matrix cannot contain values greater than 1")
+        raise ValueError(
+            "The probability matrix cannot contain values greater than 1")
     return bernoulli.logpmf(np.triu(A, k=1), np.clip(np.triu(probs, k=1), EPS, 1 - EPS)).sum()

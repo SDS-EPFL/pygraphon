@@ -27,5 +27,7 @@ __all__ = [
     "edge_density",
     "compute_areas_histogram",
     "bic",
+    "aic",
+    "elbow_point",
     "log_likelihood",
 ]
