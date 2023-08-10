@@ -34,7 +34,7 @@ def test_non_fitted_getters() -> None:
     """Test non fitted estimator returns default value."""
     estimator = SmoothNetHist('bic')
     with pytest.warns():
-        assert estimator.get_bic() == np.inf
+        assert estimator.get_criterion_value() == np.inf
     with pytest.warns():
         assert estimator.get_ratio_par() == np.inf
 
@@ -182,3 +182,54 @@ def test_smoothing_histLC_tensor() -> None:
     assert np.allclose(smooth_test_tensor[-1].graphon, olhede_fit.graphon)
     assert np.allclose(smooth_test_tensor[0].graphon, np.ones(
         smooth_test_tensor[0].graphon.shape))
+
+
+def test_setup_criterion() -> None:
+    """Check other criterion are correctly initially setup."""
+    estimator = SmoothNetHist('aic')
+    assert estimator.criterion_name == 'aic'
+    estimator = SmoothNetHist('bic')
+    assert estimator.criterion_name == 'bic'
+    estimator = SmoothNetHist('elbow')
+    assert estimator.criterion_name == 'elbow'
+
+
+def test_criterion_selection() -> None:
+    """Check for a single criterion is everything is correctly setup."""
+    n = 30
+    estimator = SmoothNetHist('bic')
+    theta = np.array([[0.5, 0.3, 0.1], [0.3, 0.6, 0.25], [0.1, 0.25, 0.6]])
+    hist = StepGraphon(theta, bandwidthHist=1 / 3)
+    adj = hist.draw(rho=None, n=n, exchangeable=False)
+    criterion_list = ['aic', 'bic', 'elbow']
+    for criterion in criterion_list:
+        estimator = SmoothNetHist(criterion)
+        estimator.fit(adj)
+        assert estimator.criterion_name == criterion
+        assert estimator.best_pairs[estimator.criterion_name]["graphon"] is not None
+        assert estimator.best_pairs[estimator.criterion_name]["pij"] is not None
+        assert not np.isinf(estimator.get_criterion_value())
+        #Check other criterion are not setup
+        for key, value in estimator.best_pairs.items():
+            if key != criterion:
+                assert value["graphon"] is None
+                assert value["pij"] is None
+                #assert np.isinf(estimator.criterion_values[key])
+
+
+def test_if_all_criterion() -> None:
+    """Check if everything is correctly setup if all criterion are used."""
+    n = 30
+    estimator = SmoothNetHist('all')
+    theta = np.array([[0.5, 0.3, 0.1], [0.3, 0.6, 0.25], [0.1, 0.25, 0.6]])
+    hist = StepGraphon(theta, bandwidthHist=1 / 3)
+    adj = hist.draw(rho=None, n=n, exchangeable=False)
+    estimator.fit(adj)
+    criterion_list = ['aic', 'bic', 'elbow']
+    assert estimator.criterion_name == 'all'
+    for criterion in criterion_list:
+        assert estimator.best_pairs[criterion]["graphon"] is not None
+        assert estimator.best_pairs[criterion]["pij"] is not None
+        assert estimator.criterion_values[criterion] != np.inf
+
+
