@@ -13,12 +13,12 @@ from pygraphon.estimators.BaseEstimator import BaseEstimator
 from pygraphon.estimators.networkhistogram.assignment import Assignment
 from pygraphon.estimators.networkhistogram.nethist import nethist
 from pygraphon.graphons import StepGraphon
-from pygraphon.utils import bic, edge_density, log_likelihood, aic, elbow
+from pygraphon.utils import bic, edge_density, log_likelihood, aic, elbow_point
 
 CRITERIONS = {
     "bic": bic,
     "aic": aic,
-    "elbow": lambda log_likelihood_value, n, num_par, norm, *args, **kwargs: norm
+    "elbow": lambda log_likelihood_val, n, num_par, norm, *args, **kwargs: norm
 }
 
 
@@ -35,21 +35,25 @@ class SmoothNetHist(BaseEstimator):
 
     def __init__(self, criterion: str, bandwidth: Optional[float] = None) -> None:
         super().__init__()
-        if criterion.lower() not in CRITERIONS.keys():
+        if criterion.lower() not in CRITERIONS.keys() and criterion.lower() != "all":
             raise ValueError(
                 f"Criterion {criterion} not available, please choose between {list(CRITERIONS.keys())}"
             )
+        elif criterion.lower() == "all":
+            self.gof = None
+            self.criterion_name = "all"
         else:
             # self.gof is the criterion function
             self.gof = CRITERIONS[criterion.lower()]
             # self.criterion_name is the name of the criterion
             self.criterion_name = criterion.lower()
         # if 'all' is prompted, the model selection will be done by all criterions
-        self.criterion_values = {
-            "bic": np.inf,
-            "aic": np.inf,
-            "elbow": np.inf,
-        }
+        if criterion.lower() == "all":
+            self.criterion_values = {
+                "bic": np.inf,
+                "aic": np.inf,
+                "elbow": np.inf,
+            }
         self.best_pairs = {
             "bic": {"graphon": None, "pij": None},
             "aic": {"graphon": None, "pij": None},
@@ -158,22 +162,22 @@ class SmoothNetHist(BaseEstimator):
         )
 
         bandwidthHist = h / adjacencyMatrix.shape[0]
-        self._criterion_nethist = self.gof(
-            log_likelihood_val=assignment_nethist.log_likelihood,
-            n=adjacencyMatrix.shape[0],
-            num_par=comb(assignment_nethist.theta.shape[0] + 1, 2),
-            norm=np.linalg.norm(
-                assignment_nethist._get_edge_probabilities(
-                    n=adjacencyMatrix.shape[0],
-                    latentVarArray=assignment_nethist.labels_to_latent_variables())
-            ))
-
         # ---------------------------------------------------------------------------------------------
         # Return the graphon from first fit nethist.
         graphon_nethist = StepGraphon(
             assignment_nethist.theta,
             bandwidthHist=bandwidthHist,
         )
+        # Update criterion
+        pij = graphon_nethist._get_edge_probabilities(
+            n=adjacencyMatrix.shape[0],
+            latentVarArray=assignment_nethist.labels_to_latent_variables())
+        if self.gof is not None:
+            self._criterion_nethist = self.gof(log_likelihood_val=assignment_nethist.log_likelihood,
+                                            n=adjacencyMatrix.shape[0],
+                                            num_par=comb(
+                                                assignment_nethist.theta.shape[0] + 1, 2),
+                                            norm=np.linalg.norm(pij - adjacencyMatrix, 2))
         return graphon_nethist, assignment_nethist
 
     def _smoothing_histLC(
@@ -449,9 +453,9 @@ class SmoothNetHist(BaseEstimator):
         if self.criterion_name == "all":
             for criterion in ["bic", "aic", "elbow"]:
                 all_criterion_values = self.get_criterion_values(
-                    tensor_graphon, n_nodes, latentVar, criterion)
+                    tensor_graphon, adjacencyMatrix, latentVar, n_link_com, criterion)
                 best_index = self.choose_best(
-                    np.array(all_criterion_values), criterion, self._tolerance)
+                    np.array(all_criterion_values), criterion)
                 if criterion == 'bic':
                     idx = best_index
                 self.criterion_values[criterion] = all_criterion_values[best_index]
@@ -466,12 +470,15 @@ class SmoothNetHist(BaseEstimator):
                 f"Best bic among criterions: {self.criterion_values['bic']}, with {n_link_com[idx]} link communities.")
         else:
             all_criterion_values = self.get_criterion_values(
-                tensor_graphon, n_nodes, latentVar, self.criterion_name)
+                tensor_graphon, adjacencyMatrix, latentVar, n_link_com, self.criterion_name)
             best_index = self.choose_best(
-                np.array(all_criterion_values), criterion, self._tolerance)
+                np.array(all_criterion_values), self.criterion_name)
             best_graphon = tensor_graphon[best_index]
             best_pij = best_graphon._get_edge_probabilities(
                 n=n_nodes, latentVarArray=latentVar)
+            self._criterion = all_criterion_values[best_index]
+            self.best_pairs[self.criterion_name]["graphon"] = best_graphon
+            self.best_pairs[self.criterion_name]["pij"] = best_pij
             self._num_par_smooth = n_link_com[best_index]
             logger.debug(
                 f"Best {self.criterion_name}: {self._criterion}, with {n_link_com[best_index]} link communities.")
@@ -479,8 +486,9 @@ class SmoothNetHist(BaseEstimator):
         return best_graphon, best_pij
 
     def get_criterion_values(self, tensor_graphon: List[StepGraphon],
-                             n_nodes: int,
+                             adjacencyMatrix: np.ndarray,
                              latentVar: np.ndarray,
+                             n_link_com: List[int],
                              criterion: str) -> List[float]:
         """Get the criterion values for each smoothed graphon.
 
@@ -489,6 +497,8 @@ class SmoothNetHist(BaseEstimator):
         tensor_graphon : List[StepGraphon]
             tensor of smoothed graphons of shape (n_graphons, n_block, n_block),
             where n_block is the number of blocks in the original fit graphon.
+        adjacencyMatrix : np.ndarray
+            adjacency matrix of the graph
         n_nodes : int
             number of nodes of the graph
         latentVar : np.ndarray
@@ -496,22 +506,23 @@ class SmoothNetHist(BaseEstimator):
         criterion : str
             criterion used for the model selection, either 'aic', 'bic', 'elbow'.
         """
+        n_nodes = adjacencyMatrix.shape[0]
         all_criterion_values = []
         for i, graphon in enumerate(tensor_graphon):
             pij = graphon._get_edge_probabilities(
                 n=n_nodes, latentVarArray=latentVar)
-            log_likelihood_value = log_likelihood(pij, self.adjacencyMatrix)
+            log_likelihood_value = log_likelihood(pij, adjacencyMatrix)
             self.gof = CRITERIONS[criterion.lower()]
             if criterion == "elbow":
                 all_criterion_values.append(
-                    norm=np.linalg.norm(pij - self.adjacencyMatrix, 2))
+                    np.linalg.norm(pij - adjacencyMatrix, 2))
             else:
                 all_criterion_values.append(
-                    self.gof(log_likelihood_value=log_likelihood_value,
-                             n=n_nodes, num_par=self.n_link_com[i], norm=np.linalg.norm(pij - self.adjacencyMatrix, 2)))
+                    self.gof(log_likelihood_val=log_likelihood_value,
+                             n=n_nodes, num_par=n_link_com[i], norm=np.linalg.norm(pij - adjacencyMatrix, 2)))
         return all_criterion_values
 
-    def get_criterion(self) -> float:
+    def get_criterion_value(self) -> float:
         """Get the criterion score of the estimated graphon.
 
         Returns
