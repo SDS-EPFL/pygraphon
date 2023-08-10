@@ -209,12 +209,11 @@ def test_criterion_selection() -> None:
         assert estimator.best_pairs[estimator.criterion_name]["graphon"] is not None
         assert estimator.best_pairs[estimator.criterion_name]["pij"] is not None
         assert not np.isinf(estimator.get_criterion_value())
-        #Check other criterion are not setup
+        # Check other criterion are not setup
         for key, value in estimator.best_pairs.items():
             if key != criterion:
                 assert value["graphon"] is None
                 assert value["pij"] is None
-                #assert np.isinf(estimator.criterion_values[key])
 
 
 def test_if_all_criterion() -> None:
@@ -231,5 +230,3 @@ def test_if_all_criterion() -> None:
         assert estimator.best_pairs[criterion]["graphon"] is not None
         assert estimator.best_pairs[criterion]["pij"] is not None
         assert estimator.criterion_values[criterion] != np.inf
-
-
