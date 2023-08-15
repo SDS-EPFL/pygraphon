@@ -505,7 +505,7 @@ class SmoothNetHist(BaseEstimator):
             self.best_pairs[self.criterion_name]["pij"] = best_pij
             self._num_par_smooth = n_link_com[best_index]
             logger.debug(
-                f"Best {self.criterion_name}: {self.criterion_values[self.criterion_name]},+"
+                f"Best {self.criterion_name}: {self.criterion_values[self.criterion_name]}," +
                 " with {n_link_com[best_index]} link communities."
             )
 
