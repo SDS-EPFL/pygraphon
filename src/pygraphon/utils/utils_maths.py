@@ -87,11 +87,11 @@ def mallows_cp(norm: float, var: float, num_par: int, n: int, *args, **kwargs) -
 
     Parameters
     ----------
-    sse : float
+    norm : float
         sum of squared errors
     var : float
         variance
-    p : int
+    num_par : int
         number of parameters
     n : int
         number of nodes of the graph
@@ -129,9 +129,9 @@ def fpe(norm: float, num_par: int, n: int, *args, **kwargs) -> float:
 
     Parameters
     ----------
-    sse : float
+    norm : float
         sum of squared errors
-    p : int
+    num_par : int
         number of parameters of the graphon
     n : int
         number of nodes of the graph
