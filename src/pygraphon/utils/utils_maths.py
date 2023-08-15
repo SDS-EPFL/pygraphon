@@ -4,9 +4,8 @@ from itertools import permutations
 from typing import Iterable
 
 import numpy as np
-from scipy.stats import bernoulli
-
 from kneed import KneeLocator
+from scipy.stats import bernoulli
 
 EPS = np.spacing(1)
 
@@ -66,7 +65,7 @@ def aic(log_likelihood_val: float, num_par: int, *args, **kwargs) -> float:
 
 
 def elbow_point(norm: np.ndarray, *args, **kwargs) -> int:
-    """ Return the index of the elbow point of the curve.
+    """Return the index of the elbow point of the curve.
 
     Parameters
     ----------
@@ -124,6 +123,5 @@ def log_likelihood(probs: np.ndarray, A: np.ndarray) -> float:
         For this reason, only the upper triangular part of :py:obj:`probs` and :py:obj:`A` are considered.
     """
     if np.any(np.triu(probs, k=1) > 1):
-        raise ValueError(
-            "The probability matrix cannot contain values greater than 1")
+        raise ValueError("The probability matrix cannot contain values greater than 1")
     return bernoulli.logpmf(np.triu(A, k=1), np.clip(np.triu(probs, k=1), EPS, 1 - EPS)).sum()

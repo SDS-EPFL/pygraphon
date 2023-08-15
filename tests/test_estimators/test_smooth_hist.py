@@ -11,10 +11,8 @@ class DeterministicSmoother(SmoothNetHist):
         k_init = len(np.unique(flat_graphon))
         return np.concatenate(
             [
-                np.repeat(np.arange(number_link_communities),
-                          k_init // number_link_communities),
-                np.repeat([number_link_communities - 1], k_init %
-                          number_link_communities),
+                np.repeat(np.arange(number_link_communities), k_init // number_link_communities),
+                np.repeat([number_link_communities - 1], k_init % number_link_communities),
             ]
         )
 
@@ -32,7 +30,7 @@ def _test_cluster_up_to_relabelling(theoretical: np.ndarray, empirical: np.ndarr
 
 def test_non_fitted_getters() -> None:
     """Test non fitted estimator returns default value."""
-    estimator = SmoothNetHist('bic')
+    estimator = SmoothNetHist("bic")
     with pytest.warns():
         assert estimator.get_criterion_value() == np.inf
     with pytest.warns():
@@ -45,7 +43,7 @@ def test_cluster_no_reduction() -> None:
     Should return the same group up to relabelling if there are no reductions
     in the number of groups.
     """
-    estimator = SmoothNetHist('bic')
+    estimator = SmoothNetHist("bic")
 
     test_array_1 = np.array([0, 0, 0, 0, 1, 1, 1, 1])
     labels_array_1 = estimator._cluster(2, test_array_1)
@@ -58,9 +56,8 @@ def test_cluster_no_reduction() -> None:
 
 def test_cluster_reduction() -> None:
     """Test if the clustering method reduces the number of groups."""
-    estimator = SmoothNetHist('bic')
-    test_array_3 = np.array(
-        [0.1, 0.15, 0.12, 0.09, 0.23, 0.27, 0.29, 0.3, 0.5, 0.55, 0.48, 0.52])
+    estimator = SmoothNetHist("bic")
+    test_array_3 = np.array([0.1, 0.15, 0.12, 0.09, 0.23, 0.27, 0.29, 0.3, 0.5, 0.55, 0.48, 0.52])
     labels_array_3 = estimator._cluster(3, test_array_3)
     assert len(np.unique(labels_array_3)) == 3
     assert test_array_3.shape == labels_array_3.shape
@@ -68,7 +65,7 @@ def test_cluster_reduction() -> None:
 
 def test_flat_to_tensor() -> None:
     """Test flat_to_tensor with regular block graphon."""
-    estimator = SmoothNetHist('bic')
+    estimator = SmoothNetHist("bic")
     theta = np.array([[0.5, 0.3, 0.1], [0.3, 0.6, 0.2], [0.1, 0.2, 0.7]])
     flat_theta = np.array([[0.5, 0.3, 0.1, 0.6, 0.2, 0.7]])
     hist = StepGraphon(theta, bandwidthHist=1 / 3)
@@ -78,7 +75,7 @@ def test_flat_to_tensor() -> None:
 
 def test_smoothing_operator() -> None:
     """Test smoothing_operator with regular block graphon."""
-    estimator = SmoothNetHist('bic')
+    estimator = SmoothNetHist("bic")
     theta = np.array([[1.5, 0.9, 0.3], [0.9, 1.8, 0.6], [0.3, 0.6, 2.1]]) / 2.1
     labels = np.array([0, 1, 1, 0, 1, 0])
     hist = StepGraphon(theta, bandwidthHist=1 / 3)
@@ -94,14 +91,13 @@ def test_smoothing_operator() -> None:
         flat_graphon=flat_graphon,
         flat_areas=flat_areas,
     )
-    assert np.allclose(computed_smoothed_est, np.array(
-        [[1.8, 0.6, 0.6, 1.8, 0.6, 1.8]]))
+    assert np.allclose(computed_smoothed_est, np.array([[1.8, 0.6, 0.6, 1.8, 0.6, 1.8]]))
 
 
 def test_smoothing_histLC_givenLC_reg_block() -> None:
     """Test smoothing_histLC_givenLC with regular block graphon."""
     n = 99
-    estimator = SmoothNetHist('bic')
+    estimator = SmoothNetHist("bic")
     theta = np.array([[0.5, 0.3, 0.1], [0.3, 0.6, 0.25], [0.1, 0.25, 0.6]])
     hist = StepGraphon(theta, bandwidthHist=1 / 3)
     adj = hist.draw(rho=None, n=n, exchangeable=False)
@@ -134,10 +130,9 @@ def test_smoothing_histLC_givenLC_reg_block() -> None:
 def test_smoothing_histLC_givenLC_nonreg_block() -> None:
     """Test smoothing_histLC_givenLC with non-regular block graphon."""
     n = 99
-    estimator = SmoothNetHist('bic')
+    estimator = SmoothNetHist("bic")
     theta = np.array(
-        [[0.5, 0.3, 0.1, 0.7], [0.3, 0.6, 0.25, 0.1], [
-            0.1, 0.25, 0.6, 0.3], [0.7, 0.1, 0.3, 0.01]]
+        [[0.5, 0.3, 0.1, 0.7], [0.3, 0.6, 0.25, 0.1], [0.1, 0.25, 0.6, 0.3], [0.7, 0.1, 0.3, 0.01]]
     )
     hist = StepGraphon(theta, bandwidthHist=0.3)
     adj = hist.draw(rho=None, n=n, exchangeable=False)
@@ -150,8 +145,7 @@ def test_smoothing_histLC_givenLC_nonreg_block() -> None:
         flat_graphon=theta[np.triu_indices_from(theta)],
         flat_areas=hist.areas[np.triu_indices_from(theta)],
     )
-    theoretical_theta = estimator._flat_to_tensor(
-        flat_theoretical_thera, hist)[0].graphon
+    theoretical_theta = estimator._flat_to_tensor(flat_theoretical_thera, hist)[0].graphon
 
     estimator._num_par_nethist = len(np.unique(hist.graphon))
     smooth_test1, n_link_com = estimator._smoothing_histLC(
@@ -164,44 +158,41 @@ def test_smoothing_histLC_givenLC_nonreg_block() -> None:
 def test_smoothing_histLC_tensor() -> None:
     """Test smoothing_histLC with regular block graphon, selected by BIC."""
     n = 99
-    estimator = SmoothNetHist('bic')
+    estimator = SmoothNetHist("bic")
     theta = np.array([[0.5, 0.3, 0.1], [0.3, 0.6, 0.25], [0.1, 0.25, 0.6]])
     hist = StepGraphon(theta, bandwidthHist=1 / 3)
     adj = hist.draw(rho=None, n=n, exchangeable=False)
 
-    olhede_fit, _ = estimator._first_approximate_graphon_from_adjacency(
-        adjacencyMatrix=adj)
+    olhede_fit, _ = estimator._first_approximate_graphon_from_adjacency(adjacencyMatrix=adj)
     params_olhede_fit = comb(olhede_fit.graphon.shape[0] + 1, 2)
     smooth_test_tensor, n_link_com = estimator._smoothing_histLC(
         hist_approx=olhede_fit, A=adj, number_link_communities=None
     )
-    assert np.array_equal(n_link_com, np.arange(
-        1, len(np.unique(olhede_fit.graphon)) + 1))
+    assert np.array_equal(n_link_com, np.arange(1, len(np.unique(olhede_fit.graphon)) + 1))
 
     assert estimator._num_par_nethist == params_olhede_fit
     assert np.allclose(smooth_test_tensor[-1].graphon, olhede_fit.graphon)
-    assert np.allclose(smooth_test_tensor[0].graphon, np.ones(
-        smooth_test_tensor[0].graphon.shape))
+    assert np.allclose(smooth_test_tensor[0].graphon, np.ones(smooth_test_tensor[0].graphon.shape))
 
 
 def test_setup_criterion() -> None:
     """Check other criterion are correctly initially setup."""
-    estimator = SmoothNetHist('aic')
-    assert estimator.criterion_name == 'aic'
-    estimator = SmoothNetHist('bic')
-    assert estimator.criterion_name == 'bic'
-    estimator = SmoothNetHist('elbow')
-    assert estimator.criterion_name == 'elbow'
+    estimator = SmoothNetHist("aic")
+    assert estimator.criterion_name == "aic"
+    estimator = SmoothNetHist("bic")
+    assert estimator.criterion_name == "bic"
+    estimator = SmoothNetHist("elbow")
+    assert estimator.criterion_name == "elbow"
 
 
 def test_criterion_selection() -> None:
     """Check for a single criterion is everything is correctly setup."""
     n = 30
-    estimator = SmoothNetHist('bic')
+    estimator = SmoothNetHist("bic")
     theta = np.array([[0.5, 0.3, 0.1], [0.3, 0.6, 0.25], [0.1, 0.25, 0.6]])
     hist = StepGraphon(theta, bandwidthHist=1 / 3)
     adj = hist.draw(rho=None, n=n, exchangeable=False)
-    criterion_list = ['aic', 'bic', 'elbow']
+    criterion_list = ["aic", "bic", "elbow"]
     for criterion in criterion_list:
         estimator = SmoothNetHist(criterion)
         estimator.fit(adj)
@@ -219,13 +210,13 @@ def test_criterion_selection() -> None:
 def test_if_all_criterion() -> None:
     """Check if everything is correctly setup if all criterion are used."""
     n = 30
-    estimator = SmoothNetHist('all')
+    estimator = SmoothNetHist("all")
     theta = np.array([[0.5, 0.3, 0.1], [0.3, 0.6, 0.25], [0.1, 0.25, 0.6]])
     hist = StepGraphon(theta, bandwidthHist=1 / 3)
     adj = hist.draw(rho=None, n=n, exchangeable=False)
     estimator.fit(adj)
-    criterion_list = ['aic', 'bic', 'elbow']
-    assert estimator.criterion_name == 'all'
+    criterion_list = ["aic", "bic", "elbow"]
+    assert estimator.criterion_name == "all"
     for criterion in criterion_list:
         assert estimator.best_pairs[criterion]["graphon"] is not None
         assert estimator.best_pairs[criterion]["pij"] is not None
