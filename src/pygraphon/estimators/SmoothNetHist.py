@@ -48,7 +48,9 @@ class SmoothNetHist(BaseEstimator):
     def __init__(self, criterion: str, bandwidth: Optional[float] = None) -> None:
         super().__init__()
         if criterion.lower() not in CRITERIONS.keys() and criterion.lower() != "all":
-            raise ValueError(f"Criterion {criterion} not available, please choose between {list(CRITERIONS.keys())}")
+            raise ValueError(
+                f"Criterion {criterion} not available, please choose between {list(CRITERIONS.keys())}"
+            )
         elif criterion.lower() == "all":
             self.gof = None
             self.criterion_name = "all"
@@ -118,7 +120,9 @@ class SmoothNetHist(BaseEstimator):
             progress_bar,
         )
 
-        tensor_graphon, n_link_com = self._smoothing_histLC(first_fit_graphon, adjacencyMatrix, number_link_communities)
+        tensor_graphon, n_link_com = self._smoothing_histLC(
+            first_fit_graphon, adjacencyMatrix, number_link_communities
+        )
 
         return self._select_best_graphon(
             tensor_graphon,
@@ -248,7 +252,11 @@ class SmoothNetHist(BaseEstimator):
                 + f"than the number of clusters {num_par_diff} in the histogram estimator"
             )
 
-        clusters = list(range(1, num_par_diff + 1)) if number_link_communities is None else [number_link_communities]
+        clusters = (
+            list(range(1, num_par_diff + 1))
+            if number_link_communities is None
+            else [number_link_communities]
+        )
         avr_graphon = np.asarray([flat_graphon.copy() for _ in clusters])
 
         # smoothing based on kmeans if needed
@@ -336,13 +344,15 @@ class SmoothNetHist(BaseEstimator):
         """
         for j in range(number_link_communities):
             labels_j = np.argwhere(labels == j).reshape(-1)
-            tensor_slice_graphon[labels_j] = np.sum(flat_graphon[labels_j] * flat_areas[labels_j]) / np.sum(
-                flat_areas[labels_j]
-            )
+            tensor_slice_graphon[labels_j] = np.sum(
+                flat_graphon[labels_j] * flat_areas[labels_j]
+            ) / np.sum(flat_areas[labels_j])
 
         return tensor_slice_graphon
 
-    def _flat_to_tensor(self, avr_graphon: np.ndarray, hist_approx: StepGraphon) -> List[StepGraphon]:
+    def _flat_to_tensor(
+        self, avr_graphon: np.ndarray, hist_approx: StepGraphon
+    ) -> List[StepGraphon]:
         """Convert the flattened smoothed histograms to a tensor containing all possible smoothing.
 
         Parameters
@@ -410,7 +420,9 @@ class SmoothNetHist(BaseEstimator):
 
         if len(tensor_graphon) == 1:
             best_graphon = tensor_graphon[0]
-            best_pij = best_graphon._get_edge_probabilities(n=n_nodes, latentVarArray=latentVarArray)
+            best_pij = best_graphon._get_edge_probabilities(
+                n=n_nodes, latentVarArray=latentVarArray
+            )
             best_criterion = bic(
                 log_likelihood(best_pij, adjacencyMatrix),
                 n=n_nodes,
@@ -454,7 +466,7 @@ class SmoothNetHist(BaseEstimator):
         Returns
         -------
         Tuple[np.ndarray, np.ndarray]
-            best graphon matrix and P_ij selected by the criterion.
+            best graphon matrix and P_ij selected by the criterion, if all criterions are selected, return bic.
         """
         n_nodes = adjacencyMatrix.shape[0]
         best_graphon = tensor_graphon[0]
@@ -472,9 +484,9 @@ class SmoothNetHist(BaseEstimator):
 
                 self.criterion_values[criterion] = all_criterion_values[best_index]
                 self.best_pairs[criterion]["graphon"] = tensor_graphon[best_index]
-                self.best_pairs[criterion]["pij"] = tensor_graphon[best_index]._get_edge_probabilities(
-                    n=n_nodes, latentVarArray=latentVar
-                )
+                self.best_pairs[criterion]["pij"] = tensor_graphon[
+                    best_index
+                ]._get_edge_probabilities(n=n_nodes, latentVarArray=latentVar)
             # Return by default bic to preserve estimator structure, other criterion are available in self.best_pairs.
             best_graphon = self.best_pairs["bic"]["graphon"]
             best_pij = self.best_pairs["bic"]["pij"]
@@ -562,7 +574,9 @@ class SmoothNetHist(BaseEstimator):
         if criterion_name != "elbow":
             best_value = np.inf
             for i, criterion_candidate in enumerate(values):
-                improvement = (best_value - criterion_candidate) / best_value if best_value != np.inf else 1
+                improvement = (
+                    (best_value - criterion_candidate) / best_value if best_value != np.inf else 1
+                )
                 if improvement >= self._tolerance and improvement > 0:
                     best_value = criterion_candidate
                     index_best = i
