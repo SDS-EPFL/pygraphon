@@ -82,6 +82,68 @@ def elbow_point(norm: np.ndarray, *args, **kwargs) -> int:
     return kn.knee
 
 
+def mallows_cp(norm: float, var: float, num_par: int, n: int, *args, **kwargs) -> float:
+    """Compute the Mallows' Cp score.
+
+    Parameters
+    ----------
+    sse : float
+        sum of squared errors
+    var : float
+        variance
+    p : int
+        number of parameters
+    n : int
+        number of nodes of the graph
+
+    Returns
+    -------
+    float
+        Mallows' Cp score
+    """
+    return (norm + 2 * num_par * var) / n
+
+
+def hqic(log_likelihood_val: float, num_par: int, n: int, *args, **kwargs) -> float:
+    """Compute the HQIC score of the graphon.
+
+    Parameters
+    ----------
+    log_likelihood_val : float
+        log-likelihood of the graphon given the adjacency matrix
+    num_par : int
+        number of parameters of the graphon
+    n : int
+        number of nodes of the graph
+
+    Returns
+    -------
+    float
+        HQIC score of the graphon
+    """
+    return -2 * log_likelihood_val + 2 * num_par * math.log(math.log(n))
+
+
+def fpe(norm: float, num_par: int, n: int, *args, **kwargs) -> float:
+    """Compute the Aikake final prediction error score of the graphon.
+
+    Parameters
+    ----------
+    sse : float
+        sum of squared errors
+    p : int
+        number of parameters of the graphon
+    n : int
+        number of nodes of the graph
+
+    Returns
+    -------
+    float
+        FPE score of the graphon
+    """
+    return norm * (n + num_par + 1) / (n - num_par - 1)
+
+
 def log_likelihood(probs: np.ndarray, A: np.ndarray) -> float:
     r"""Compute the log-likelihood of the graphon given the adjacency matrix of a simple graph.
 
