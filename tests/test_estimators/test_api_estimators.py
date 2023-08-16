@@ -118,7 +118,7 @@ class TestApiSmoothing(TestApiHistogramEstimator):
 
     @pytest.fixture
     def estimator(self):
-        return SmoothNetHist("bic")
+        return SmoothNetHist()
 
     @pytest.fixture
     def fitted_estimator(self, estimator, sbm_3):
