@@ -40,7 +40,8 @@ class SmoothNetHist(BaseEstimator):
     From the theory of edge clustering, approximate a graphon by smoothing blocks of similar density from a histogram.
 
     Args:
-        criterion (str): criterion used for the model selection, either 'aic', 'bic', 'elbow'.
+        criterion (str): criterion used for the model selection, either 'aic', 'bic',
+        'elbow', 'mallows_cp', 'hqic', 'fpe'.
         bandwidth (float): bandwidth of the original non-smoothed :py:class:`~pygraphon.estimators.HistogramEstimator`
         graphon.
     """
