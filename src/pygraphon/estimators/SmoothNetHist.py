@@ -27,7 +27,7 @@ from pygraphon.utils import (
 CRITERIONS = {
     "bic": bic,
     "aic": aic,
-    "elbow": lambda log_likelihood_val, n, num_par, norm, *args, **kwargs: norm,
+    "elbow": lambda norm, *args, **kwargs: norm,
     "mallows_cp": mallows_cp,
     "hqic": hqic,
     "fpe": fpe,
