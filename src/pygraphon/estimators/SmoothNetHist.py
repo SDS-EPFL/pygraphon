@@ -56,8 +56,7 @@ class SmoothNetHist(BaseEstimator):
             self.gof = None
             self.criterion_name = "all"
             self.criterion_values = {k: np.inf for k in CRITERIONS.keys()}
-            self.best_pairs = {k: {"graphon": None, "pij": None}
-                               for k in CRITERIONS.keys()}
+            self.best_pairs = {k: {"graphon": None, "pij": None} for k in CRITERIONS.keys()}
             self._criterion_nethist = {k: np.inf for k in CRITERIONS.keys()}
         else:
             # self.gof is the criterion function
@@ -65,10 +64,8 @@ class SmoothNetHist(BaseEstimator):
             # self.criterion_name is the name of the criterion
             self.criterion_name = criterion.lower()
             self.criterion_values = {self.criterion_name: np.inf}
-            self.best_pairs = {self.criterion_name: {
-                "graphon": None, "pij": None}}
-            self._criterion_nethist = np.inf
-
+            self.best_pairs = {self.criterion_name: {"graphon": None, "pij": None}}
+            self._criterion_nethist = {self.criterion_name: np.inf}
         self.bandwidth = bandwidth
         self._num_par_nethist = -1
         self._num_par_smooth = -1
@@ -184,8 +181,9 @@ class SmoothNetHist(BaseEstimator):
             log_likelihood_val=assignment_nethist.log_likelihood,
             n=adjacencyMatrix.shape[0],
             num_par=comb(assignment_nethist.theta.shape[0] + 1, 2),
-            norm=np.linalg.norm(pij - adjacencyMatrix, 2),
-            var=np.var(pij - adjacencyMatrix),
+            norm=np.linalg.norm(pij - adjacencyMatrix)
+            / (adjacencyMatrix.shape[0] ** 2 - adjacencyMatrix.shape[0]),
+            var=np.var(pij - adjacencyMatrix, ddof=adjacencyMatrix.shape[0]),
         )
         list_criterion = (
             [self.criterion_name] if self.criterion_name != "all" else CRITERIONS.keys()
@@ -256,8 +254,7 @@ class SmoothNetHist(BaseEstimator):
         for index, number_groups in enumerate(clusters):
             # erdos renyi approximation
             if number_groups == 1:
-                avr_graphon[index] = edge_density(
-                    A) * np.ones_like(flat_graphon)
+                avr_graphon[index] = edge_density(A) * np.ones_like(flat_graphon)
             # original histogram estimator
             elif number_groups == self._num_par_nethist:
                 pass
@@ -271,8 +268,7 @@ class SmoothNetHist(BaseEstimator):
                 )
 
         return (
-            self._flat_to_tensor(avr_graphon=avr_graphon,
-                                 hist_approx=hist_approx),
+            self._flat_to_tensor(avr_graphon=avr_graphon, hist_approx=hist_approx),
             clusters,
         )
 
@@ -375,8 +371,7 @@ class SmoothNetHist(BaseEstimator):
         diag_km = np.zeros((nclust_hist, nrow_tile, nrow_tile))
         diag_km[:, i, j] = diag_km_vec
         # X+X^T-diag(X) on axis (1,2) of tensor
-        sym_KM_smooth_g = KM_smooth_g + \
-            np.transpose(KM_smooth_g, (0, 2, 1)) - diag_km
+        sym_KM_smooth_g = KM_smooth_g + np.transpose(KM_smooth_g, (0, 2, 1)) - diag_km
         smoothed_graphons = [
             StepGraphon(
                 graphon=sym_KM_smooth_g[i],
@@ -423,8 +418,8 @@ class SmoothNetHist(BaseEstimator):
                 log_likelihood_val=assignment.log_likelihood,
                 n=adjacencyMatrix.shape[0],
                 num_par=comb(assignment.theta.shape[0] + 1, 2),
-                norm=np.linalg.norm(best_pij - adjacencyMatrix, 2),
-                var=np.var(best_pij - adjacencyMatrix),
+                norm=np.linalg.norm(best_pij - adjacencyMatrix) / (n_nodes**2 - n_nodes),
+                var=np.var(best_pij - adjacencyMatrix, ddof=n_nodes),
             )
             list_criterion = (
                 [self.criterion_name] if self.criterion_name != "all" else CRITERIONS.keys()
@@ -481,8 +476,7 @@ class SmoothNetHist(BaseEstimator):
             all_criterion_values = self.get_criterion_values(
                 tensor_graphon, adjacencyMatrix, latentVar, n_link_com, criterion
             )
-            best_index = self.choose_best(
-                np.array(all_criterion_values), criterion)
+            best_index = self.choose_best(np.array(all_criterion_values), criterion)
             if criterion == ref_criterion:
                 idx = best_index
                 self._num_par_smooth = n_link_com[idx]
@@ -534,16 +528,14 @@ class SmoothNetHist(BaseEstimator):
         n_nodes = adjacencyMatrix.shape[0]
         all_criterion_values = []
         for i, graphon in enumerate(tensor_graphon):
-            pij = graphon._get_edge_probabilities(
-                n=n_nodes, latentVarArray=latentVar)
+            pij = graphon._get_edge_probabilities(n=n_nodes, latentVarArray=latentVar)
             log_likelihood_value = log_likelihood(pij, adjacencyMatrix)
             self.gof = CRITERIONS[criterion.lower()]
             params = dict(
                 log_likelihood_val=log_likelihood_value,
                 n=n_nodes,
                 num_par=n_link_com[i],
-                norm=np.linalg.norm(pij - adjacencyMatrix) /
-                (n_nodes**2 - n_nodes),
+                norm=np.linalg.norm(pij - adjacencyMatrix) / (n_nodes**2 - n_nodes),
                 var=np.var(pij - adjacencyMatrix, ddof=n_nodes),
             )
             all_criterion_values.append(self.gof(**params))
@@ -568,8 +560,7 @@ class SmoothNetHist(BaseEstimator):
             best_value = np.inf
             for i, criterion_candidate in enumerate(values):
                 improvement = (
-                    (best_value - criterion_candidate) /
-                    best_value if best_value != np.inf else 1
+                    (best_value - criterion_candidate) / best_value if best_value != np.inf else 1
                 )
                 if improvement >= self._tolerance and improvement > 0:
                     best_value = criterion_candidate
