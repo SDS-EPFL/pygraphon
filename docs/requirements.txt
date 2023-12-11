@@ -8,3 +8,4 @@ sphinxcontrib-bibtex
 sphinx-copybutton
 sphinx-inline-tabs
 sphinx-togglebutton
+matplotlib
