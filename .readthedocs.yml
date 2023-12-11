@@ -7,11 +7,12 @@ build:
   tools:
     python: "3.10"
 
-python:
-  install:
-    - requirements: docs/requirements.txt
-
 sphinx:
   builder: html
   fail_on_warning: true
   configuration: docs/conf.py
+
+
+python:
+  install:
+    - requirements: docs/requirements.txt
