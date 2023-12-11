@@ -11,7 +11,7 @@
 
 <p>
         <a href="https://zenodo.org/doi/10.5281/zenodo.10355247"><img src="https://zenodo.org/badge/446324463.svg" alt="DOI"></a>
-		<a href='https:/dufourc1/pygraphon.readthedocs.io/en/latest/?badge=latest'>
+        <a href='https://pygraphon.readthedocs.io/en/latest/index.html'>
 				<img src='https://readthedocs.org/projects/pygraphon/badge/?version=latest' alt='Documentation Status' />
 		</a>
         <a href="https://codecov.io/gh/dufourc1/pygraphon" >
