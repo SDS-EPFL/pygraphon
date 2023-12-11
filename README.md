@@ -1,6 +1,6 @@
 <!--
 <p align="center">
-	<img src="https://github.com//pygraphon/raw/main/docs/source/logo.png" height="150">
+	<img src="https://github.com/dufourc1/pygraphon/raw/main/docs/source/logo.png" height="150">
 </p>
 -->
 
@@ -11,7 +11,7 @@
 
 <p>
         <a href="https://zenodo.org/doi/10.5281/zenodo.10212851"><img src="https://zenodo.org/badge/572018079.svg" alt="DOI"></a>
-		<a href='https://pygraphon.readthedocs.io/en/latest/?badge=latest'>
+		<a href='https:/dufourc1/pygraphon.readthedocs.io/en/latest/?badge=latest'>
 				<img src='https://readthedocs.org/projects/pygraphon/badge/?version=latest' alt='Documentation Status' />
 		</a>
         <a href="https://codecov.io/gh/dufourc1/pygraphon" >
@@ -90,7 +90,7 @@ $ pip install -e .
 ## 👐 Contributing
 
 Contributions, whether filing an issue, making a pull request, or forking, are appreciated. See
-[CONTRIBUTING.rst](https://github.com//pygraphon/blob/master/CONTRIBUTING.rst) for more information on getting involved.
+[CONTRIBUTING.rst](https://github.com/dufourc1/pygraphon/blob/master/CONTRIBUTING.rst) for more information on getting involved.
 
 ## 👋 Attribution
 
@@ -151,7 +151,7 @@ run reproducibly with:
 $ tox -q 
 ```
 
-Additionally, these tests are automatically re-run with each commit in a [GitHub Action](https://github.com//pygraphon/actions?query=workflow%3ATests).
+Additionally, these tests are automatically re-run with each commit in a [GitHub Action](https://github.com/dufourc1/pygraphon/actions?query=workflow%3ATests).
 
 ### 📝 Documentation
 
