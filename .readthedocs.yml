@@ -8,10 +8,7 @@ build:
 python:
   version: "3.10"
   install:
-    - method: pip
-      path: .
-      extra_requirements:
-        - docs
+    - requirements: docs/requirements.txt
 sphinx:
   builder: html
   fail_on_warning: true
