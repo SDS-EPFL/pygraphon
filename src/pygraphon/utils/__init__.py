@@ -7,6 +7,7 @@ from .utils_graph import (
     get_adjacency_matrix_from_graph,
 )
 from .utils_graphon import check_consistency_graphon_shape_with_bandwidth, compute_areas_histogram
+from .utils_jit import log_likelihood
 from .utils_maths import (
     EPS,
     aic,
@@ -15,7 +16,6 @@ from .utils_maths import (
     fpe,
     generate_all_permutations,
     hqic,
-    log_likelihood,
     mallows_cp,
 )
 from .utils_matrix import (
@@ -25,6 +25,7 @@ from .utils_matrix import (
     scatter_symmetric_matrix,
     upper_triangle_values,
 )
+from ..graphons.ssm_generators import AssociativeFullyRandom, generate_hierarchical_theta
 
 __all__ = [
     "copy_func",
@@ -46,4 +47,6 @@ __all__ = [
     "log_likelihood",
     "check_consistency_graphon_shape_with_bandwidth",
     "scatter_symmetric_matrix",
+    "generate_hierarchical_theta",
+    "AssociativeFullyRandom",
 ]

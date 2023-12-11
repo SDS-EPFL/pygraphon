@@ -99,6 +99,7 @@ def test_integral():
         assert math.isclose(first_integral, second_integral, abs_tol=1e-3)
         assert math.isclose(first_integral, 1, abs_tol=1e-3)
         assert math.isclose(second_integral, 1, abs_tol=1e-3)
+
         assert math.isclose(
             graphon.unormalized_graphon_function(0.2, 0.3),
             graphon.graphon_function(0.2, 0.3) * graphon.initial_rho,
@@ -128,3 +129,13 @@ def test_print_method(capfd):
     print(g2)  # noqa: T201
     out, _ = capfd.readouterr()
     assert out == "Erdos-Renyi\n"
+
+
+def test_sparsification():
+    """Test that the sparsification method is correct."""
+    g = Graphon(lambda x, y: 1)
+    assert g.initial_rho == 1
+    g.sparsify(0.5)
+    assert g.initial_rho == 0.5
+    with pytest.raises(ValueError):
+        g.sparsify(2)

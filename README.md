@@ -8,27 +8,25 @@
 	PyGraphon
 </h1>
 
-<p align="center">
-		<a href="https://github.com/dufourc1/pygraphon/actions/workflows/build.yml">
-			<img alt="Build" src="https://github.com/dufourc1/pygraphon/workflows/build/badge.svg" />
-		</a>
-		<a href="https://codecov.io/gh/dufourc1/pygraphon" > 
-			<img src="https://codecov.io/gh/dufourc1/pygraphon/branch/master/graph/badge.svg?token=MDWJ6F86US"/> 
-		</a>
+
+<p>
+        <a href="https://zenodo.org/doi/10.5281/zenodo.10212851"><img src="https://zenodo.org/badge/572018079.svg" alt="DOI"></a>
 		<a href='https://pygraphon.readthedocs.io/en/latest/?badge=latest'>
 				<img src='https://readthedocs.org/projects/pygraphon/badge/?version=latest' alt='Documentation Status' />
 		</a>
-		<a href="https://github.com/cthoyt/cookiecutter-python-package">
-				<img alt="Cookiecutter template from @cthoyt" src="https://img.shields.io/badge/Cookiecutter-python--package-yellow" /> 
-		</a>
+        <a href="https://codecov.io/gh/dufourc1/pygraphon" >
+            <img src="https://codecov.io/gh/dufourc1/pygraphon/branch/master/graph/badge.svg?token=MDWJ6F86US"/>
+        </a>
+</p>
+<p>
+        <a href="https://github.com/dufourc1/pygraphon/actions/workflows/build.yml">
+            <img alt="Build" src="https://github.com/dufourc1/pygraphon/workflows/build/badge.svg" />
+        </a>
 		<a href="https://pypi.org/project/pygraphon">
 				<img alt="PyPI" src="https://img.shields.io/pypi/v/pygraphon" />
 		</a>
 		<a href="https://pypi.org/project/pygraphon">
 				<img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/pygraphon" />
-		</a>
-		<a href="https://github.com/dufourc1/pygraphon/blob/master/LICENSE">
-				<img alt="PyPI - License" src="https://img.shields.io/pypi/l/pygraphon" />
 		</a>
 		<a href='https://github.com/psf/black'>
 				<img src='https://img.shields.io/badge/code%20style-black-000000.svg' alt='Code style: black' />
@@ -62,6 +60,9 @@ P_estimated = graphon_estimated.get_edge_connectivity()
 
 ## 🚀 Installation
 
+<details>
+ <summary>See Installation instructions</summary>
+
 <!-- Uncomment this section after your first ``tox -e finish``
 The most recent release can be installed from
 [PyPI](https://pypi.org/project/pygraphon/) with:
@@ -84,6 +85,7 @@ $ git clone git+https://github.com/dufourc1/pygraphon.git
 $ cd pygraphon
 $ pip install -e .
 ```
+</details>
 
 ## 👐 Contributing
 
@@ -91,6 +93,10 @@ Contributions, whether filing an issue, making a pull request, or forking, are a
 [CONTRIBUTING.rst](https://github.com//pygraphon/blob/master/CONTRIBUTING.rst) for more information on getting involved.
 
 ## 👋 Attribution
+
+<details>
+ <summary>See Attributions</summary>
+
 
 ### ⚖️ License
 
@@ -126,13 +132,14 @@ This project has been supported by the following grants:
 This package was created with [@audreyfeldroy](https://github.com/audreyfeldroy)'s
 [cookiecutter](https://github.com/cookiecutter/cookiecutter) package using [@cthoyt](https://github.com/cthoyt)'s
 [cookiecutter-snekpack](https://github.com/cthoyt/cookiecutter-snekpack) template.
+</details>
 
 ## 🛠️ For Developers
 
 <details>
-	<summary>See developer instrutions</summary>
+	<summary>See developer instructions</summary>
 
-	
+
 The final section of the README is for if you want to get involved by making a code contribution.
 
 ### ❓ Testing
@@ -172,25 +179,4 @@ $ pip install -r docs/requirements.txt
 ```
 
 note: to correctly format the documentation, one can use tool such as `rstfmt` (installable with `pip install rstfmt`).
-
-### 📦 Making a Release
-
-After installing the package in development mode and installing
-`tox` with `pip install tox`, the commands for making a new release are contained within the `finish` environment
-in `tox.ini`. Run the following from the shell:
-
-```shell
-$ tox -e finish
-```
-
-This script does the following:
-
-1. Uses BumpVersion to switch the version number in the `setup.cfg` and
-	 `src/pygraphon/version.py` to not have the `-dev` suffix
-2. Packages the code in both a tar archive and a wheel
-3. Uploads to PyPI using `twine`. Be sure to have a `.pypirc` file configured to avoid the need for manual input at this
-	 step
-4. Push to GitHub. You'll need to make a release going with the commit where the version was bumped.
-5. Bump the version to the next patch. If you made big changes and want to bump the version by minor, you can
-	 use `tox -e bumpversion minor` after.
 </details>
