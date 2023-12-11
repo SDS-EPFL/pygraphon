@@ -10,7 +10,7 @@
 
 
 <p>
-        <a href="https://zenodo.org/doi/10.5281/zenodo.10212851"><img src="https://zenodo.org/badge/572018079.svg" alt="DOI"></a>
+        <a href="https://zenodo.org/doi/10.5281/zenodo.10355247"><img src="https://zenodo.org/badge/446324463.svg" alt="DOI"></a>
 		<a href='https:/dufourc1/pygraphon.readthedocs.io/en/latest/?badge=latest'>
 				<img src='https://readthedocs.org/projects/pygraphon/badge/?version=latest' alt='Documentation Status' />
 		</a>
